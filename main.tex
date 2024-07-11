@@ -16,7 +16,6 @@
 \input{listings}
 \input{boolean}
 \makenomenclature
-\renewcommand{\nomname}{Acronyms}
 \input{acronyms}
 \renewcommand\_{\textunderscore\allowbreak}
 
@@ -37,7 +36,7 @@
 \setlength{\epigraphwidth}{0.8\textwidth}
 
 \begin{document}
-\addtocontents{toc}{\protect\hypertarget{toc}{}}
+% \addtocontents{toc}{\protect\hypertarget{toc}{}}
 
 % Page de garde avec commande \maketitle
 % Front cover calling \maketitle
@@ -60,24 +59,33 @@
 
 % Inclusion du chapitre remerciement
 % Input acknowledgement chapter
-% \clearemptydoublepage
+\clearemptydoublepage\newpage
 \input{./acknowledgement/acknowledgement}
 
 % Ne pas oublier cette commande qui g\'{e}n\`{e}re la page de couverture avant
 % This command will generate the front cover
 \frontmatter
 \clearemptydoublepage
-\renewcommand{\contentsname}{Table of Contents}
-\addcontentsline{toc}{chapter}{Table of Contents}
 \dominitoc % Initialization
-\tableofcontents %sommaire %table of content
-%\shorttableofcontents{Sommaire}{0}
 
+\newpage
+\renewcommand{\contentsname}{Table of Contents}
+% \addcontentsline{toc}{chapter}{Table of Contents}
+\tableofcontents
+
+\newpage
+\renewcommand{\nomname}{Acronyms}
 \printnomenclature
+
+\newpage
 \listoffigures
 \addcontentsline{toc}{chapter}{List of Figures}
+
+\newpage
 \listoftables
 \addcontentsline{toc}{chapter}{List of Tables}
+
+\newpage
 \renewcommand{\lstlistlistingname}{List of Listings}
 \lstlistoflistings
 \addcontentsline{toc}{chapter}{List of Listings}
