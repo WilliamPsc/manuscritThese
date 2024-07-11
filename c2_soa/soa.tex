@@ -1,0 +1,46 @@
+\chapter{State of the Art}
+\chaptermark{State of the Art}
+\label{chapter:soa}
+\minitoc
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+This chapter provides an overview of related work to contextualize the primary objectives of this thesis. Firstly, Information Flow Tracking (IFT) is introduced, detailing the different types and their respective purposes. I will discuss the various levels of monitoring, from program behaviour to the detection of hardware trojans.
+Subsequently, Physical Attacks are examined, focusing on two main types: Side-Channel Attacks (SCA) and Fault Injection Attacks (FIA).
+Finally, as my research will concentrate on FIA, I will exclusively present countermeasures against Fault Injection Attacks.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Information Flow Tracking}
+This section presents the various types of IFT and the different functional levels associated with Dynamic IFT.
+
+    \subsection{Different types of IFT}
+    There are two distinct types of IFT approaches: static and dynamic, each with its own specific objectives.
+
+        \subsubsection{Static IFT (SIFT)}
+        This approach involves analysing the flow of information within a system without actually executing the program. The goal of static IFT is to determine potential information flows and data pathways by examining the codebase or system architecture. This method is particularly useful for identifying theoretical vulnerabilities and ensuring compliance with design principles before deployment. Static analysis is comprehensive as it covers all possible execution paths, but it may also generate false positives by flagging theoretical flows that might not occur in practice.
+
+        \subsubsection{Dynamic IFT (DIFT)}
+        In contrast, dynamic IFT tracks information flow in real-time as the system operates. This method observes how data actually moves through the system under various operating conditions, providing a practical and immediate understanding of information handling and leakage. The goal of dynamic IFT is to detect and respond to security breaches or compliance issues as they happen, offering a real-world perspective on the system's security posture. However, this approach might not cover all potential data paths as it is dependent on the specific conditions and inputs provided during the monitoring period.
+    \subsection{Different levels of IFT}
+        \subsubsection{Application level}
+        \subsubsection{OS level}
+        \subsubsection{Architecture level}
+        \subsubsection{Gate level}
+
+    \subsection{DIFT Architectures}
+        \subsubsection{Off-Core}
+
+        \subsubsection{Off-Loading}
+
+        \subsubsection{In-Core}
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Physical Attacks}
+    \subsection{Side-Channel Attacks}
+    \subsection{Fault Injection Attacks}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Countermeasures against FIA}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

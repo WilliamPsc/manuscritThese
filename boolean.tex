@@ -1,0 +1,14 @@
+\newboolean{showcomments}
+% \setboolean{showcomments}{false}
+\setboolean{showcomments}{true}
+\ifthenelse{\boolean{showcomments}}
+{ \newcommand{\mynote}[2]{
+    \fbox{\bfseries\sffamily\normalsize#1}
+    {\normalsize$\blacktriangleright$\textsf{\emph{#2}}$\blacktriangleleft$}}}
+{ \newcommand{\mynote}[2]{}}
+
+\newcommand{\wip}[1]{\mynote{William}{\textcolor{red}{#1}}}
+\newcommand{\vl}[1]{\mynote{Vianney}{\textcolor{blue}{#1}}}
+\newcommand{\gug}[1]{\mynote{Guy}{\textcolor{ForestGreen}{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

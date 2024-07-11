@@ -1,0 +1,133 @@
+% Ce fichier main.tex est le fichier principal \`{a} partir duquel tout est g\'{e}n\'{e}r\'{e}
+% This file is the main file where the final document is generated
+\documentclass{these-dbl}
+
+% Remplir les metadonnees du pdf
+% Fill the pdf metadata
+\hypersetup{
+   pdfauthor   = {William PENSEC},
+   pdftitle    = {Protection d'un processeur avec DIFT contre des attaques physiques},
+   pdfsubject  = {Th\`{e}se de doctorat de William PENSEC},
+   pdfkeywords = {},
+   pdfstartview= {FitV} % ajuste la page à la largueur de l'écran
+}
+
+\geometry{vmargin=4.0cm}
+\input{listings}
+\input{boolean}
+\makenomenclature
+\renewcommand{\nomname}{Acronyms}
+\input{acronyms}
+\renewcommand\_{\textunderscore\allowbreak}
+
+% Spécifier vos fichiers de bibliographie
+% Specify you bibliography files here
+\addbibresource{./biblio/biblio.bib}
+
+\setlength{\headheight}{14pt}
+
+%%%%%%%%%%%%%%%%%%%%% Minitoc configuration %%%%%%%%%%%%%%%%%%%%%
+\setcounter{minitocdepth}{2}
+\usepackage{lipsum}
+
+%%%%%%%%%%%%%%%%%%%%% Epigraph configuration %%%%%%%%%%%%%%%%%%%%%
+\usepackage{calrsfs}
+\usepackage{dutchcal}
+% Set the desired width for the epigraph
+\setlength{\epigraphwidth}{0.8\textwidth}
+
+\begin{document}
+\addtocontents{toc}{\protect\hypertarget{toc}{}}
+
+% Page de garde avec commande \maketitle
+% Front cover calling \maketitle
+\input{./cover/front}
+
+% Sélectionner la langue du contenu suivant cette ligne
+% Select the content language following this line
+\selectlanguage{english}
+
+% \setlength{\headheight}{14pt}
+% \addtolength{\topmargin}{-1.6pt}
+
+\thispagestyle{empty}
+\pagenumbering{roman}
+
+% Inclusion du chapitre remerciement
+% Input acknowledgement chapter
+\clearemptydoublepage
+\input{./acknowledgement/epigraph}
+
+% Inclusion du chapitre remerciement
+% Input acknowledgement chapter
+% \clearemptydoublepage
+\input{./acknowledgement/acknowledgement}
+
+% Ne pas oublier cette commande qui g\'{e}n\`{e}re la page de couverture avant
+% This command will generate the front cover
+\frontmatter
+\clearemptydoublepage
+\renewcommand{\contentsname}{Table of Contents}
+\addcontentsline{toc}{chapter}{Table of Contents}
+\dominitoc % Initialization
+\tableofcontents %sommaire %table of content
+%\shorttableofcontents{Sommaire}{0}
+
+\printnomenclature
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\renewcommand{\lstlistlistingname}{List of Listings}
+\lstlistoflistings
+\addcontentsline{toc}{chapter}{List of Listings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearemptydoublepage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\setcounter{mtc}{5}
+\mainmatter
+\input{./c1_intro/Introduction}
+
+\clearemptydoublepage
+\input{./c2_soa/soa}
+
+\clearemptydoublepage
+\input{./c3_vulnerabilities_assessment/assessment}
+
+\clearemptydoublepage
+\input{./c4_fissa/fissa}
+
+\clearemptydoublepage
+\input{./c5_countermeasures_dift/countermeasures}
+
+\clearemptydoublepage
+\input{./c6_results/results}
+
+\clearemptydoublepage
+\backmatter
+\input{./c7_conclusion/conclusion}
+
+% Chapitre pour la bibliographie
+% Bibliography chapter
+\clearemptydoublepage
+\phantomsection % To have a correct link in the table of contents
+\addcontentsline{toc}{chapter}{Bibliography}
+
+% nocite: Pour citer la totalit\'{e} des r\'{e}f\'{e}rences contenues dans le fichier biblio
+% nocite: In order to cite all the references included biblio
+\nocite{*}
+\printbibliography
+% \newpage
+% \nocite{*}
+% \printbibliography[heading=secondary,keyword=secondary]
+
+\clearemptydoublepage
+% Pour avoir la quatrième de couverture sur une page paire
+% To have the back cover on an even page
+\cleartoevenpage[\thispagestyle{empty}]
+\input{./cover/back}
+
+\end{document}
