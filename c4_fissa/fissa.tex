@@ -1,9 +1,9 @@
-\chapter{FISSA - Fault Injection Simulation for Security Assessment}
+\chapter{FISSA -- Fault Injection Simulation for Security Assessment}
 \chaptermark{FISSA - Fault Injection Simulation for Security Assessment}
 \label{chapter:fissa}
 \minitoc
 
-This section introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation. The first section will presents the state of the art of existing tools for FIA campaigns in emulation, formal methods or even perform real world attacks. The second section will presents the architecture and details how FISSA works and presents how to extend it depending on other needs. Finally, I will discuss about it and draw some perspectives for the tool's development and usability.
+This section introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation. The first section presents the state of the art of existing tools for FIA campaigns in emulation, formal methods or even perform real world attacks. The second section presents the architecture and details how FISSA works and presents how to extend it depending on other needs. Finally, we will discuss and draw some perspectives for the tool's development and usability.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulation tools for Fault Injection}
@@ -26,7 +26,7 @@ This section presents recent works related to methods and tools for vulnerabilit
     \end{tabular}
 \end{table}
 
-Actual FIAs involve physically injecting faults into the target hardware using techniques such as variations in supply voltage or clock signal~\cite{BCNTW-06-procieee, BFP-19-tches}, laser pulses~\cite{BCNTW-06-procieee, CGVCBLC-22-cardis}, electromagnetic emanations~\cite{BCNTW-06-procieee} or X-rays~\cite{GBD-23-paine}.
+Actual FIAs involve physically injecting faults into the target hardware using techniques such as variations in supply voltage or clock signal~\cite{BCNTW-06-procieee, BFP-19-tches}, laser pulses~\cite{BCNTW-06-procieee, CGVCBLC-22-cardis}, electromagnetic emanations~\cite{BCNTW-06-procieee} or X-Rays~\cite{GBD-23-paine}.
 This approach offers valuable insights into the real impact of faults on hardware components.
 However, a significant drawback of actual fault injections is that they demand considerable expertise to prepare the target, involving intricate setup procedures.
 Additionally, this approach can only be executed once the physical circuit is available, potentially delaying the vulnerability assessment process until later stages of development.
@@ -52,7 +52,18 @@ Table~\ref{table:FI_type_comparison} shows that CABA simulation offers a good co
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{FISSA}
+This section presents our open-source tool, FISSA~\cite{fissa}. It is under the CeCILL-B licence and available on GitHub.
+
 \subsection{Main software architecture}
+FISSA is designed to help circuit designers to analyse, throughout the design cycle, the sensitivity to FIA of the developed circuit.
+Figure~\ref{fig:archi_fissa} presents the software architecture of FISSA.
+It consists of 3 different modules: \textit{TCL generator}, \textit{Fault Injection Simulator} and \textit{Analyser}. The first and third modules correspond to a set of Python classes.
+\textit{The TCL generator}, detailed in Section~\ref{subsec:tcl_gen}, relies on a configuration file and a target file to create a set of parameterised TCL scripts. These scripts are tailored based on the provided configuration file and are used to drive the fault injection simulation campaign.
+
+\textit{Fault Injection Simulator}, detailed in Section~\ref{subsec:FIS}, performs the fault injection simulation campaign based on inputs files from \textit{TCL generator} for a circuit design described through HDL files and memory initialisation files. For that purpose it relies on an existing HDL simulator such as Questasim~\cite{questasim}, Verilator~\cite{verilator}, or Vivado~\cite{vivado}.
+
+\textit{The Analyser}, detailed in Section~\ref{subsec:analyser}, evaluates the outcomes of the simulations and generates a set of files that allows the designers to examine fault injection effects on their designs through various information.
+
 
 \begin{figure}[ht]
     \centering
@@ -61,9 +72,66 @@ Table~\ref{table:FI_type_comparison} shows that CABA simulation offers a good co
     \label{fig:archi_fissa}
 \end{figure}
 
+Algorithm~\ref{algo:pseudoCodeSimuStages} shows a representation of a fault injection campaign. The algorithm requires a set of targets  (i.e. hardware elements in which a fault should be
+injected), the fault model and the considered injection window(s) which identifies the period(s), in number of clock cycles, in which fault injections are performed.
+Then, it runs a first simulation with no fault injected, which is used as a reference for comparison with the following simulations to determine end-of-simulation statuses. 
+Then, for each target, each fault model and for each clock cycle within the injection window, the corresponding simulation is executed, and the corresponding logs are stored in a dedicated file.
+
+Customising end-of-simulation statuses allows for adaptation to the specific requirements of each design assessment. To configure these statuses, adjustments need to be made either directly in FISSA's code or the HDL code. This process may involve evaluating factors such as:
+\begin{itemize}
+    \item hardware element content (signal, registers, \ldots),
+    \item simulation time (e.g. the simulation exceeds a reference number of clock cycles),
+    \item simulation's end (e.g. an assert statement introduced in the HDL code is reached)
+\end{itemize}
+
+\begin{algorithm}
+    \caption{Simulated FIA campaign pseudo-code}
+    \label{algo:pseudoCodeSimuStages}
+    \normalsize
+    \begin{algorithmic}[1]
+        \Require $targets \leftarrow list(targets)$
+        \Require $faults \leftarrow list(fault_model)$
+        \Require $windows \leftarrow list(injection_windows)$
+            \State $ref_sims = simulate()$
+            \For{$target \in targets$}
+                \For{$fault \in faults$}
+                    \For{$cycle \in windows$}
+                        \State $logs = simulate(target, fault, cycle)$
+                    \EndFor
+                \EndFor
+            \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
 \subsection{Supported fault models}
+\label{subsec:supported_fault_models}
+
+A set of fault models has already been integrated into FISSA. For a given fault injection campaign, the relevant fault model is defined in the input configuration file and is applied to targets during the simulation phase.
+Currently, supported fault models are:
+\begin{itemize}
+    \justifying
+    \item target set to 0/1,
+    \item single bit-flip in one target at a given clock cycle,
+    \item single bit-flip in two targets at a given clock cycle,
+    \item single bit-flip in two targets at two different clock cycles,
+    \item exhaustive multi-bits faults in one target at a given clock cycle,
+    \item exhaustive multi-bits faults in two targets at a given clock cycle.
+\end{itemize}
 
 \subsection{TCL Generator}
+\label{subsec:tcl_gen}
+
+The \textit{TCL Generator} is used to generate the set of TCL script files which drive the \textit{fault injection simulator}. This module requires two input files.
+Figure~\ref{fig:archi-scriptGen} details the \textit{TCL Generator}. Each blue box represents a python class used to generate the set of output TCL scripts.
+The initialisation class gets inputs from a configuration file. This JSON-formatted file includes various parameters such as the targeted HDL simulator, the considered fault model and the injection window(s). Furthermore, it encompasses parameters such as the clock period (in ns) of the HDL design and the maximum number of simulated clock cycles used to stop the simulation in case of divergence due to the injected fault. Moreover, one extra parameter defines the quantity of simulations per TCL file, allowing a simulation parallelism degree.
+The \textit{Targets} file contains, in YAML format, the list of the circuit elements (e.g. registers or logic gates) that need to be targeted during the fault injection campaign. For each target, its HDL path and bit-width are specified.
+\textit{TCL Script Generator} class gets the configuration parameters from \textit{Initialisation} class, reads the \textit{Targets'} file and calls three others classes.
+The first one, \textit{Basic Code Generator}, undertakes the fundamental generation of TCL code for initialising a simulation, running a simulation, and ending a simulation.
+The second one, \textit{Fault Generator}, produces the TCL code related to fault injection. The \textit{TCL Script Generator} provides specific parameters to the \textit{Fault Generator} to produce code for a designated set of targets and a specified set of clock cycles for fault injection.
+The third one, \textit{Log Generator}, produces the TCL code to produce logs after each simulation.
+Logs comprise the simulation's ID, fault model, faulted targets, injection clock cycle(s), end-of-simulation status, values for all targets, and the end-of-simulation clock cycle. This data constitutes the automated aspect of logging.
+Finally, the \textit{TCL Script Generator} outputs a set of TCL files, each one correspond to a batch of simulations. It is worth noting that each batch starts with a reference simulation (i.e. without fault injection). This allows the user to perform a per batch results analysis.
+Furthermore, it produces a target file used by TCL scripts to get the target list (see Subsection~\ref{subsec:FIS}).
 
 \begin{figure}[ht]
     \centering
@@ -72,9 +140,32 @@ Table~\ref{table:FI_type_comparison} shows that CABA simulation offers a good co
     \label{fig:archi_tcl_gen}
 \end{figure}
 
+Algorithm~\ref{algo:pseudoCodeSimus} depicts a fault injection simulation pseudo-code, showcasing requirements, each state with essential parameters, and the corresponding Python class from Figure~\ref{fig:archi_tcl_gen}.
+Line 5 in Algorithm~\ref{algo:pseudoCodeSimuStages} corresponds to Algorithm~\ref{algo:pseudoCodeSimus}. This algorithm is executed multiple times with different inputs to build a TCL script.
+
+
+\begin{algorithm}
+    \caption{FIA simulation pseudo-code}
+    \label{algo:pseudoCodeSimus}
+    \normalsize
+    \begin{algorithmic}[1]
+        \Require $target$
+        \Require $cycle$
+        \Require $fault_model$
+        \State $tcl_script = init_sim(fault_model, cycle, target)$ \textcolor{blue}{\scriptsize // generated by Basic Code Generator}
+        \State $tcl_script += inject_fault(fault_model)$  \textcolor{red}{\scriptsize // generated by Fault Generator}
+        \State $tcl_script += run_sim()$ \textcolor{blue}{\scriptsize // generated by Basic Code Generator}
+        \State $tcl_script += log_sim(fault_model)$ \textcolor{ForestGreen}{\scriptsize // generated by Log Generator}
+        \State $tcl_script += end_sim()$ \textcolor{blue}{\scriptsize // generated by Basic Code Generator}
+        \State $tcl_file.write(tcl_script)$
+    \end{algorithmic}
+\end{algorithm}
+
 \subsection{Fault Injection Simulator}
+\label{subsec:FIS}
 
 \subsection{Analyser}
+\label{subsec:analyser}
 
 \subsection{Extending FISSA}
 

@@ -4,8 +4,8 @@
 \minitoc
 
 This chapter provides the background of this thesis and the vulnerability assessment. The first section offers a description of the RISC-V Instruction Set Architecture (ISA) and an overview of the specific RISC-V design under consideration.
-The second section details and describe the considered uses cases of this thesis.
-The third section will then detail vulnerabilities assessment of the D-RI5CY, using these two case studies.
+The second section details and describes the considered uses cases of this thesis.
+The third section then detail vulnerabilities assessment of the D-RI5CY, using these three case studies.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{D-RI5CY}
@@ -19,13 +19,15 @@ In this section, we describe the RISC-V ISA and detail the DIFT design we have c
     \label{fig:driscy}
 \end{figure}
 
-\paragraph{RISC-V Instruction Set Architecture (ISA)} is an open and free ISA, which was originally developed at University of California, Berkeley, in 2010, and now is managed and supported by the RISC-V Foundation, having more than 70 members including companies such as Google, AMD, Intel, etc. The architecture was designed with a focus on simplicity and efficiency, embodying the Reduced Instruction Set Computer (RISC) principles. Unlike proprietary ISAs, RISC-V is freely available for anyone to use without licensing fees, making it a popular choice for academic research, commercial products, and educational purposes.
+\subsection{RISC-V Instruction Set Architecture (ISA)}
+RISC-V is an open and free ISA, which was originally developed at University of California, Berkeley, in 2010, and now is managed and supported by the RISC-V Foundation, having more than 70 members including companies such as Google, AMD, Intel, etc. The architecture was designed with a focus on simplicity and efficiency, embodying the Reduced Instruction Set Computer (RISC) principles. Unlike proprietary ISA, RISC-V is freely available for anyone to use without licensing fees, making it a popular choice for academic research, commercial products, and educational purposes.
 
 Technically, RISC-V features a modular design, allowing developers to incorporate only the necessary components for their specific application, which can significantly reduce the processor's complexity and power consumption. It supports several base integer sets classified by width—mainly RV32I, RV64I, and RV128I for 32-bit, 64-bit, and 128-bit architectures respectively. Each base set can be extended with additional modules for applications requiring floating-point computations (e.g., RV32F, RV64F), atomic operations (e.g., RV32A, RV64A), and more. This modularity and the openness of RISC-V have spurred a wide range of innovations in processor design and applications in areas ranging from embedded systems to high-performance computing.
 
-\paragraph{DIFT design} We have selected the D-RI5CY design, which utilises the RI5CY core supported by PULPino and developed by ETH Zurich. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, and, ALU and MAC operations.
+\subsection{DIFT design}
+We have selected the D-RI5CY design, which utilises the RI5CY core supported by PULPino and developed by ETH Zurich. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, and, ALU and MAC operations.
 
-D-RI5CY~\cite{PDGLC-18-hpec} has been developed by researchers of Columbia University, in the USA, in partnership with Politecnico di Torino, in Italy. D-RI5CY use the RI5CY processor in which they implemented a hardware in-core DIFT.
+D-RI5CY~\cite{PDGLC-18-hpec} has been developed by researchers of Columbia University, in the USA, in partnership with Politecnico di Torino, in Italy. D-RI5CY use the RI5CY processor, in which they implemented a hardware in-core DIFT.
 
 Figure~\ref{fig:driscy} presents an overview of the D-RI5CY processor's architecture. In red are represented the DIFT specific modules.
 These modules allow storing, propagating and checking tags during the execution of a sensitive application.
@@ -33,13 +35,25 @@ The \textit{Tag Update Logic} module is used to initialize or update the tag in 
 Then, when a tag is propagated in the pipeline, the \textit{Tag Propagation Logic} module propagates tags according to the security policy defined in the TPR.
 Once a tag has been propagated and its data has been sent out of the pipeline, the \textit{Tag Check Logic} modules check that it conforms to the security policy defined in the TCR. If not, an exception is raised.
 
-Authors defined a library of routines to initialise the tags of the data coming from potentially malicious channels. Additionally, they extended the RI5CY ISA with memory and register tagging instructions. The default 1-bit tag is "\textit{0}", this means that the data is trusted, otherwise, the tag would be set to "\textit{1}" which means that the data is untrusted.
+The authors defined a library of routines to initialise the tags of the data coming from potentially malicious channels.
+At program startup, D-RI5CY initialises the tags of the registers, program counter and memory blocks to zero (i.e. trusted).
+They extended the RI5CY ISA with memory and register tagging instructions. The default 1-bit tag is "\textit{0}", this means that the data is trusted, otherwise, the tag would be set to "\textit{1}" which means that the data is untrusted.
+They have added four assembly instructions to initialise tags for user-supplied inputs, they are:
+\begin{itemize}
+    \item \textbf{p.set rd} sets to untrusted the security tag of the destination register $rd$
+    \item \textbf{p.spsb x0, offset(rt)} sets to untrusted the security tag of the memory byte at the address of the value stored in $rt$ + offset
+    \item \textbf{p.spsh x0, offset(rt)} sets to untrusted the security tag of the memory half-word at the address of the value stored in $rt$ + offset
+    \item \textbf{p.spsw x0, offset(rt)} sets to untrusted the security tag of the memory word at the address of the value stored in $rt$ + offset
+\end{itemize}
+
+
 Moreover, they augmented the program counter with a tag of one bit and the register file with one tag per register's byte (marked as $T$). Finally, they added a tag in the data memory, however, it is a 4-bits tag.
 Each data element is physically stored in memory with its associated tag.
 
 It is worth noting that the D-RI5CY designers have chosen to rely on the illegal instruction exception already implemented in the original RI5CY processor to manage the DIFT exceptions. This choice minimizes the area overhead of the proposed solution.
 
-In the Control and Status Registers (CSR), they added two additionals 32-bits registers : Tag Propagation Register (TPR) and Tag Check Register (TCR). These registers are used to store the security policy for both propagation and check. These registers contains a default policy but they can be modified during runtime with a simple instruction. These policies consist of rules, which have fine-grain control over tag propagation and check for different classes of instructions. The rules specify how the tags of the instruction operands are combined and checked.
+In the Control and Status Registers (CSR), they added two additional 32-bits registers : Tag Propagation Register (TPR) and Tag Check Register (TCR). These registers are used to store the security policy for both propagation and check. These registers contain a default policy, but they can be modified during runtime with a simple instruction. This instruction is an CSR write, such as \texttt{csrw \textit{csr, rs1}}.
+These policies consist of rules, which have fine-grain control over tag propagation and check for different classes of instructions. The rules specify how the tags of the instruction operands are combined and checked.
 Table~\ref{tab:insnClasses} shows the different instructions for each category represented in both TPR and TCR.
 
 \begin{table}[t]
@@ -84,7 +98,7 @@ The \textit{Load/Store Enable} field provides a finer-granularity rule to enable
 \end{table}
 
 Table~\ref{tab:tcr} shows the TCR configurations considered in our work.
-Each instruction type has a user-configurable 3-bits tag control policy field (except for \textit{Execute Check}, \textit{Branch Check} and \textit{Load/Store Check} which have 1, 2 and 4-bits tag control policy fields respectively) which can be configured through the same instruction used for the TPR. The tag control policy determines whether or not the integrity of the system is corrupted based on the tags of the instruction's operands. 
+Each instruction type has a user-configurable 3-bits tag control policy field (except for \textit{Execute Check}, \textit{Branch Check} and \textit{Load/Store Check} which have 1, 2 and 4-bits tag control policy fields respectively) which can be configured through the same instruction used for the TPR. The tag control policy determines whether the integrity of the system is corrupted based on the tags of the instruction's operands. 
 The default 3-bits field should be read as follows: the right bit corresponds to input operand 1, the middle bit corresponds to input operand 2 and the left bit corresponds to the output tag of the operation. For each bit set, the corresponding tag is checked to determine whether an exception must be raised.
 The \textit{Execute Check} field is used to check the integrity of the PC. 
 The \textit{Branch Check} field is used to check both inputs during branch instruction (\textit{beq, blt, \ldots}). The right bit is used for input operand 1 and the left bit is used for input operand 2.
@@ -100,25 +114,59 @@ Finally, the \textit{Load/Store Check} field is used to enable/disable source or
         \toprule
                   & Execute Check & \begin{tabular}{c}Load/Store\\Check \end{tabular}   & Logical Check & Comparison Check & Shift Check & Jump Check & Branch Check & Arith Check \\\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}
         Bit index & 21            & 20 19 18 17      & 16 15 14      & 13 12 11         & 10 9 8      & 7 6 5      & 4 3          & 2 1 0       \\ \midrule
-        Policy    & 1             & 1 0 1 0          & 0 0 0         & 0 0 0            & 0 0 0       & 0 0 0      & 0 0          & 0 0 0       \\
-        Policy V2 & 0             & 0 0 0 0          & 0 0 0         & 0 0 0            & 0 0 0       & 0 0 0      & 0 0          & 0 1 1       \\
+        Policy 1   & 1             & 1 0 1 0          & 0 0 0         & 0 0 0            & 0 0 0       & 0 0 0      & 0 0          & 0 0 0       \\
+        Policy 2 & 0             & 0 0 0 0          & 0 0 0         & 0 0 0            & 0 0 0       & 0 0 0      & 0 0          & 0 1 1       \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\textwidth]{c3_vulnerabilities_assessment/img/dift_workflow.pdf}
-    \caption{Representation of the DIFT flow.}
-    \label{fig:dift_workflow}
-\end{figure}
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=\textwidth]{c3_vulnerabilities_assessment/img/dift_workflow.pdf}
+%     \caption{Representation of the DIFT flow.}
+%     \label{fig:dift_workflow}
+% \end{figure}
 
-Figure~\ref{fig:dift_workflow} shows a representation of the DIFT work flow. At first~\textcircled{\small{1}}, the D-RI5CY initalises the configuration registers (TPR and TCR) from the default security policy and tag all others registers .
-Then at program startup~\textcircled{\small{2}}, D-RI5CY initialises all the tags to \textit{trusted} (i.e, set at 0).
-The tag propagation~\textcircled{\small{3}} and verification~\textcircled{\small{4}} happen in the D-RI5CY pipeline in parallel with the standard behavior, without incurring any latency overhead.
+% Figure~\ref{fig:dift_workflow} shows a representation of the DIFT work flow. At first~\textcircled{\small{1}}, the D-RI5CY initialises the configuration registers (TPR and TCR) from the default security policy and tag all others registers.
+% Then at program startup~\textcircled{\small{2}}, D-RI5CY initialises all the tags to \textit{trusted} (i.e, set to 0).
+% The tag propagation~\textcircled{\small{3}} and verification~\textcircled{\small{4}} happen in the D-RI5CY pipeline in parallel with the standard behaviour, without incurring any latency overhead.
 
-To illustrate the use of TCR and TPR registers, let's consider the detection of buffer overflow attacks leading to an ROP attack by overwriting a function return address. We assume that buffer data tags are set to 1 (i.e., \textit{untrusted}) since the user manipulates the buffer.
-To detect this kind of attack, it is necessary to ensure the PC integrity by prohibiting the use of untrusted data for this register (i.e., \textit{Execute Check} field of TCR set to 1). Regarding tag propagation configuration, load, and store input operand tags must be propagated to output. Thus, the TPR register \textit{Load/Store Mode} field should be set to value 10 (i.e., destination tag = source tag) and the \textit{Load/Store Enable} field must be set to 001 (i.e., Source tag enabled).
+\subsection{Pedagogical case study}
+To present the use of the D-RISCY, we will introduce a use case to demonstrate how to use a new security policy and how the DIFT will detect the violation of different security policy.
+
+This use case has been developed for pedagogical purposes but does not involve a real attack like the two previous use cases.
+\wip{à terminer}
+% Policy 2 allows tag propagation for each type of instruction, unlike 1 which disables propagation for branch and comparison instructions and for \textit{Load/Store Enable} field.
+% Regarding TCR configuration, 2 only enables tag checks for arithmetic instructions from input sources.
+% Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure the new security policy by writing in the TPR and TCR registers with an assembly line and the write in the CSR instruction. Line 7 tags the variable \verb|a| as untrusted (tag is set to "\textit{0}"). In line 8, variables \verb|a| and \verb|b| are compared to determine which arithmetic operation should be performed.
+% Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of \verb|a| and \verb|b| stored in the registers \verb|a4| and \verb|a5| respectively. The \verb|(a>b)| condition and its associated branch is computed in line 9, the \verb|(a-b)| subtraction in line 14 and the \verb|(a+b)| addition in line 20.
+% Policy 2 focuses on arithmetic operations. It prohibits the use of untrusted variables for arithmetic computations. Since variable \verb|a| is untrusted and \verb|(b>a)|, the DIFT protection raises an exception when executing instruction \verb|add a5,a4,a5| (i.e., the \verb|a+b| C statement).
+
+\begin{lstlisting}[style=topPosition, caption=Compare/Compute C Code, language=C, label=code:compcompu]
+    int main(){
+       int a, b = 5, c;
+       register int reg asm("x9");
+       a = reg;
+       asm volatile("csrw 0x700, tprValue");
+       asm volatile("csrw 0x701, tcrValue");
+       asm volatile("p.spsw x0, 0(\%0);" :: "r" (&a));
+       c = (a > b) ? (a-b) : (a+b);
+           //42c:   ble a4,a5,448
+           //430:   addi a5,s0,-16
+           //434:   lw a4,-12(a5)
+           //438:   addi a3,s0,-16
+           //43c:   lw a5,-4(a3)
+           //440:   sub a5,a4,a5
+           //444:   j 45c
+           //448:   addi a5,s0,-16
+           //44c:   lw a4,-12(a5)
+           //450:   addi a3,s0,-16
+           //454:   lw a5,-4(a3)
+           //458:   add a5,a4,a5
+           //45c:   sw a5,-24(s0)
+       return EXIT_SUCCESS;
+    }\end{lstlisting}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Use cases}
@@ -130,11 +178,20 @@ This section details the considered use cases in our work. The first two use cas
 \subsection{First use case: Buffer Overflow}
 The first use case involves exploiting a buffer overflow, potentially leading to a Return-Oriented Programming (ROP) attack\footnote{\url{https://github.com/sld-columbia/riscv-dift/blob/master/pulpino\_apps\_dift/wilander\_testbed/}} and the execution of a shellcode. The attacker exploits the buffer overflow to access the return address (\textit{RA}) register. When the function returns, the corrupted \textit{RA} register is loaded into the \textit{PC} via a \textit{jalr} instruction. This hijacks the execution flow, causing the first shellcode instruction to be fetched from address (\textit{0x6fc}). Due to the DIFT mechanism, the tag associated with the buffer data overwrites the \textit{RA} register tag. As the buffer data is user-manipulated, it is tagged as \textit{untrusted} (tag value = 1). Consequently, when the first shellcode instruction is fetched, the tag associated with the \textit{PC} propagates through the pipeline until the DIFT mechanism detects a violation of the security policy and raises an exception. This attack demonstrates the behaviour of DIFT when monitoring the \textit{PC} tag. This use case employs the first security policy from Table~\ref{tab:tpr} and Table~\ref{tab:tcr}.
 
+To illustrate the use of TCR and TPR registers, we assume that buffer data tags are set to 1 (i.e., \textit{untrusted}) since the user manipulates the buffer.
+To detect this kind of attack, it is necessary to ensure the PC integrity by prohibiting the use of untrusted data for this register (i.e., \textit{Execute Check} field of TCR set to 1). Regarding tag propagation configuration, load, and store input operand tags must be propagated to output. Thus, the TPR register \textit{Load/Store Mode} field should be set to value 10 (i.e. destination tag = source tag) and the \textit{Load/Store Enable} field must be set to 001 (i.e., Source tag enabled).
+
 Listing~\ref{code:buffer_overflow} displays the C code for the buffer overflow scenario. The assembly code on line 22 of this listing represents the saving of the register \textit{x8}, which is the \textit{saved register 0} or \textit{frame pointer} register in the RISC-V ISA. Next, the source buffer is filled with A's characters and the shellcode address is appended to the end of this source buffer. Finally, lines 30-33 illustrate the tag initialisation on the source buffer.
 
-Figure~\ref{fig:rop_attack}\wip{Revoir cette partie avec nouvelle version de l'image} represents the five steps from the source buffer initialisation to the first shellcode instruction being fetched. In Figure~\ref{fig:rop_attack_1}, the source buffer is initialised with A's, the destination buffer is empty, and both \textit{PC} and \textit{RA} register are trusted. In the second step, Figure~\ref{fig:rop_attack_2}, the source buffer is copied into the destination buffer, and in Figure~\ref{fig:rop_attack_3}, the \textit{RA} register is compromised with the address of the shellcode function. At the same steps, during the buffer copy, the associated tags are copied into the destination buffer. Finally, in Figure~\ref{fig:rop_attack_4}, the \textit{PC} loads the \textit{RA} register along with its tag. The \textit{PC} loses its integrity. In Figure~\ref{fig:rop_attack_5}, the \textit{PC} address is fetched, and the instruction is sent into the pipeline along with the tag.
+% \wip{Revoir cette partie avec nouvelle version de l'image}
+Figure~\ref{fig:rop_attack} represents the five steps from the source buffer initialisation to the first shellcode instruction being fetched.
+In Figure~\ref{fig:rop_attack_1}, the source buffer, in yellow, is initialised with A's, and as it is manipulated by a user, it is tagged as untrusted (red). The destination buffer is empty, and both \textit{PC} and \textit{RA} register are trusted (green).
+In Figure~\ref{fig:rop_attack_2}, the source buffer is copied into the destination buffer, the data and the tag are copied.
+In Figure~\ref{fig:rop_attack_3}, the overflow occurs and the $ra$ register is compromised with the address of the shellcode function from the source buffer. Now, all the memory tags are untrusted.
+In Figure~\ref{fig:rop_attack_4}, the \textit{PC} loads the $ra$ register along with its tag. The \textit{PC} loses its integrity and became untrusted.
+In Figure~\ref{fig:rop_attack_5}, the \textit{PC} address is fetched, and the instruction is sent into the pipeline along with the tag.
+At this moment, the DIFT mechanism will detect the untrusted tag and as the security policy do not allow executing an untrusted PC, an exception will be raised and the application will be stopped.
 
-% \newpage
 \begin{lstlisting}[style=topPosition, language=C, label=code:buffer_overflow, caption=Buffer overflow C code]
 #define BUFSIZE 16
 #define OVERFLOWSIZE 256
@@ -198,13 +255,13 @@ int main(){
     \hfill
     \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth, page=3]{c3_vulnerabilities_assessment/img/buffer_overflow/schemaPedagogique.pdf}
-        \caption{Overwrite of the return address register $ra$}
+        \caption{An overflow occurs, the $ra$ register is overwritten}
         \label{fig:rop_attack_3}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth, page=4]{c3_vulnerabilities_assessment/img/buffer_overflow/schemaPedagogique.pdf}
-        \caption{Return address register is loaded into the PC}
+        \caption{Corrupted $ra$ register is loaded into the PC}
         \label{fig:rop_attack_4}
     \end{subfigure}
     \hfill
@@ -284,36 +341,36 @@ Table~\ref{table:ftpdOverwriteMemory} represents the different steps to overwrit
 \subsection{Third use case: Compare/Compute}
 
 The third use case implements security policy 2 from Table~\ref{tab:tpr} and Table~\ref{tab:tcr}. This use case has been developed for our use but does not induce a real attack as both previous use cases.
-Policy 2 allows tag propagation for each type of instruction, unlike 1 which disables propagation for branch and comparison instructions and for \textit{Load/Store Enable} field.
-Regarding TCR configuration, 2 only enables tag checks for arithmetic instructions from input sources.
-Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure the new security policy by writing in the TPR and TCR registers with an assembly line and the write in the CSR instruction. Line 7 tags the variable \verb|a| as untrusted (tag is set to "\textit{0}"). In line 8, variables \verb|a| and \verb|b| are compared to determine which arithmetic operation should be performed.
-Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of \verb|a| and \verb|b| stored in the registers \verb|a4| and \verb|a5| respectively. The \verb|(a>b)| condition and its associated branch is computed in line 9, the \verb|(a-b)| subtraction in line 14 and the \verb|(a+b)| addition in line 20.
-Policy 2 focuses on arithmetic operations. It prohibits the use of untrusted variables for arithmetic computations. Since variable \verb|a| is untrusted and \verb|(b>a)|, the DIFT protection raises an exception when executing instruction \verb|add a5,a4,a5| (i.e., the \verb|a+b| C statement).
+% Policy 2 allows tag propagation for each type of instruction, unlike 1 which disables propagation for branch and comparison instructions and for \textit{Load/Store Enable} field.
+% Regarding TCR configuration, 2 only enables tag checks for arithmetic instructions from input sources.
+% Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure the new security policy by writing in the TPR and TCR registers with an assembly line and the write in the CSR instruction. Line 7 tags the variable \verb|a| as untrusted (tag is set to "\textit{0}"). In line 8, variables \verb|a| and \verb|b| are compared to determine which arithmetic operation should be performed.
+% Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of \verb|a| and \verb|b| stored in the registers \verb|a4| and \verb|a5| respectively. The \verb|(a>b)| condition and its associated branch is computed in line 9, the \verb|(a-b)| subtraction in line 14 and the \verb|(a+b)| addition in line 20.
+% Policy 2 focuses on arithmetic operations. It prohibits the use of untrusted variables for arithmetic computations. Since variable \verb|a| is untrusted and \verb|(b>a)|, the DIFT protection raises an exception when executing instruction \verb|add a5,a4,a5| (i.e., the \verb|a+b| C statement).
 
-\begin{lstlisting}[style=topPosition, caption=Compare/Compute C Code, language=C, label=code:compcompu]
-    int main(){
-       int a, b = 5, c;
-       register int reg asm("x9");
-       a = reg;
-       asm volatile("csrw 0x700, tprValue");
-       asm volatile("csrw 0x701, tcrValue");
-       asm volatile("p.spsw x0, 0(\%0);" :: "r" (&a));
-       c = (a > b) ? (a-b) : (a+b);
-           //42c:   ble a4,a5,448
-           //430:   addi a5,s0,-16
-           //434:   lw a4,-12(a5)
-           //438:   addi a3,s0,-16
-           //43c:   lw a5,-4(a3)
-           //440:   sub a5,a4,a5
-           //444:   j 45c
-           //448:   addi a5,s0,-16
-           //44c:   lw a4,-12(a5)
-           //450:   addi a3,s0,-16
-           //454:   lw a5,-4(a3)
-           //458:   add a5,a4,a5
-           //45c:   sw a5,-24(s0)
-       return EXIT_SUCCESS;
-    }\end{lstlisting}
+% \begin{lstlisting}[style=topPosition, caption=Compare/Compute C Code, language=C, label=code:compcompu]
+%     int main(){
+%        int a, b = 5, c;
+%        register int reg asm("x9");
+%        a = reg;
+%        asm volatile("csrw 0x700, tprValue");
+%        asm volatile("csrw 0x701, tcrValue");
+%        asm volatile("p.spsw x0, 0(\%0);" :: "r" (&a));
+%        c = (a > b) ? (a-b) : (a+b);
+%            //42c:   ble a4,a5,448
+%            //430:   addi a5,s0,-16
+%            //434:   lw a4,-12(a5)
+%            //438:   addi a3,s0,-16
+%            //43c:   lw a5,-4(a3)
+%            //440:   sub a5,a4,a5
+%            //444:   j 45c
+%            //448:   addi a5,s0,-16
+%            //44c:   lw a4,-12(a5)
+%            //450:   addi a3,s0,-16
+%            //454:   lw a5,-4(a3)
+%            //458:   add a5,a4,a5
+%            //45c:   sw a5,-24(s0)
+%        return EXIT_SUCCESS;
+%     }\end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vulnerability assessment}
@@ -412,6 +469,17 @@ Furthermore, it shows that 8 different cycles can be targeted for the attack to 
 Finally, faults in \textit{tpr\_q} and \textit{tcr\_q} are successful, since these registers maintain the propagation rules and the security policy configuration. 
 The last two registers, \textit{tpr\_q} and \textit{tcr\_q} are critical when we fault the bit 12 of TPR because the load/store mode which is set to \textit{10} but if we change it the propagation policy will change and then the tag will not be propagated as a mode set to \textit{11} will clear the tag. A bit-flip at bit 15 will impact the behaviour as it stores the load/store enable source tag. Finally, bit 20 of TCR store the load/store check destination address tag, which is used when the program wants to store at the address (a-4).
 
+Figure~\ref{fig:study_mem_overwriting_tag_propagation} details the tag propagation in the context of a format string attack case for a non-faulty execution and illustrates the reason behind the sensitivity of registers highlighted in Table~\ref{tab:end_sim_from_time_fault_register_mo}.
+Figure~\ref{fig:study_mem_overwriting_tag_propagation} focuses on three clock cycles dedicated to the instruction \verb|sw a4,0(a5)| decoding and execution which should lead to the storage of the value 224 at address (a-4). 
+In cycles 52482 and 52483, \verb|sw a4,0(a5)| is decoded and the source operands tag are retrieved from the tag register file. Particularly, the store destination address is retrieved from \textit{rf\_reg[15]} and stored in register \textit{store\_dest\_addr\_ex\_o\_tag}. In cycle 52484, the destination address of the store operation is computed by the processor Arithmetic Logic Unit (ALU).
+In parallel, \textit{alu\_operator\_o\_mode}, \textit{alu\_operand\_a\_ex\_o\_tag}, \textit{alu\_operand\_b\_ex\_o\_tag}, \textit{store\_dest\_addr\_ex\_o\_tag} and \textit{check\_s1\_o\_tag} registers drives the tag computation corresponding to the destination address. 
+\textit{use\_store\_ops\_ex\_o} drives a multiplexer to propagate the value stored in \textit{alu\_operand\_a\_ex\_o\_tag} register to the tag checking module. 
+\textit{alu\_operand\_a\_ex\_o\_tag} and \textit{alu\_operand\_b\_ex\_o\_tag} sequentially store the tag associated to `\verb|a|' while \textit{alu\_operator\_o\_mode} stores the propagation rule according to the TPR configuration (see Table~\ref{tab:tpr}).
+\textit{check\_s1\_o\_tag} maintains the TCR value from the decode stage to the execution stage, it is compared to the value of the operand tag for tag checking.
+Then, the store should be executed in the Execute stage. However, the tag associated with the store destination address is set to 1 due to tag propagation (since it is computed from variable `\verb|a|'). 
+Since the security policy prohibits the use of data tagged as \textit{untrusted} as a store instruction destination address (\textit{Load/Store Check} field of TCR = 1010), an exception is raised.
+\textit{use\_store\_ops\_ex\_o}, highlighted in Table~\ref{tab:end_sim_from_time_fault_register_mo} but not shown in Figure~\ref{fig:study_mem_overwriting_tag_propagation}, drives a multiplexer leading to the propagation of register \textit{store\_dest\_addr\_ex\_o\_tag}.
+
 \begin{landscape}
     \begin{table}[t]
         \footnotesize
@@ -443,17 +511,6 @@ The last two registers, \textit{tpr\_q} and \textit{tcr\_q} are critical when we
         \end{tabular}
     \end{table}
 \end{landscape}
-
-Figure~\ref{fig:study_mem_overwriting_tag_propagation} details the tag propagation in the context of a format string attack case for a non-faulty execution and illustrates the reason behind the sensitivity of registers highlighted in Table~\ref{tab:end_sim_from_time_fault_register_mo}.
-Figure~\ref{fig:study_mem_overwriting_tag_propagation} focuses on three clock cycles dedicated to the instruction \verb|sw a4,0(a5)| decoding and execution which should lead to the storage of the value 224 at address (a-4). 
-In cycles 52482 and 52483, \verb|sw a4,0(a5)| is decoded and the source operands tag are retrieved from the tag register file. Particularly, the store destination address is retrieved from \textit{rf\_reg[15]} and stored in register \textit{store\_dest\_addr\_ex\_o\_tag}. In cycle 52484, the destination address of the store operation is computed by the processor Arithmetic Logic Unit (ALU).
-In parallel, \textit{alu\_operator\_o\_mode}, \textit{alu\_operand\_a\_ex\_o\_tag}, \textit{alu\_operand\_b\_ex\_o\_tag}, \textit{store\_dest\_addr\_ex\_o\_tag} and \textit{check\_s1\_o\_tag} registers drives the tag computation corresponding to the destination address. 
-\textit{use\_store\_ops\_ex\_o} drives a multiplexer to propagate the value stored in \textit{alu\_operand\_a\_ex\_o\_tag} register to the tag checking module. 
-\textit{alu\_operand\_a\_ex\_o\_tag} and \textit{alu\_operand\_b\_ex\_o\_tag} sequentially store the tag associated to `\verb|a|' while \textit{alu\_operator\_o\_mode} stores the propagation rule according to the TPR configuration (see Table~\ref{tab:tpr}).
-\textit{check\_s1\_o\_tag} maintains the TCR value from the decode stage to the execution stage, it is compared to the value of the operand tag for tag checking.
-Then, the store should be executed in the Execute stage. However, the tag associated with the store destination address is set to 1 due to tag propagation (since it is computed from variable `\verb|a|'). 
-Since the security policy prohibits the use of data tagged as \textit{untrusted} as a store instruction destination address (\textit{Load/Store Check} field of TCR = 1010), an exception is raised.
-\textit{use\_store\_ops\_ex\_o}, highlighted in Table~\ref{tab:end_sim_from_time_fault_register_mo} but not shown in Figure~\ref{fig:study_mem_overwriting_tag_propagation}, drives a multiplexer leading to the propagation of register \textit{store\_dest\_addr\_ex\_o\_tag}.
 
  \begin{figure}[ht]
     \centering
@@ -549,5 +606,5 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
-In this section, I have described the processor, I will work on with its implementation of a hardware in-core DIFT. I have described how it works and how to use the DIFT part with the default configuration. Then, I described the different use cases we choose to work with to analyse the DIFT behaviour and assess its behaviour against fault injection attacks. Finally, I presented the vulnerability assessment on these use case using the D-RI5CY processor. I have shown that this DIFT implementation is vulnerable to FIA in different registers and depending on the application a different path is used and so different registers will be critical.
+In this section, we have described the processor, we will work on with its implementation of a hardware in-core DIFT. We have described how it works and how to use the DIFT part with the default configuration. Then, we described the different use cases we choose to work with to analyse the DIFT behaviour and assess its behaviour against fault injection attacks. Finally, we presented the vulnerability assessment on these use case using the D-RI5CY processor. We have shown that this DIFT implementation is vulnerable to FIA in different registers and depending on the application a different path is used and so different registers will be critical.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
