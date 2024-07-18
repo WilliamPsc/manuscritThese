@@ -3,9 +3,9 @@
 \label{chapter:dift_assessment}
 \minitoc
 
-This chapter provides the background of this thesis and the vulnerability assessment. The first section offers a description of the RISC-V Instruction Set Architecture (ISA) and an overview of the specific RISC-V design under consideration.
+This chapter provides the background of this thesis and the vulnerability assessment. The first section offers a description of the RISC-V Instruction Set Architecture (ISA) and an overview of the specific RISC-V DIFT design under consideration.
 The second section details and describes the considered uses cases of this thesis.
-The third section then detail vulnerabilities assessment of the D-RI5CY, using these three case studies.
+Finally, the third section assesses the vulnerabilities of the D-RI5CY, using these three cases.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{D-RI5CY}
@@ -19,48 +19,51 @@ In this section, we describe the RISC-V ISA and detail the DIFT design we have c
     \label{fig:driscy}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{RISC-V Instruction Set Architecture (ISA)}
 RISC-V is an open and free ISA, which was originally developed at University of California, Berkeley, in 2010, and now is managed and supported by the RISC-V Foundation, having more than 70 members including companies such as Google, AMD, Intel, etc. The architecture was designed with a focus on simplicity and efficiency, embodying the Reduced Instruction Set Computer (RISC) principles. Unlike proprietary ISA, RISC-V is freely available for anyone to use without licensing fees, making it a popular choice for academic research, commercial products, and educational purposes.
 
 Technically, RISC-V features a modular design, allowing developers to incorporate only the necessary components for their specific application, which can significantly reduce the processor's complexity and power consumption. It supports several base integer sets classified by width—mainly RV32I, RV64I, and RV128I for 32-bit, 64-bit, and 128-bit architectures respectively. Each base set can be extended with additional modules for applications requiring floating-point computations (e.g., RV32F, RV64F), atomic operations (e.g., RV32A, RV64A), and more. This modularity and the openness of RISC-V have spurred a wide range of innovations in processor design and applications in areas ranging from embedded systems to high-performance computing.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{DIFT design}
-We have selected the D-RI5CY design, which utilises the RI5CY core supported by PULPino and developed by ETH Zurich. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, and, ALU and MAC operations.
+For this thesis, we opted not to develop a Dynamic Information Flow Tracking (DIFT) system from the ground up, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
+As a result, we have selected the D-RI5CY~\cite{PDGLC-18-hpec, driscy} design, which utilises the RI5CY core supported by PULPino and developed by ETH Zurich. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, and, ALU and MAC operations.
 
-D-RI5CY~\cite{PDGLC-18-hpec} has been developed by researchers of Columbia University, in the USA, in partnership with Politecnico di Torino, in Italy. D-RI5CY use the RI5CY processor, in which they implemented a hardware in-core DIFT.
+D-RI5CY has been developed by researchers of Columbia University, in the USA, in partnership with Politecnico di Torino, in Italy. D-RI5CY use the RI5CY processor, in which they implemented a hardware in-core DIFT.
 
-Figure~\ref{fig:driscy} presents an overview of the D-RI5CY processor's architecture. In red are represented the DIFT specific modules.
-These modules allow storing, propagating and checking tags during the execution of a sensitive application.
+Figure~\ref{fig:driscy} presents an overview of the D-RI5CY processor's architecture. In red and dark red are represented the DIFT specific modules.
+These modules allow tags to be initialised, propagated and checked during the execution of a sensitive application.
 The \textit{Tag Update Logic} module is used to initialize or update the tag in the register file according to the tagged data.
-Then, when a tag is propagated in the pipeline, the \textit{Tag Propagation Logic} module propagates tags according to the security policy defined in the TPR.
-Once a tag has been propagated and its data has been sent out of the pipeline, the \textit{Tag Check Logic} modules check that it conforms to the security policy defined in the TCR. If not, an exception is raised.
+Then, when a tag is propagated in the pipeline in parallel to its associated data, the \textit{Tag Propagation Logic} module propagates it according to the security policy defined in the \textit{TPR}.
+Once a tag has been propagated and its data has been sent out of the pipeline, the \textit{Tag Check Logic} modules check that it conforms to the security policy defined in the TCR. If not, an exception is raised and the application is stopped to avoid accessing or executing corrupted data.
 
-The authors defined a library of routines to initialise the tags of the data coming from potentially malicious channels.
-At program startup, D-RI5CY initialises the tags of the registers, program counter and memory blocks to zero (i.e. trusted).
-They extended the RI5CY ISA with memory and register tagging instructions. The default 1-bit tag is "\textit{0}", this means that the data is trusted, otherwise, the tag would be set to "\textit{1}" which means that the data is untrusted.
-They have added four assembly instructions to initialise tags for user-supplied inputs, they are:
+The authors of the D-RI5CY defined a library of routines to initialise the tags of the data coming from potentially malicious channels.
+At program startup, D-RI5CY initialises the tags of the registers, program counter and memory blocks to \textit{zero}. The default 1-bit tag is "\textit{0}", this means that the data is trusted, otherwise, the tag would be set to "\textit{1}" which means that the data is untrusted.
+They extended the RI5CY ISA with memory and register tagging instructions.
+They have added four assembly instructions to initialise tags for user-supplied inputs:
 \begin{itemize}
-    \item \textbf{p.set rd} sets to untrusted the security tag of the destination register $rd$
-    \item \textbf{p.spsb x0, offset(rt)} sets to untrusted the security tag of the memory byte at the address of the value stored in $rt$ + offset
-    \item \textbf{p.spsh x0, offset(rt)} sets to untrusted the security tag of the memory half-word at the address of the value stored in $rt$ + offset
-    \item \textbf{p.spsw x0, offset(rt)} sets to untrusted the security tag of the memory word at the address of the value stored in $rt$ + offset
+    \item \textbf{p.set rd}: sets to untrusted the security tag of the destination register \textit{rd} (you can check the register names in the ISA specification\footnote{\url{https://www2.eecs.berkeley.edu/Pubs/TechRpts/2014/EECS-2014-54.pdf}} at page 85),
+    \item \textbf{p.spsb x0, offset(rt)}: sets to untrusted the security tag of the memory byte at the address of the value stored in \textit{rt + offset},
+    \item \textbf{p.spsh x0, offset(rt)}: sets to untrusted the security tag of the memory half-word at the address of the value stored in \textit{rt + offset},
+    \item \textbf{p.spsw x0, offset(rt)}: sets to untrusted the security tag of the memory word at the address of the value stored in \textit{rt + offset}.
 \end{itemize}
 
 
-Moreover, they augmented the program counter with a tag of one bit and the register file with one tag per register's byte (marked as $T$). Finally, they added a tag in the data memory, however, it is a 4-bits tag.
+Moreover, they augmented the program counter with a tag of one bit and the register file with one tag per register's byte (marked as $T$ in Figure~\ref{fig:driscy}). Finally, they added 4-bit tags to the data memory.
 Each data element is physically stored in memory with its associated tag.
 
-It is worth noting that the D-RI5CY designers have chosen to rely on the illegal instruction exception already implemented in the original RI5CY processor to manage the DIFT exceptions. This choice minimizes the area overhead of the proposed solution.
+It is worth noting that the D-RI5CY designers have chosen to rely on the \textit{illegal instruction exception} already implemented in the original RI5CY processor to manage the DIFT exceptions. This choice minimizes the area overhead of the proposed solution.
 
-In the Control and Status Registers (CSR), they added two additional 32-bits registers : Tag Propagation Register (TPR) and Tag Check Register (TCR). These registers are used to store the security policy for both propagation and check. These registers contain a default policy, but they can be modified during runtime with a simple instruction. This instruction is an CSR write, such as \texttt{csrw \textit{csr, rs1}}.
-These policies consist of rules, which have fine-grain control over tag propagation and check for different classes of instructions. The rules specify how the tags of the instruction operands are combined and checked.
+In the Control and Status Registers (CSR), they added two additional 32-bits registers : Tag Propagation Register (TPR) and Tag Check Register (TCR). These registers are used to store the security policy for both tag propagation and tag check. These registers contain a default policy, and they can be modified during runtime with a simple \textit{csr write} instruction, such as \texttt{csrw \textit{csr, rs1}}.
+These policies consist of rules, which have fine-grain control over tag propagation and tag check for different classes of instructions. The rules specify how the tags of the instruction operands are combined and checked.
 Table~\ref{tab:insnClasses} shows the different instructions for each category represented in both TPR and TCR.
 
 \begin{table}[t]
     \centering
-    \caption{Instructions per security classes}
+    \caption{Instructions per category}
     \label{tab:insnClasses}
-    \begin{tabular}{@{}cc@{}}
+    \begin{tabular}{@{}rl@{}}
         \toprule
         \textbf{Class} & \textbf{Instructions} \\ \midrule
         Load/Store & \textit{LW, LH{[}U{]}, LB{[}U{]}, SW, SH, SB, LUI, AUIPC, XPulp Load/Store} \\
@@ -75,8 +78,9 @@ Table~\ref{tab:insnClasses} shows the different instructions for each category r
 
 
 Table~\ref{tab:tpr} shows the TPR configurations for the security policies considered in our work.
-Each instruction type has a user-configurable 2-bit tag propagation policy field (except for \textit{Load/Store Enable} which has a 3-bit tag) which is configured through a write instruction in the CSR.
-The tag propagation policy determines how the instruction result tag is generated according to the instruction operand tags. For 2-bit fields, value `00' disables the tag propagation and the output tag keeps its previous value, value `01' stands for a logic AND on the 2 operand tags, value `10' stands for a logic OR on the 2 operand tags and value `11' sets the output tag to zero. 
+Each instruction type has a user-configurable 2-bit tag propagation policy field, except for \textit{Load/Store Enable} which has a 3-bit tag. %Each of these field is configured through a write instruction in the CSR.
+The tag propagation policy determines how the instruction result tag is generated according to the instruction operand tags.
+For 2-bit fields, value `00' disables the tag propagation and the output tag keeps its previous value, value `01' stands for a logic AND on the 2 operand tags, value `10' stands for a logic OR on the 2 operand tags and value `11' sets the output tag to zero. 
 The \textit{Load/Store Enable} field provides a finer-granularity rule to enable/disable the input operands before applying the propagation rule specified in the \textit{Load/Store Mode} field. This extra tag propagation policy is defined through 3 bits. These bits allow enabling the source, source-address, and destination-address tags, respectively.
 
 \begin{table}[t]
@@ -98,21 +102,22 @@ The \textit{Load/Store Enable} field provides a finer-granularity rule to enable
 \end{table}
 
 Table~\ref{tab:tcr} shows the TCR configurations considered in our work.
-Each instruction type has a user-configurable 3-bits tag control policy field (except for \textit{Execute Check}, \textit{Branch Check} and \textit{Load/Store Check} which have 1, 2 and 4-bits tag control policy fields respectively) which can be configured through the same instruction used for the TPR. The tag control policy determines whether the integrity of the system is corrupted based on the tags of the instruction's operands. 
+Each instruction type has a user-configurable 3-bits tag control policy field, except for \textit{Execute Check}, \textit{Branch Check} and \textit{Load/Store Check} which have 1, 2 and 4-bits tag control policy fields respectively.
+The tag control policy determines whether the integrity of the system is corrupted based on the tags of the instruction's operands. 
 The default 3-bits field should be read as follows: the right bit corresponds to input operand 1, the middle bit corresponds to input operand 2 and the left bit corresponds to the output tag of the operation. For each bit set, the corresponding tag is checked to determine whether an exception must be raised.
 The \textit{Execute Check} field is used to check the integrity of the PC. 
-The \textit{Branch Check} field is used to check both inputs during branch instruction (\textit{beq, blt, \ldots}). The right bit is used for input operand 1 and the left bit is used for input operand 2.
+The \textit{Branch Check} field is used to check both inputs during branch instructions. The right bit is used for input operand 1 and the left bit is used for input operand 2.
 Finally, the \textit{Load/Store Check} field is used to enable/disable source or destination tags checking during a \textit{load} or \textit{store} instruction. These bits enable or disable the checking of the source tag, source address tag, destination tag and destination address tag.
 
 \begin{table}[t]
     \scriptsize
-    \setlength{\tabcolsep}{1pt}
+    \setlength{\tabcolsep}{2pt}
     \centering
     \caption{Tag Check Register configuration}
     \label{tab:tcr}
     \begin{tabular}{@{}lcccccccc@{}}
         \toprule
-                  & Execute Check & \begin{tabular}{c}Load/Store\\Check \end{tabular}   & Logical Check & Comparison Check & Shift Check & Jump Check & Branch Check & Arith Check \\\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}
+                  & \begin{tabular}{c}Execute\\Check \end{tabular} & \begin{tabular}{c}Load/Store\\Check \end{tabular}   & Logical Check & Comparison Check & Shift Check & Jump Check & Branch Check & Arith Check \\\cmidrule(lr){2-2}\cmidrule(lr){3-3}\cmidrule(lr){4-4}\cmidrule(lr){5-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}\cmidrule(lr){9-9}
         Bit index & 21            & 20 19 18 17      & 16 15 14      & 13 12 11         & 10 9 8      & 7 6 5      & 4 3          & 2 1 0       \\ \midrule
         Policy 1   & 1             & 1 0 1 0          & 0 0 0         & 0 0 0            & 0 0 0       & 0 0 0      & 0 0          & 0 0 0       \\
         Policy 2 & 0             & 0 0 0 0          & 0 0 0         & 0 0 0            & 0 0 0       & 0 0 0      & 0 0          & 0 1 1       \\
@@ -120,17 +125,11 @@ Finally, the \textit{Load/Store Check} field is used to enable/disable source or
     \end{tabular}
 \end{table}
 
-% \begin{figure}[t]
-%     \centering
-%     \includegraphics[width=\textwidth]{c3_vulnerabilities_assessment/img/dift_workflow.pdf}
-%     \caption{Representation of the DIFT flow.}
-%     \label{fig:dift_workflow}
-% \end{figure}
+To summarise, at first~\textcircled{\small{1}}, D-RI5CY initialises the configuration registers (TPR and TCR) from the default security policy.
+Then at program startup~\textcircled{\small{2}}, D-RI5CY initialises all the tags to \textit{trusted} (i.e, set to 0).
+The tag propagation~\textcircled{\small{3}} and verification~\textcircled{\small{4}} happen in the D-RI5CY pipeline in parallel with the standard behaviour, without incurring any latency overhead.
 
-% Figure~\ref{fig:dift_workflow} shows a representation of the DIFT work flow. At first~\textcircled{\small{1}}, the D-RI5CY initialises the configuration registers (TPR and TCR) from the default security policy and tag all others registers.
-% Then at program startup~\textcircled{\small{2}}, D-RI5CY initialises all the tags to \textit{trusted} (i.e, set to 0).
-% The tag propagation~\textcircled{\small{3}} and verification~\textcircled{\small{4}} happen in the D-RI5CY pipeline in parallel with the standard behaviour, without incurring any latency overhead.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pedagogical case study}
 To present the use of the D-RISCY, we will introduce a use case to demonstrate how to use a new security policy and how the DIFT will detect the violation of different security policy.
 
