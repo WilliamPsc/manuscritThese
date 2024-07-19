@@ -132,14 +132,19 @@ The tag propagation~\textcircled{\small{3}} and verification~\textcircled{\small
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pedagogical case study}
 To present the use of the D-RISCY, we will introduce a use case to demonstrate how to use a new security policy and how the DIFT will detect the violation of different security policy.
+This use case has been developed for pedagogical purposes but does not involve a real software attack.
 
-This use case has been developed for pedagogical purposes but does not involve a real attack like the two previous use cases.
-\wip{à terminer}
-% Policy 2 allows tag propagation for each type of instruction, unlike 1 which disables propagation for branch and comparison instructions and for \textit{Load/Store Enable} field.
-% Regarding TCR configuration, 2 only enables tag checks for arithmetic instructions from input sources.
-% Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure the new security policy by writing in the TPR and TCR registers with an assembly line and the write in the CSR instruction. Line 7 tags the variable \verb|a| as untrusted (tag is set to "\textit{0}"). In line 8, variables \verb|a| and \verb|b| are compared to determine which arithmetic operation should be performed.
-% Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of \verb|a| and \verb|b| stored in the registers \verb|a4| and \verb|a5| respectively. The \verb|(a>b)| condition and its associated branch is computed in line 9, the \verb|(a-b)| subtraction in line 14 and the \verb|(a+b)| addition in line 20.
-% Policy 2 focuses on arithmetic operations. It prohibits the use of untrusted variables for arithmetic computations. Since variable \verb|a| is untrusted and \verb|(b>a)|, the DIFT protection raises an exception when executing instruction \verb|add a5,a4,a5| (i.e., the \verb|a+b| C statement).
+Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure a security policy by writing in the TPR and TCR registers with an assembly line and the write in the CSR instruction. Line 7 tags the variable \verb|a| as untrusted (tag is set to "\textit{1}"). In line 8, variables \verb|a| and \verb|b| are compared to determine which arithmetic operation should be performed.
+Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of \verb|a| and \verb|b| stored in the registers \verb|a4| and \verb|a5| respectively. The \verb|(a>b)| condition and its associated branch is computed in line 9, the \verb|(a-b)| subtraction in line 14 and the \verb|(a+b)| addition in line 20.
+
+The assembly line in C is constructed from key words \textit{asm volatile}. The template for this assembly line is: "\textit{asm asm-qualifiers ( AssemblerTemplate : OutputOperands [ : InputOperands [ : Clobbers ] ])}".
+So to explain briefly line 7 in Listing~\ref{code:compcompu} is composed of a custom assembly instruction "\texttt{p.spsw}", that takes the "\texttt{x0}" register as target and specifies an address mode using the placeholder "\texttt{0(\%0)}". Finally, \"textit{:: "r" (\&a)}" part specifies the input operand, with "\texttt{r}" indicating that a general-purpose register should be used to hold the address of the variable "\texttt{a}".
+
+In terms of security policy, depending on which one we use in Table~\ref{tab:tpr} and Table~\ref{tab:tcr}, we will have different results of exception.
+Security policy 1 propagates the tags with an \textit{OR} logic for five modes (arithmetic, jump, shift, logical, and load/store mode) and enables the propagation of the tag from the source of a load/store.
+Security policy 1 checks the tags only for the execute check (i.e., PC instruction) and for the source address and destination address for a load/store instruction.
+In comparison, security policy 2 enables the propagation for all tags and checks tags only for both inputs of arithmetic instructions.
+To summarise from our application case, if we use security policy 1, the DIFT will detect the \textit{load} instruction before executing the \verb|a > b| comparison and raise an exception; whereas if we use security policy 2, the DIFT protection raises an exception when executing the instruction \verb|add a5,a4,a5| (i.e., the "\verb|a+b|" C statement), since variable \verb|a| is untrusted and \verb|b > a|.
 
 \begin{lstlisting}[style=topPosition, caption=Compare/Compute C Code, language=C, label=code:compcompu]
     int main(){
@@ -166,6 +171,7 @@ This use case has been developed for pedagogical purposes but does not involve a
        return EXIT_SUCCESS;
     }\end{lstlisting}
 
+In the continuation of this work, this use case will be referred to as \textit{Compare/Compute} and will be utilised as the third case, implementing security policy 2 from Table~\ref{tab:tpr} and Table~\ref{tab:tcr}. The two other use cases will be presented in the following section~\ref{section:uses_cases}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Use cases}
@@ -336,40 +342,6 @@ Table~\ref{table:ftpdOverwriteMemory} represents the different steps to overwrit
     \end{tabular}
 \end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Third use case: Compare/Compute}
-
-The third use case implements security policy 2 from Table~\ref{tab:tpr} and Table~\ref{tab:tcr}. This use case has been developed for our use but does not induce a real attack as both previous use cases.
-% Policy 2 allows tag propagation for each type of instruction, unlike 1 which disables propagation for branch and comparison instructions and for \textit{Load/Store Enable} field.
-% Regarding TCR configuration, 2 only enables tag checks for arithmetic instructions from input sources.
-% Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure the new security policy by writing in the TPR and TCR registers with an assembly line and the write in the CSR instruction. Line 7 tags the variable \verb|a| as untrusted (tag is set to "\textit{0}"). In line 8, variables \verb|a| and \verb|b| are compared to determine which arithmetic operation should be performed.
-% Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of \verb|a| and \verb|b| stored in the registers \verb|a4| and \verb|a5| respectively. The \verb|(a>b)| condition and its associated branch is computed in line 9, the \verb|(a-b)| subtraction in line 14 and the \verb|(a+b)| addition in line 20.
-% Policy 2 focuses on arithmetic operations. It prohibits the use of untrusted variables for arithmetic computations. Since variable \verb|a| is untrusted and \verb|(b>a)|, the DIFT protection raises an exception when executing instruction \verb|add a5,a4,a5| (i.e., the \verb|a+b| C statement).
-
-% \begin{lstlisting}[style=topPosition, caption=Compare/Compute C Code, language=C, label=code:compcompu]
-%     int main(){
-%        int a, b = 5, c;
-%        register int reg asm("x9");
-%        a = reg;
-%        asm volatile("csrw 0x700, tprValue");
-%        asm volatile("csrw 0x701, tcrValue");
-%        asm volatile("p.spsw x0, 0(\%0);" :: "r" (&a));
-%        c = (a > b) ? (a-b) : (a+b);
-%            //42c:   ble a4,a5,448
-%            //430:   addi a5,s0,-16
-%            //434:   lw a4,-12(a5)
-%            //438:   addi a3,s0,-16
-%            //43c:   lw a5,-4(a3)
-%            //440:   sub a5,a4,a5
-%            //444:   j 45c
-%            //448:   addi a5,s0,-16
-%            //44c:   lw a4,-12(a5)
-%            //450:   addi a3,s0,-16
-%            //454:   lw a5,-4(a3)
-%            //458:   add a5,a4,a5
-%            //45c:   sw a5,-24(s0)
-%        return EXIT_SUCCESS;
-%     }\end{lstlisting}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vulnerability assessment}
