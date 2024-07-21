@@ -131,20 +131,22 @@ The tag propagation~\textcircled{\small{3}} and verification~\textcircled{\small
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pedagogical case study}
-To present the use of the D-RISCY, we will introduce a use case to demonstrate how to use a new security policy and how the DIFT will detect the violation of different security policy.
+To present the use of the D-RISCY, we will introduce a use case to demonstrate how to use a new security policy and how the DIFT will detect the violation of different security policies.
 This use case has been developed for pedagogical purposes but does not involve a real software attack.
 
-Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure a security policy by writing in the TPR and TCR registers with an assembly line and the write in the CSR instruction. Line 7 tags the variable \verb|a| as untrusted (tag is set to "\textit{1}"). In line 8, variables \verb|a| and \verb|b| are compared to determine which arithmetic operation should be performed.
-Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of \verb|a| and \verb|b| stored in the registers \verb|a4| and \verb|a5| respectively. The \verb|(a>b)| condition and its associated branch is computed in line 9, the \verb|(a-b)| subtraction in line 14 and the \verb|(a+b)| addition in line 20.
+Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure a security policy by writing in the TPR and TCR registers thanks to an assembly line. Line 7 tags the variable "\verb|a|" as untrusted (tag is set to "\textit{1}"). In line 8, variables "\verb|a|" and "\verb|b|" are compared to determine which arithmetic operation should be performed.
+Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of "\verb|a|" and "\verb|b|" stored in the registers "\verb|a4|" and "\verb|a5|". The "\verb|(a>b)|" condition and its associated branch is computed in line 9, the "\verb|(a-b)|" subtraction in line 14 and the "\verb|a+b|" addition in line 20.
 
 The assembly line in C is constructed from key words \textit{asm volatile}. The template for this assembly line is: "\textit{asm asm-qualifiers ( AssemblerTemplate : OutputOperands [ : InputOperands [ : Clobbers ] ])}".
-So to explain briefly line 7 in Listing~\ref{code:compcompu} is composed of a custom assembly instruction "\texttt{p.spsw}", that takes the "\texttt{x0}" register as target and specifies an address mode using the placeholder "\texttt{0(\%0)}". Finally, \"textit{:: "r" (\&a)}" part specifies the input operand, with "\texttt{r}" indicating that a general-purpose register should be used to hold the address of the variable "\texttt{a}".
+So to explain briefly,
+ line 7 in Listing~\ref{code:compcompu} is composed of a custom assembly instruction "\texttt{p.spsw}", that takes the "\texttt{x0}" register as target and specifies an address mode using the placeholder "\texttt{0(\%0)}". Finally, \mbox{"\textit{:: "r" (\&a)}"} part specifies the input operand, with "\texttt{r}" indicating that a general-purpose register should be used to hold the address of the variable "\texttt{a}".
 
 In terms of security policy, depending on which one we use in Table~\ref{tab:tpr} and Table~\ref{tab:tcr}, we will have different results of exception.
 Security policy 1 propagates the tags with an \textit{OR} logic for five modes (arithmetic, jump, shift, logical, and load/store mode) and enables the propagation of the tag from the source of a load/store.
 Security policy 1 checks the tags only for the execute check (i.e., PC instruction) and for the source address and destination address for a load/store instruction.
 In comparison, security policy 2 enables the propagation for all tags and checks tags only for both inputs of arithmetic instructions.
-To summarise from our application case, if we use security policy 1, the DIFT will detect the \textit{load} instruction before executing the \verb|a > b| comparison and raise an exception; whereas if we use security policy 2, the DIFT protection raises an exception when executing the instruction \verb|add a5,a4,a5| (i.e., the "\verb|a+b|" C statement), since variable \verb|a| is untrusted and \verb|b > a|.
+To summarise from our application case, if we use security policy 1, the DIFT will detect the \textit{load} instruction before executing the "\verb|a > b|"
+ comparison and raise an exception; whereas if we use security policy 2, the DIFT protection raises an exception when executing the instruction \verb|add a5,a4,a5| (i.e., the "\verb|a+b|" C statement), since variable \verb|a| is untrusted and \verb|b > a|.
 
 \begin{lstlisting}[style=topPosition, caption=Compare/Compute C Code, language=C, label=code:compcompu]
     int main(){
@@ -346,7 +348,8 @@ Table~\ref{table:ftpdOverwriteMemory} represents the different steps to overwrit
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vulnerability assessment}
 \label{section:vuln_assessment}
-In order to analyse the behaviour of the processor at application runtime against Fault Injection Attacks, we have simulated some fault injections campaigns in which we inject fault inside the 55 registers associated to the DIFT, which correspond to 127 bits in total. Table~\ref{tab:registersDIFT} shows the repartition of these registers in every pipeline stage of the RI5CY core and the number of associated bits. This work has been published in ACM Sensors S\&P~\cite{PLG-22-SensorsSP}.% and the same analysis is available in it.
+In order to analyse the behaviour of the processor at application runtime against Fault Injection Attacks, we have simulated some fault injections campaigns in which we inject fault inside the 55 registers associated to the DIFT, which correspond to 127 bits in total. For these campaigns, we use a tool, developed for this purpose. This tool is described in Chapter~\ref{chapter:fissa} and can generate the TCL code to automatise fault injections attacks campaigns at Cycle Accurate and Bit Accurate (CABA) level.
+Table~\ref{tab:registersDIFT} shows the repartition of these registers in every pipeline stage of the RI5CY core and the number of associated bits. This work has been published in ACM Sensors S\&P~\cite{PLG-22-SensorsSP}.
 
 \begin{table}[t]
     \centering
@@ -577,5 +580,5 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
-In this section, we have described the processor, we will work on with its implementation of a hardware in-core DIFT. We have described how it works and how to use the DIFT part with the default configuration. Then, we described the different use cases we choose to work with to analyse the DIFT behaviour and assess its behaviour against fault injection attacks. Finally, we presented the vulnerability assessment on these use case using the D-RI5CY processor. We have shown that this DIFT implementation is vulnerable to FIA in different registers and depending on the application a different path is used and so different registers will be critical.
+In this chapter, we described the processor we focus on with its implementation of a hardware in-core DIFT. We described how it works and how to use the DIFT mechanism with the default configuration. Then, we described the different use cases we choose to work with, in order to analyse the DIFT behaviour and assess it against fault injection attacks. Finally, we presented the vulnerability assessment on these use cases using the D-RI5CY security mechanism. We shown that this DIFT implementation is vulnerable to FIA within different registers depending on the fault model and depending on the application, as different paths are used and so different registers are going to be criticals.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
