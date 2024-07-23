@@ -3,12 +3,16 @@
 \label{chapter:fissa}
 \minitoc
 
-This section introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation. The first section presents the state of the art of existing tools for FIA campaigns in emulation, formal methods or even perform real world attacks. The second section presents the architecture and details how FISSA works and presents how to extend it depending on other needs. Finally, we will discuss and draw some perspectives for the tool's development and usability.
+This section introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation. 
+The first section presents the state of the art of existing tools for FIA campaigns in emulation, formal methods or even perform real world attacks.
+The second section presents the architecture and details how FISSA works and presents how to extend it depending on other needs.
+The third section presents an example to present how FISSA work in real conditions with an use case from Section~\ref{section:uses_cases}.
+Finally, we will discuss and draw some perspectives for the tool's development and usability.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulation tools for Fault Injection}
 This section presents recent works related to methods and tools for vulnerability assessment when considering fault injection attacks. For such vulnerability assessment, main strategies include actual fault injections, emulations, formal methods and simulations.
-
+\wip{Ajouter états de l'art plus complet sur cette partie, voir articles dans papier SoK - Ileana + FLAT (mycore)}
 \begin{table}[t]
     \centering
     \caption{Fault Injection based methods for vulnerability assessment comparison}
@@ -124,6 +128,7 @@ Currently, supported fault models are:
 \subsection{TCL Generator}
 \label{subsec:tcl_gen}
 
+
 \begin{lstlisting}[style=topPosition, language=json, label=code:configFile_fissa, caption=Example of a FISSA configuration file]
 {
     "name_simulator": "modelsim",
@@ -215,6 +220,8 @@ Logs comprise the simulation's ID, fault model, faulted targets, injection clock
 Finally, the \textit{TCL Script Generator} outputs a set of TCL files, each one correspond to a batch of simulations. This allows the user to perform a per batch results analysis. It is worth noting that each batch starts with a reference simulation which means a simulation without any fault injected. It allows to have results for comparison after when a fault occured and determine what happened due to the injected fault.
 Additionally, it generates a target file utilised by TCL scripts to obtain a simplified target list (refer to Subsection~\ref{subsec:FIS}), as the simulation log requires a list of targets without their sizes.
 
+\wip{Modification des Listings~\ref{code:configFile_fissa}, \ref{code:TargetFile_fissa}, \ref{code:logJSONFile_fissa} en les remplaçant par un exemple simple genre additionneur (à la place de le mettre dans la section~\ref{section:exampleApplication_fissa})?}
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{c4_fissa/img/fissa/detail_tcl_gen.pdf}
@@ -298,9 +305,11 @@ The \textit{Log Generator} automates the extraction of specific segments from th
 An integral aspect of expanding FISSA involves adjusting functions depending on the used HDL simulator. Despite the definition of the TCL language, specific commands vary between simulators. %For instance, in Questasim, injecting a fault into a target can be accomplished with the command: “\textit{force \textless object\_name\textgreater \textless value\textgreater -freeze -cancel \textless time\_info\textgreater}”~\cite{modelsim-force}, whereas in Vivado, the equivalent command is: “\textit{add\_force \textless hdl\_object\textgreater \textless values\textgreater -cancel\_after \textless time\_info\textgreater}”~\cite{vivado-force}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Use example}
+\section{Use case example}
 \label{section:exampleApplication_fissa}
 This section presents a case study to demonstrate the use of FISSA in real conditions. It focuses on the evaluation of the robustness of the DIFT mechanism integrated in the D-RI5CY processor with the Buffer overflow use case from Section~\ref{section:uses_cases}.
+
+\wip{Est ce que je laisse cet exemple qui est le même que celui de DSD ou j'ajoute un exemple plus simple où j'attaque un additionneur avec 3 registres avec quelques modèles de fautes ?}
 
 \subsection{FISSA's configuration}
 \label{subsec:tool_config}
@@ -337,7 +346,7 @@ The \textit{Targets'} file is filled with the 55 registers of the DIFT security 
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\linewidth]{c4_fissa/img/heatmap/heatmap_buffer_overflow_wop_1_multi_bitflip_reg_multi_2.pdf}
+    \includegraphics[width=.5\linewidth]{c4_fissa/img/heatmap/heatmap_buffer_overflow_wop_1_multi_bitflip_reg_multi_2.pdf}
     \caption{Heatmap generated according to the exhaustive multi-bits faults in two targets at a given clock cycle fault model}
     \label{fig:heatmap_multi_reg_multi}
 \end{figure}
@@ -406,20 +415,14 @@ The colour scale represents the number of fault injections targeting a couple of
 This figure highlights the registers that are critical to a specific fault model, allowing the designer to assess his design and choose which protection and where a protection is required, from low need to very high need.
 To give an example, it can be noted that the horizontally displayed registers \texttt{tcr\_q} and \texttt{tpr\_q} are critical registers, because a success will occur regardless of the associated register. Similarly, the registers shown vertically, \texttt{memory\_set\_o\_tag}, \texttt{pc\_if\_o\_tag}, and \texttt{rf\_reg[1]}, are also critical because they lead to many successes with almost all tested registers.
 
-To provide an analytical perspective from the buffer overflow use case presented in Section~\ref{section:use_case}, the five previously mentioned registers are critical as they either store the DIFT security policy configuration (\texttt{tpr\_q} and \texttt{tcr\_q}) or store (\texttt{rf\_reg[1]} represents the tag associated with the value of the Program Counter (PC), which is stored in the register file at index 1 for RISC-V ISA) and propagate the tag (\texttt{pc\_if\_o\_tag}) associated with the PC. This is particularly important in our example, which demonstrates an ROP attack via a buffer overflow.
+To provide an analytical perspective from the buffer overflow use case presented in Section~\ref{section:uses_cases}, the five previously mentioned registers are critical as they either store the DIFT security policy configuration (\texttt{tpr\_q} and \texttt{tcr\_q}) or store (\texttt{rf\_reg[1]} represents the tag associated with the value of the Program Counter (PC), which is stored in the register file at index 1 for RISC-V ISA) and propagate the tag (\texttt{pc\_if\_o\_tag}) associated with the PC. This is particularly important in our example, which demonstrates an ROP attack via a buffer overflow.
 The colour scale indicates the impact of the fault injections on the combination of registers tested. For example, a pair associated with a high number such as 272, 124, and 135 for \texttt{tcr\_q} and \texttt{tpr\_q} are very high priority as they lead to 37.77\% success on this fault model.
-In addition, we can see that several registers produce a low number of successes, such as \texttt{alu\_operand\_a\_ex\_o\_tag} and \texttt{rf\_reg[2]}; these registers are then not the highest priority for protection for the designer.
+In addition, we can see that several registers produce a low number of successes, such as \mbox{\texttt{alu\_operand\_a\_ex\_o\_tag}} and \mbox{\texttt{rf\_reg[2]}}; these registers are then not the highest priority for protection for the designer.
 
 It allows the designer to identify the critical hardware elements to be protected for the use case under consideration.
 All of this information allows the designer to prioritize countermeasures according to allocated budget, protection requirements, etc.
 
-While Table~\ref{table:end_sim_by_status} provides the total number of \textit{successes} for each fault model and Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} gives the successes for each fault model (\texttt{set to 0}, \texttt{set to 1}, and \texttt{a single bit flip in a target at a given cycle}) correlated with the cycle and affected target, Figure~\ref{fig:heatmap_spatial} shows that fault injections in 246 register pairs result in a \textit{success}. This information allows the designer to focus on specific simulation traces to understand the effect(s) of the fault(s) and improve the robustness of his design by implementing adapted countermeasures.
-
-To conclude this section, we aim to provide an overview of the time invested in these simulations.
-The entire fault injection campaign comprises 360,747 simulations, involving the injection of 1 or 2 faults per simulation. The duration of these simulations was about 67 hours, equating to an average of 0.725 seconds per simulation, spanning from initialisation to data recording.
-The execution time is contingent upon various parameters, including the design's size, the specific simulation case, and the number of targets involved.
-In emulation campaigns, FPGA-based fault emulation is four times faster than simulation-based techniques, as noted in paper~\cite{NNHRS-14-dsd}. Actual FIAs are faster than simulations, taking about 0.35 seconds per injection in our tests, relying on the ChipWhisperer-lite platform for clock glitching injection.
-While simulations may be slower, they offer the benefit of not requiring an FPGA prototype or the final circuit. Furthermore, it allows integrating vulnerability assessment in the first stages of the development flow and provides a rich set of information for the designer in order to understand sources of vulnerabilities in his design.
+While Table~\ref{table:end_sim_by_status} provides the total number of \textit{successes} for each fault model and Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} gives the successes for each fault model (\textit{set to 0}, \textit{set to 1}, and \textit{a single bit flip in a target at a given cycle}) correlated with the cycle and affected target, Figure~\ref{fig:heatmap_spatial} shows that fault injections in 246 register pairs result in a \textit{success}. This information allows the designer to focus on specific simulation traces to understand the effect(s) of the fault(s) and improve the robustness of his design by implementing adapted countermeasures.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion and Perspectives}
