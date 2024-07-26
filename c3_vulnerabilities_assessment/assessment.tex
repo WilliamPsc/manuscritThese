@@ -1,4 +1,4 @@
-\chapter{D-RI5CY - Vulnerabilities Assessment}
+\chapter{D-RI5CY - Vulnerability Assessment}
 \chaptermark{Dynamic Information Flow Tracking - Vulnerabilities Assessment}
 \label{chapter:dift_assessment}
 \minitoc
@@ -11,6 +11,7 @@ Finally, the third section assesses the vulnerabilities of the D-RI5CY, using th
 \section{D-RI5CY}
 \label{section:driscy}
 In this section, we describe the RISC-V ISA and detail the DIFT design we have chosen to focus on.
+We choose to work on RISC-V core as they are open-source, and it means that we have the ability to access and modify the design according to our needs.
 
 \begin{figure}[t]
     \centering
@@ -27,7 +28,7 @@ Technically, RISC-V features a modular design, allowing developers to incorporat
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{DIFT design}
-For this thesis, we opted not to develop a Dynamic Information Flow Tracking (DIFT) system from the ground up, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
+This thesis focus on the evaluation of a DIFT against fault injection attacks in order to protect it. We opted to not develop a Dynamic Information Flow Tracking (DIFT) system from scratch, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
 As a result, we have selected the D-RI5CY~\cite{PDGLC-18-hpec, driscy} design, which utilises the RI5CY core supported by PULPino and developed by ETH Zurich. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, and, ALU and MAC operations.
 
 D-RI5CY has been developed by researchers of Columbia University, in the USA, in partnership with Politecnico di Torino, in Italy. D-RI5CY use the RI5CY processor, in which they implemented a hardware in-core DIFT.

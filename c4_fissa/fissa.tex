@@ -3,14 +3,16 @@
 \label{chapter:fissa}
 \minitoc
 
-This section introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation. 
+This chapter introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation. 
 The first section presents the state of the art of existing tools for FIA campaigns in emulation, formal methods or even perform real world attacks.
 The second section presents the architecture and details how FISSA works and presents how to extend it depending on other needs.
-The third section presents an example to present how FISSA work in real conditions with an use case from Section~\ref{section:uses_cases}.
+The third section presents an example to present how FISSA work in real conditions with a use case from Section~\ref{section:uses_cases}.
 Finally, we will discuss and draw some perspectives for the tool's development and usability.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulation tools for Fault Injection}
+Addressing fault injection vulnerabilities is crucial. Historically, fault attacks have been conducted using physical equipment. Nonetheless, a modern approach has emerged that leverages simulators for fault testing. The main advantages of using simulators are they cost less money than physical setups, it is easier to make them work as they do not need specific skills, and they can be used during the conceptual stage.
+
 This section presents recent works related to methods and tools for vulnerability assessment when considering fault injection attacks. For such vulnerability assessment, main strategies include actual fault injections, emulations, formal methods and simulations.
 \wip{Ajouter états de l'art plus complet sur cette partie, voir articles dans papier SoK - Ileana + FLAT (mycore)}
 \begin{table}[t]
@@ -22,7 +24,7 @@ This section presents recent works related to methods and tools for vulnerabilit
     \begin{tabular}{@{}lccccccc@{}}
         \toprule
                           & References  & Cost                                & \begin{tabular}[c]{@{}c@{}}Control over\\fault scenarios\end{tabular}       & Scalability                         & Speed of execution                                      & Realism                             & Expertise \\ \midrule
-        Formal Methods    & \cite{BSSMG-21-tchess, ANR-18-ices, BBCFGS-19-esorics, SVPMRDKMS-24-eprint}     & \textcolor{ForestGreen}{Very low}  & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very low}           & \textcolor{red}{Low}                                    & \textcolor{red}{Low}                & \textcolor{red}{Very high} \\
+        Formal Methods    & \cite{BSSMG-21-tches, ANR-18-ices, BBCFGS-19-esorics, SVPMRDKMS-24-eprint}     & \textcolor{ForestGreen}{Very low}  & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very low}           & \textcolor{red}{Low}                                    & \textcolor{red}{Low}                & \textcolor{red}{Very high} \\
         Simulations  & \cite{AB-23-acns, fisim, AWMN-20-host}     & \textcolor{ForestGreen}{Very low}       & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Low}                & \textcolor{red}{Low}/\textcolor{ForestGreen}{Moderate}  & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{Low} \\
         Emulations        & \cite{CMLCVR-11-crypto, HGASO-21-fdtc,BLK-23-access, NNHRS-14-dsd}     & \textcolor{Red}{High}           & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{High}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{High}       & \textcolor{red}{Moderate} \\
         Actual FIA        & \cite{BCNTW-06-procieee, BFP-19-tches, GBD-23-paine, CGVCBLC-22-cardis}     & \textcolor{Red}{Very high}           & \textcolor{Red}{Very low}           & \textcolor{ForestGreen}{Very high}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very high} \\
@@ -38,7 +40,7 @@ Additionally, this approach can only be executed once the physical circuit is av
 Fault emulation can, for instance, rely on FPGA~\cite{CMLCVR-11-crypto}, or on an emulator such as QEMU~\cite{HGASO-21-fdtc,BLK-23-access} to perform fault injection campaigns. This approach is four times faster than simulation-based techniques~\cite{NNHRS-14-dsd}, and unlike simulation-based or formal method-based fault injections techniques, the size of the evaluated circuit has no major impact on the fault injection campaign timing performances.
 However, configuring an emulation environment can be complex and time-consuming. Achieving an accurate representation of the target system may require detailed configuration and parameter tuning. The accuracy of emulation is contingent on the quality of the models used to replicate the target hardware. If the models are inaccurate or incomplete, the results of fault injections may not precisely reflect actual behaviour.
 
-Formal methods provide an advantage with mathematical proofs, ensuring a rigorous verification of the system's behaviour during fault injection experiments. Formal methods approaches such as~\cite{BSSMG-21-tchess} allow the analysis of a circuit design in order to detect sensitive logic or sequential hardware elements. \cite{ANR-18-ices}, \cite{BBCFGS-19-esorics} and~\cite{SVPMRDKMS-24-eprint} present formal verification methods to analyse the behaviour of HDL implementation.
+Formal methods provide an advantage with mathematical proofs, ensuring a rigorous verification of the system's behaviour during fault injection experiments. Formal methods approaches such as~\cite{BSSMG-21-tches} allow the analysis of a circuit design in order to detect sensitive logic or sequential hardware elements. \cite{ANR-18-ices}, \cite{BBCFGS-19-esorics} and~\cite{SVPMRDKMS-24-eprint} present formal verification methods to analyse the behaviour of HDL implementation.
 However, this type of tool usually suffers from restrictions limiting its actual usage on a complete processor.
 Conventional formal approaches encounter scalability challenges due to limitations in verification techniques.
 In particular, the circuit structure it can analyse is usually limited.
@@ -427,15 +429,15 @@ While Table~\ref{table:end_sim_by_status} provides the total number of \textit{s
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion and Perspectives}
 
-\subsection{Discussion}
-In this section, we will discuss about this proposed tool and draw some perspectives for the long-term development.
+% \subsection{Discussion}
+In this section, we will discuss this proposed tool and draw some perspectives for the long-term development.
 In terms of execution time, we did in total around 24,000,000 simulations for approximatively 3 seconds for each simulation in average spanning from initialisation to data recording.
-The execution time is contingent upon various parameters, including the design's size, the specific simulation case, and the number of targets involve. For example, as we have 3 different use cases, it goes from an average of 0.4 second to 5.8 seconds per simulation.
+The execution time is contingent upon various parameters, including the design's size, the specific simulation case, and the number of targets involve. For example, as we have three different use cases, it goes from an average of 0.4 second to 5.8 seconds per simulation.
 In emulation campaigns, FPGA-based fault emulation is four times faster than simulation-based techniques, as noted in paper~\cite{NNHRS-14-dsd}. Actual FIAs are faster than simulations, taking about 0.35 seconds per injection in our tests, relying on the ChipWhisperer-lite platform for clock glitching injection.
 While simulations may be slower, they offer the benefit of not requiring an FPGA prototype or the final circuit. Furthermore, it allows integrating vulnerability assessment in the first stages of the development flow and provides a rich set of information for the designer in order to understand sources of vulnerabilities in his design.
 
-\subsection{Perspectives}
-As a perspective, we plan to extend FISSA to support new fault models and HDL simulators such as Vivado or Verilator.
+% \subsection{Perspectives}
+As perspectives, we plan to extend FISSA to support new fault models and HDL simulators such as Vivado or Verilator.
 Additionally, we intend to enhance integration into the design workflow by adding more automatisation. This may include the management of HDL sources compilation, design's input stimuli or the development of a graphical user interface to improve the overall user experience.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
