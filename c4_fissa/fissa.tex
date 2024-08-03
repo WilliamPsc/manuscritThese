@@ -11,10 +11,28 @@ Finally, we will discuss and draw some perspectives for the tool's development a
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulation tools for Fault Injection}
+
 Addressing fault injection vulnerabilities is crucial. Historically, fault attacks have been conducted using physical equipment. Nonetheless, a modern approach has emerged that leverages simulators for fault testing. The main advantages of using simulators are they cost less money than physical setups, it is easier to make them work as they do not need specific skills, and they can be used during the conceptual stage.
 
 This section presents recent works related to methods and tools for vulnerability assessment when considering fault injection attacks. For such vulnerability assessment, main strategies include actual fault injections, emulations, formal methods and simulations.
-\wip{Ajouter états de l'art plus complet sur cette partie, voir articles dans papier SoK - Ileana + FLAT (mycore)}
+\wip{Ajouter état de l'art plus complet sur cette partie}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics{c4_fissa/img/fissa/anatomy.pdf}
+    \caption{Anatomy of a Fault Injection tool}
+    \label{fig:anatomy_tool}
+\end{figure}
+
+The diagram presented in Figure~\ref{fig:anatomy_tool} illustrates the process of a fault injection. The process begins with an \textit{Application}, which represents the target system under test. This application is then passed to the \textit{Mutate} state, where faults are introduced based on a predefined \textit{Fault Model}. 
+This fault model provides parameters such as the \texttt{target} to be attacked or the list of targets, the type of \texttt{fault} (set to 0/1, bit-flip, etc), and the \texttt{clock cycle} that guide the mutation process.
+
+After the fault is injected, the faulted application is executed, the \textit{Execute} state. The results of this execution are captured by the \textit{Record} module, which logs the outcomes for further analysis.
+
+Finally, the recorded data is saved in the \textit{Save} module, completing the fault injection cycle. The dashed arrow from the \textit{Record} module back to the \textit{Mutate} module indicates a feedback loop, where the results of the execution can influence subsequent fault injections. This iterative process helps in thoroughly evaluating the resilience and fault tolerance of the application.
+
+
+
 \begin{table}[t]
     \centering
     \caption{Fault Injection based methods for vulnerability assessment comparison}
