@@ -25,7 +25,7 @@ Static Information Flow Tracking (SIFT) is a security technique used to analyse 
 \subsubsection{Dynamic IFT}
 Dynamic Information Flow Tracking (DIFT) is a powerful security technique that monitors and analyses, in real-time, the flow of information within a program during its execution~\cite{CGDJ-21-micromac}. DIFT operates by tagging or labelling input data from potentially untrusted sources and tracking how this data propagates through the system~\cite{SLD-04-sigplan}. As the program executes, DIFT maintains metadata about the tagged information, updating it as operations are performed on the data. This allows the system to detect when tainted data is used in security-critical operations, such as modifying control flow or accessing sensitive resources. DIFT can be implemented at various levels, including hardware, software, or a combination of both. Hardware-based implementations often offer better performance but require specialized processor modifications, while software-based approaches provide more flexibility but may incur higher overhead~\cite{CGDJ-21-micromac}. DIFT has proven effective in detecting and preventing a wide range of security vulnerabilities, including buffer overflows, format string attacks, and code injection attacks~\cite{SLD-04-sigplan}. However, DIFT also faces challenges, such as handling implicit information flows, managing performance overhead, and addressing over-tainting issues.
 This approach might not cover all potential data paths, as it is dependent on the specific conditions and inputs provided during the monitoring period.
-Despite these challenges, DIFT remains a valuable tool in the cybersecurity arsenal, particularly for runtime attack detection and prevention in modern computing systems.
+Despite these challenges, DIFT remains a valuable tool for software security, particularly for runtime attack detection in modern systems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 \subsection{Different levels of IFT}
@@ -62,7 +62,7 @@ Application level IFT tracks information flows between application variables. Th
 \subsubsection{Low level IFT}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{DIFT Architectures}
+\subsection{Hardware DIFT architectures}
 \subsubsection{Off-Core}
 
 \subsubsection{Off-Loading}
