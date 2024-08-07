@@ -28,15 +28,15 @@ This approach might not cover all potential data paths, as it is dependent on th
 Despite these challenges, DIFT remains a valuable tool for software security, particularly for runtime attack detection in modern systems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-\subsection{Different levels of IFT}
+\subsection{Different levels of DIFT}
 IFT can be implemented at various levels of abstraction in computing systems. Each level presents unique trade-offs between precision, performance overhead, and ease of implementation, allowing designers to choose the most appropriate approach for their security requirements.
-At the lowest level, Gate-Level IFT (GLIFT) tracks information flow through individual logic gates, providing precise security guarantees.
-Moving up, Register Transfer Level IFT (RTLIFT) operates on hardware descriptions, enabling early-stage verification of security properties.
-At the microarchitecture level, IFT can be implemented within processor cores or as off-core designs, balancing performance and security.
-Software-based IFT operates at either the system level, monitoring OS-wide information flows, or the program level, focusing on specific applications.
-Finally, hardware-software co-designed IFT solutions aim to leverage the strengths of both hardware and software implementations.
 
-Figure~\ref{fig:levels_system} represents the four different levels of a simplified embedded system: application layer, system service layer, OS layer, and hardware layer. This figure is inspired by Figure 1.9 of~\cite{ebrary}.
+Software-based DIFT mechanisms benefit from close integration with the software context via binary code instrumentation and source code modifications, offering better flexibility, customisation, and scalability without altering hardware components. However, these software solutions often incur high performance overheads due to the extra instructions required. They operate at either the system level, monitoring OS-wide information flows, or the program level, focusing on specific applications.
+On the other hand, hardware-assisted DIFT designs can efficiently enforce security rules by implementing DIFT-related operations as hardware logic, reducing performance overhead but at the expense of flexibility and scalability, making them challenging to deploy in modern commercial systems. They can be implemented within processor cores or as off-core designs. But they can also be at the lowest level such as Gate-Level IFT who tracks information flow through logic gates.
+A hybrid hardware and software co-design offers a promising alternative, enabling fine-grained security checks by associating software context with hardware data, though it faces challenges such as balancing flexibility with hardware overhead and designing appropriate tags that support rule updates post-deployment.
+
+
+Figure~\ref{fig:levels_system} represents the different levels of a simplified embedded system: application layer, system service layer, OS layer, and hardware layer. This figure is inspired by Figure 1.9 of~\cite{ebrary}. Software-based IFTs work in the first three levels.
 
 Positioned at the highest level of the software hierarchy, \textit{the application layer} is responsible for implementing system functionalities and business logic. Functionally, all modules within this layer work together to execute the required system operations. Applications generally run in a less-privileged mode on the processor and utilise the OS-provided API scheduling to communicate with the operating system.
 \textit{The system service layer} serves as the intermediary service interface offered by the OS to the application layer. This interface allows applications to access a variety of OS-provided services, essentially bridging the gap between the OS and applications. Typically, this layer encompasses components like the file system, Graphical User Interface (GUI), task manager.
@@ -54,20 +54,34 @@ Tracking information can be performed at various levels, from the application le
 %For instance, application-level tracking might provide detailed insights and user-friendly interfaces, while hardware-level tracking offers more granular data and real-time monitoring but can be more complex and costly.
 The following subsections will explore these different levels, highlighting their respective benefits and limitations.
 
-\subsubsection{Application level IFT}
-Application level IFT tracks information flows between application variables. The programmer has to integrate data tagging inside his program and use a modified compiler or analyse his program to check if no security violation happened.
+
+\subsubsection{Software-based DIFT}
+\paragraph{Application level DIFT} tracks information flows between application variables. The programmer has to integrate data tagging inside his program and use a modified compiler or analyse his program to check if no security violation happened.
+
+One kind of application DIFT is language-based IFT.
+
+\paragraph{OS level and System-based DIFT}
+\paragraph*{}
+\cite{CQBH-06-iscc}
 
 
-\subsubsection{OS level and System-based IFT}
-\subsubsection{Low level IFT}
+\subsubsection{Hardware-based DIFT}
+This subsection discusses the hardware-based DIFT designs including gate-level DIFT designs and micro-architecture-level DIFT designs. Survey~\cite{HAK-21-acmcsur} presents an overview on all hardware DIFT techniques. They developed a taxonomy for them and use it to classify and differentiate hardware DIFT tools and techniques.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Hardware DIFT architectures}
-\subsubsection{Off-Core}
 
-\subsubsection{Off-Loading}
+\paragraph{Gate-Level DIFT} include gate-level netlist and also RTL designs.
+GLIFT~\cite{TWMMCS-09-asplos} is a well-established IFT technique. The goal is to protect against hardware trojans and unauthorized behaviors. All information flows, both explicit and implicit, are unified at the gate level. GLIFT employs a detailed initialisation and propagation policy to precisely track each bit of information flow, by adding additional logic for each gate used in the design. By analysing how inputs influence outputs, GLIFT accurately measures true information flows and substantially reduces the false positives typically associated with conservative IFT techniques.
 
-\subsubsection{In-Core}
+Hu et al. established the theoretical foundation for GLIFT~\cite{HOITSMK-11-tcad}. They introduced several algorithms for generating GLIFT logic in large digital circuits. Additionally, the authors identified the primary source of precision discrepancies in GLIFT logic produced by various methods as static logic hazards or variable correlation due to reconvergent fanouts. Many other works have been done on GLIFT to attempt a decrease of the logic complexity.
+
+\paragraph{Off-Core}
+
+\paragraph{Off-Loading}
+
+\paragraph{In-Core}
+
+
+\subsubsection{Software and Hardware Co-Design-Based DIFT}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{How DIFT works}
