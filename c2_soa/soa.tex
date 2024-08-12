@@ -35,7 +35,6 @@ Software-based DIFT mechanisms benefit from close integration with the software 
 On the other hand, hardware-assisted DIFT designs can efficiently enforce security rules by implementing DIFT-related operations as hardware logic, reducing performance overhead but at the expense of flexibility and scalability, making them challenging to deploy in modern commercial systems. They can be implemented within processor cores or as off-core designs. But they can also be at the lowest level such as Gate-Level IFT who tracks information flow through logic gates.
 A hybrid hardware and software co-design offers a promising alternative, enabling fine-grained security checks by associating software context with hardware data, though it faces challenges such as balancing flexibility with hardware overhead and designing appropriate tags that support rule updates post-deployment.
 
-
 Figure~\ref{fig:levels_system} represents the different levels of a simplified embedded system: application layer, system service layer, OS layer, and hardware layer. This figure is inspired by Figure 1.9 of~\cite{ebrary}. Software-based IFTs work in the first three levels.
 
 Positioned at the highest level of the software hierarchy, \textit{the application layer} is responsible for implementing system functionalities and business logic. Functionally, all modules within this layer work together to execute the required system operations. Applications generally run in a less-privileged mode on the processor and utilise the OS-provided API scheduling to communicate with the operating system.
@@ -73,10 +72,20 @@ HiStar~\cite{ZBKM-11-commacm} is a new OS that has been designed to provide prec
 
 
 \subsubsection{Software and Hardware Co-Design-Based DIFT}
-\wip{TODO}
+This type of design combines the features of both software DIFT and hardware DIFT. Using binary instrumentations and a modified compiler, the hardware and software co-design can provide the best of these two categories of DIFT: flexible security configuration and fine-grained protection with low impact on performances~\cite{CGDJ-21-micromac, BSMCVEJCO-21-acmcsur}.
+
+One example of this type of DIFT is RIFLE~\cite{VBCROBRVA-04-micro}, a runtime information-flow security system designed from the user's perspective, provides a practical means to enforce information-flow security policies on all programs by leveraging architectural support.
+RIFLE employs binary instrumentation and architectural support to enforce information flow security policies during runtime. The conventional Instruction Set Architecture (ISA) is transformed into an Information-Flow Security (IFS) ISA using a dedicated binary translator. Each instruction in the ISA corresponds to an instruction in the IFS ISA. 
+In the IFS ISA, additional security registers are assigned to hold tags. To avoid the pitfalls dynamic mechanisms encountered while tracking implicit flows, the binary translation will convert all implicit flows to explicit flows. The RIFLE architecture is then responsible only for tracking explicit flows. The translated binary is executed within a modified processor supporting the IFS ISA, which is simulated within the Liberty Simulation Environment. RIFLE works with every programs that run on a system and policy decisions are left to the user, not the programmer.
+
+Townley et al.~\cite{TKPAY-19-micro} presented LATCH, a generalizable architecture for optimizing DIFT. 
+LATCH exploits the observation that information flows under DIFT exhibit strong spatial and temporal locality, with typical applications manipulating sensitive data during limited phases of computation. The main objective is to detect attacks on the integrity of the system. The architecture consists of a software-assisted hardware accelerator (S-LATCH) running on a single simulated core. The software component of S-LATCH propagates tags, while the hardware accelerator monitors the data accessed by the program to detect tags. 
+
+Porquet et al.~\cite{PS-13-codes} presented WHISK, a whole system DIFT architecture implemented within a hardware simulator. WHISK stores tags and data separately in memory locations to keep low area overhead and improve flexibility and to better accommodate the integration of hardware accelerators.. Tag insertion, storage and access to the custom hardware are delegated. The software subsystem uses MutekH exokernel-based OS and provides support for tag page allocation, page table cache configuration, and interrupt handling concerning writes to untagged pages.
+
 
 \subsubsection{Hardware-based DIFT}
-Dalton et al.~\cite{DKK-07-sigarch} report that software DIFT solutions add significative runtime overhead, up to a slow down of 37 times ! Therefore, in order to improve the execution time to be more on-the-fly, the idea is to implement directly the DIFT into the hardware, but at the expense of flexibility.
+Dalton et al.~\cite{DKK-07-sigarch} report that software DIFT solutions add significative runtime overhead, up to a slow down of 37 times ! Therefore, in order to improve the execution time to be more on-the-fly, the idea is to directly implement the DIFT into the hardware, but the trade-off is flexibility.
 This subsection discusses the hardware-based DIFT designs including gate-level DIFT designs and micro-architecture-level DIFT designs. Surveys~\cite{HAK-21-acmcsur,BSMCVEJCO-21-acmcsur} present an overview on all hardware DIFT techniques. They developed a taxonomy for them and use it to classify and differentiate hardware DIFT tools and techniques.
 
 \paragraph{Gate-Level DIFT} include gate-level netlist and also RTL designs. The goal is to protect against hardware trojans and unauthorized behaviors. To achieve that, during the creation of the circuit, additional logic is added for each gate used in the design.
@@ -84,13 +93,11 @@ This subsection discusses the hardware-based DIFT designs including gate-level D
 GLIFT~\cite{TWMMCS-09-asplos} is a well-established IFT technique. The goal is to protect against hardware trojans and unauthorized behaviors. All information flows, both explicit and implicit, are unified at the gate level. GLIFT employs a detailed initialisation and propagation policy to precisely track each bit of information flow, by adding additional logic for each gate used in the design. By analysing how inputs influence outputs, GLIFT accurately measures true information flows and substantially reduces the false positives typically associated with conservative IFT techniques.
 Hu et al.~\cite{HOITSMK-11-tcad} established the theoretical foundation for GLIFT. They introduced several algorithms for generating GLIFT logic in large digital circuits. Additionally, the authors identified the primary source of precision discrepancies in GLIFT logic produced by various methods as static logic hazards or variable correlation due to reconvergent fanouts. Many other works have been done on GLIFT to attempt a decrease of the logic complexity.
 
-\paragraph{Off-Core DIFT} operations are performed on a dedicated processor working in parallel of the main core.
-This approach needs a support from the OS for the synchronisation between data computations and tags computations in order to stall one core if it needs to wait the other.
+\paragraph{Off-Core DIFT} operations are performed on a dedicated coprocessor working in parallel of the main core.
+The main drawback is that this approach needs a support from the OS for the synchronisation between data computations and tags computations in order to stall one core if it needs to wait the other. But on the other hand, its advantage is that it does not require internal hardware modifications to the main kernel. Processor manufacturers do not prioritise this type of security, and as most processors are not open to the public, it is difficult to modify them.
 
-Figure~\ref{fig:offcore_dift} represent how an off-core DIFT would be implemented. This Figure comes from article~\cite{KDK-09-dsn}. Authors of this paper, Kannan et al., described one of the first work using a coprocessor to improve tag computation runtime overhead. Traditional hardware DIFT systems require significant modifications to the processor pipeline, which increases complexity and design time.
-This coprocessor handles all DIFT functionalities, synchronizing with the main processor only during system calls. This design eliminates the need for changes to the processor's pipeline, logic, or caches, making it more attractive. The coprocessor is small, with an area footprint of about 8\% of a simple RISC core, and introduces less than 1\% runtime overhead for SPECint2000 applications benchmark.
-% The paper demonstrates that the coprocessor provides the same security guarantees as integrated DIFT architectures, supporting multiple security policies and protecting various memory regions and binary types. The authors present a prototype using a SPARC core, showing that the coprocessor can protect real-world Linux applications from both low-level and high-level security attacks with minimal performance impact. 
-% This approach offers a balanced solution in terms of performance, cost, complexity, and practicality compared to existing DIFT implementations.
+Kannan et al.~\cite{KDK-09-dsn} described one of the first work using a coprocessor to improve tag computation runtime overhead. Traditional hardware DIFT systems require significant modifications to the processor pipeline, which increases complexity and design time. Figure~\ref{fig:offcore_dift} represent how an off-core DIFT would be implemented. Kannan et al. uses this idea for implementing their solution of DIFT.
+This coprocessor handles all DIFT functionalities, synchronizing with the main processor only during system calls. This design eliminates the need for changes to the processor's pipeline, logic, or caches, making it more attractive. The coprocessor is small, with an area footprint of about 8\% of a simple RISC core, and introduces less than 1\% runtime overhead for SPECint2000 applications benchmark. The paper demonstrates that the coprocessor provides the same security guarantees as integrated DIFT architectures, supporting multiple security policies and protecting various memory regions and binary types. This approach offers a balanced solution in terms of performance, cost, complexity, and practicality compared to existing DIFT implementations.
 
 \begin{figure}[ht]
     \centering
@@ -99,12 +106,11 @@ This coprocessor handles all DIFT functionalities, synchronizing with the main p
     \label{fig:offcore_dift}
 \end{figure}
 
-Wahab et al.~\cite{WCAHBLG-18-reconfig,WCAHLG-17-fpl}
+Wahab et al.~\cite{WCAHBLG-18-reconfig,WCAHLG-17-fpl} developped a DIFT using the ARM CoreSight debug component to extract a trace.
+However, the debug component could only extract limited information about the application executing on the core. Therefore, some instrumentations has been required to recover the complete program trace. The information obtained from the trace is then sent to a dedicated DIFT coprocessor, which analyses the instruction trace and propagates tags according to a security policy. In terms of performance and area footprint, \cite{WCAHLG-17-fpl} gives around 5\% communication overhead and an area overhead of 0.47\% and a power consumption increased by 16\%; while~\cite{WCAHBLG-18-reconfig} gives a communication overhead of 335\%, an area increased by 0.95\% and a power consumption increased by 16.2\%. These results can not be compared to the initial design as they use a coprocessor without the ARM core results.
 
-
-\paragraph{Off-Loading DIFT}
-
-Figure~\ref{fig:offloading_dift}
+\paragraph{Off-Loading DIFT} use a dedicated core of a multi-core CPU~\cite{CKSFGMRRRV-08-sigarch,VHYR-08-cca,RGMRCKR-08-spaa}. Figure~\ref{fig:offloading_dift} represents how Off-Loading DIFT works with a core running the application and another, in parallel, run the DIFT analysis on the application trace. The application core is modified to create a trace and compress it. The trace includes executed instructions and pack main information such as PC address, register operands. This trace is then sent to the DIFT core via the L2 cache. Finally, the security core will decompress the trace and realizes tag computation in order to check whether an illegal information flow has been done. The notion of illegal information flow is specified thanks to a DIFT security policy.
+The main advantage is that hardware does not need to know DIFT tags or policies and does not need a coprocessor with the management of the synchronisation between the two processors.  But the main drawback is that it requires a multi-core CPU but reduces the number of core available and doubles the energy consumption due to the application trace analysis. In an embedded systems where consumption is a critical factor this solution is difficult to consider.
 
 \begin{figure}[ht]
     \centering
@@ -113,12 +119,7 @@ Figure~\ref{fig:offloading_dift}
     \label{fig:offloading_dift}
 \end{figure}
 
-
-
-
-\paragraph{In-Core DIFT}
-
-Figure~\ref{fig:incore_dift}
+\paragraph{In-Core DIFT} rely on a deeply modified processor pipeline which need to integrate tag computations inside the main core in parallel of data computations. This approach is highly invasive, but does not require any additional cores or coprocessors to operate and introduces no overhead for inter-core synchronisation. Overall, its performance impact in terms of clock cycles over native execution is minimal. On the other hand, the integrated approach requires significant modifications to the processor core. All pipeline stages must be modified to add tags, a dedicated register file and first level of caches must be added to store tags in parallel with the regular blocks into the processor core. Figure~\ref{fig:incore_dift} shows the architecture of an In-Core hardware DIFT. When the processor fetches an instruction, its associated tag is sent in parallel. In the decode stage, the instruction is decoded while the security decode module decode the security policy to determine how the tag should be propagated and checked. When the instruction is executed, the tag is sent to a tag ALU to be checked. Then, if the tag is conform to the security policy the tag and the ALU output will be saved into the Data-Cache to be used again or stored in memory. Otherwise, if the tag is not conform, the DIFT mechanism will detect the security violation and can raise an exception, stop the application, depending on what is configured.
 
 \begin{figure}[ht]
     \centering
@@ -127,11 +128,13 @@ Figure~\ref{fig:incore_dift}
     \label{fig:incore_dift}
 \end{figure}
 
-\cite{SLD-04-sigplan}
+Suh et al.~\cite{SLD-04-sigplan} proposed an approach in which the OS identifies a set of input channels as spurious, and the processor tracks all information flows from these inputs. Thanks to this tracking, the processor can detect various attacks such as attack targetting instructions or jump addresses. If the security policy detects something malicious in hardware, the OS will process the exception. They use 1-bit tag which means only two ways of representig security levels. They present two security policies that track differing sets of dependencies. Implementing the first policy incurs, on average, a memory overhead of 0.26\% and a performance decrease of 0.02\%. The second policy incurs, on average, a memory overhead of 4.48\% and a performance decrease of 0.8\%, and requires binary annotation unlike first policy.
 
-\cite{DKK-07-sigarch}
+Dalton et al.\cite{DKK-07-sigarch} presented a DIFT architecture, Raksha, to support a flexible security configuration at runtime. They extended all storage locations including registers, caches and main memory with tags, they modified the ISA instruction to propagate and check tags. In this solution, they use 4-bits tags for each word. These tags represent the security policy and not the data state (e.g. trusted or untrusted). The authors provided two global sets of configuration registers, i.e., Tag Propagation Registers (TPR) and Tag Check Registers (TCR), to configure the security policy at runtime. There is one pair of TPR/TCR for each of the four security policies. The configuration register could be configured only in trusted mode. Moreover, the tag propagation and check could only be disabled in trusted mode. However, the security policy is difficult to update when the architecture is deployed.
+The Raksha prototype is based on the Leon SPARC V8 processor, a 32-bit open-source synthesizable core, and they mapped the design onto a FPGA board.
 
-\cite{PDGLC-18-hpec}
+Palmiero et al.~\cite{PDGLC-18-hpec} implemented a DIFT framework, D-RI5CY, on a RISC-V processor and synthesized it on a Field Programmable Gate Array (FPGA) board with a focus on IoT applications. The proposed design tags every word in data memory with a 4-bits tag and every general register with a 1-bit tag. Similarly to~\cite{DKK-07-sigarch}, Palmiero et al.~\cite{PDGLC-18-hpec} also adopted global configuration registers to customise the rule of tag propagation and checking. Each type of instruction has its own rule and can be modified separately. This method provides a more fine-grain tracking than Raksha but lacks flexibility for security policy reconfiguration for different program contexts.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{How DIFT works}
