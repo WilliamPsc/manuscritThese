@@ -92,6 +92,18 @@
     url    = {https://blog.fraktal.fi/laser-fault-injection-for-the-masses-1860afde5a26}
 }
 
+@misc{riscure_station,
+    author = {Riscure},
+    title  = {{Laser Station 2}},
+    url    = {https://www.riscure.com/products/laser-station-2/}
+}
+
+@misc{chipwhisperer,
+    author = {NewAE},
+    title  = {{ChipWhisperer and ChipSHOUTER}},
+    url    = {https://www.newae.com/chipwhisperer}
+}
+
 @misc{statista_iot,
     author = {Transforma Insights; Exploding Topics},
     title  = {{Number of Internet of Things (IoT) connections worldwide from 2022 to 2023, with forecasts from 2024 to 2033}},
@@ -134,6 +146,22 @@
     journal={{Proceedings of the IEEE}}, 
     year={2006},
     doi={10.1109/JPROC.2005.862424}
+}
+
+@article{BBKN-12-procieee,
+    author   = {
+        Barenghi, Alessandro and
+        Breveglieri, Luca and
+        Koren, Israel and
+        Naccache, David
+    },
+    title    = {Fault Injection Attacks on Cryptographic Devices: Theory, Practice, and Countermeasures},
+    journal  = {Proceedings of the IEEE},
+    year     = {2012},
+    volume   = {100},
+    number   = {11},
+    pages    = {3056-3076},
+    doi      = {10.1109/JPROC.2012.2188769}
 }
 
 @Comment{============= ACM SURVEYS =============}
@@ -202,9 +230,22 @@
     doi={10.13154/tches.v2019.i2.199-224}
 }
 
+@article{NSUH-21-tches,
+	author={
+        Nashimoto, Shoei and
+        Suzuki, Daisuke and
+        Ueno, Rei and
+        Homma, Naofumi
+    },
+	title={{Bypassing Isolated Execution on {RISC-V} using Side-Channel-Assisted Fault-Injection and Its Countermeasure}},
+	journal={{IACR} Transactions on Cryptographic Hardware and Embedded Systems ({TCHES})},
+	year={2021},
+	DOI={10.46586/tches.v2022.i1.28-68}
+}
+
 @Comment{============= CRYPTO =============}
 @article{CMLCVR-11-crypto,
-    author={
+    author  = {
         Canivet, Gaetan and
         Maistri, Paolo and
         Leveugle, R{\'e}gis and
@@ -212,10 +253,24 @@
         Valette, Florent and
         Renaudin, Marc
     },
-    title={{Glitch and laser fault attacks onto a secure AES implementation on a SRAM-based FPGA}},
-    journal={Journal of cryptology},
-    year={2011},
-    doi={10.1007/s00145-010-9083-9}
+    title   = {{Glitch and laser fault attacks onto a secure AES implementation on a SRAM-based FPGA}},
+    journal = {Journal of Cryptology},
+    year    = {2011},
+    doi     = {10.1007/s00145-010-9083-9}
+}
+
+@article{BDL-01-crypto,
+    author  = {
+        Boneh, Dan and
+        DeMillo, Richard A. and
+        Lipton, Richard J.
+    },
+    title   = {{On the Importance of Eliminating Errors in Cryptographic Computations}},
+    journal = {Journal of Cryptology},
+    year    = {2001},
+    pages   = {101-119},
+    volume  = {14},
+    doi     = {10.1007/s001450010016}
 }
 
 @Comment{============= IEEE ACCESS =============}
@@ -457,6 +512,87 @@
     doi        = {10.1145/1394608.1382153}
 }
 
+@Comment{============= Computer Science Review =============}
+@article{EAJJMB-22-compscrev,
+    author   = {
+        Eryk Schiller and
+        Andy Aidoo and
+        Jara Fuhrer and
+        Jonathan Stahl and
+        Michael Ziörjen and
+        Burkhard Stiller
+    },
+    title    = {Landscape of IoT security},
+    journal  = {Computer Science Review},
+    volume   = {44},
+    pages    = {100467},
+    year     = {2022},
+    issn     = {1574-0137},
+    doi      = {https://doi.org/10.1016/j.cosrev.2022.100467}
+}
+
+@Comment{============= Computer Networks =============}
+@article{MW-19-compnet,
+    author   = {
+        Mardiana binti {Mohamad Noor} and
+        Wan Haslina Hassan
+    },
+    title    = {Current research on Internet of Things (IoT) security: A survey},
+    journal  = {Computer Networks},
+    volume   = {148},
+    pages    = {283-294},
+    year     = {2019},
+    issn     = {1389-1286},
+    doi      = {https://doi.org/10.1016/j.comnet.2018.11.025}
+}
+
+@Comment{============= Hardware and Systems Security =============}
+@article{YSW-18-hss,
+    author   = {
+        Yuce, Bilgiday and
+        Schaumont, Patrick and
+        Witteman, Marc
+    },
+    title    = {Fault Attacks on Secure Embedded Software: Threats, Design, and Evaluation},
+    journal  = {Journal of Hardware and Systems Security},
+    volume   = {2},
+    pages    = {111-130},
+    year     = {2018},
+    doi      = {10.1007/s41635-018-0038-1}
+}
+
+@Comment{============= Digital Investigation =============}
+@article{ANM-19-di,
+    author  = {
+        Asanka Sayakkara and
+        Nhien-An Le-Khac and
+        Mark Scanlon
+    },
+    title   = {A survey of electromagnetic side-channel attacks and discussion on their case-progressing potential for digital forensics},
+    journal = {Digital Investigation},
+    volume  = {29},
+    pages   = {43-54},
+    year    = {2019},
+    issn    = {1742-2876},
+    doi     = {10.1016/j.diin.2019.03.002}
+}
+
+@Comment{============= Cryptographic Engineering =============}
+@article{TBELB-21-jce,
+    author = {
+        Trouchkine, Thomas and
+        Bukasa, S{\'e}banjila Kevin K and
+        Escouteloup, Mathieu and
+        Lashermes, Ronan and
+        Bouffard, Guillaume
+    },
+    title = {{Electromagnetic Fault Injection Against a Complex CPU, toward new Micro-architectural Fault Models}},
+    journal = {{Journal of Cryptographic Engineering}},
+    publisher = {{Springer}},
+    year = {2021},
+    doi = {10.1007/s13389-021-00259-6}
+}
+
 @Comment{================================ CONFERENCES ================================}
 @Comment{============= ACM Sensors S&P =============}
 @inproceedings{PLG-22-SensorsSP,
@@ -504,6 +640,18 @@
     booktitle={{17th Euromicro Conference on Digital System Design}},
     year={2014},
     doi={10.1109/DSD.2014.39}
+}
+
+@INPROCEEDINGS{KDD-21-dsd,
+    author={
+        Khuat, Vanthanh and
+        Dutertre, Jean-Max and
+        Danger, Jean-Luc
+    },
+    booktitle={{Digital System Design (DSD)}},
+    title={{Analysis of a Laser-induced Instructions Replay Fault Model in a 32-bit Microcontroller}},
+    year={2021},
+    doi={10.1109/DSD53832.2021.00061}
 }
 
 @Comment{============= Springer CARDIS =============}
@@ -618,6 +766,18 @@
     booktitle={{Workshop on Fault Detection and Tolerance in Cryptography (FDTC)}},
     year={2021},
     doi={10.1109/FDTC53659.2021.00013}
+}
+
+@INPROCEEDINGS{TSW-16-fdtc,
+    author={
+        Timmers, Niek and
+        Spruyt, Albert and
+        Witteman, Marc
+    },
+    booktitle={Fault Diagnosis and Tolerance in Cryptography (FDTC)}, 
+    title={{Controlling PC on ARM Using Fault Injection}}, 
+    year={2016},
+    doi={10.1109/FDTC.2016.18}
 }
 
 @Comment{============= ASPLOS =============}
@@ -886,6 +1046,70 @@
     numpages  = {8},
     location  = {Minneapolis, Minnesota, USA},
     series    = {HASP '14}
+}
+
+@Comment{============= EUROCRYPT =============}
+@inproceedings{BDL-97-eurocrypt,
+    author    = {
+        Boneh, Dan and
+        DeMillo, Richard A. and
+        Lipton, Richard J.
+    },
+    title     = {On the Importance of Checking Cryptographic Protocols for Faults},
+    booktitle = {Advances in Cryptology --- EUROCRYPT '97},
+    year      = {1997},
+    publisher = {Springer Berlin Heidelberg},
+    address   = {Berlin, Heidelberg},
+    pages     = {37--51},
+    isbn      = {978-3-540-69053-5},
+    doi       = {10.1007/3-540-69053-0_4}
+}
+
+@Comment{============= Applications of Internet of Things =============}
+@inproceedings{DM-21-appiot,
+    author    = {
+        Devi, Mampi and
+        Majumder, Abhishek
+    },
+    title     = {Side-Channel Attack in Internet of Things: A Survey},
+    booktitle = {Applications of Internet of Things},
+    year      = {2021},
+    publisher = {Springer Singapore},
+    address   = {Singapore},
+    pages     = {213--222},
+    isbn      = {978-981-15-6198-6},
+    doi       = {10.1007/978-981-15-6198-6_20}
+}
+
+@Comment{============= DATE =============}
+@INPROCEEDINGS{LBDP-19-date,
+    author={
+        Laurent, Johan and
+        Beroulle, Vincent and
+        Deleuze, Christophe and
+        Pebay-Peyroula, Florian
+    },
+    booktitle={Design, Automation \& Test in Europe Conference ({DATE})}, 
+    title={{Fault Injection on Hidden Registers in a RISC-V Rocket Processor and Software Countermeasures}}, 
+    year={2019},
+    doi={10.23919/DATE.2019.8715158}
+}
+
+@Comment{============= USENIX =============}
+@inproceedings{SMS-23-usenix,
+    author    = {
+        Sa{\ss}, Xhani Marvin and
+        Mitev, Richard and
+        Sadeghi, Ahmad-Reza
+    },
+    title     = {Oops..! I Glitched It Again! How to {Multi-Glitch} the {Glitching-Protections} on {ARM} {TrustZone-M}},
+    booktitle = {32nd USENIX Security Symposium (USENIX Security 23)},
+    year      = {2023},
+    isbn      = {978-1-939133-37-3},
+    pages     = {6239--6256},
+    publisher = {USENIX Association},
+    month     = {8},
+    doi       = {10.48550/arXiv.2302.06932}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NON CLASSES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
