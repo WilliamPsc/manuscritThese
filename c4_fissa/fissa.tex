@@ -137,11 +137,11 @@ Currently, supported fault models are:
 \begin{itemize}
     \justifying
     \item \underline{target set to 0/1}: for each cycle of the injection window and for each target, we set them individually to 0 or 1, in turn exhaustively ($nbSimulations = nbCycles * nbTargets$),
-    \item \underline{single bit-flip in one target at a given clock cycle}: for each cycle of the injection window, we do a bit-flip for each bit of every targets exhaustively ($nbSimulations = nbCycles * nbBits$),
+    \item \underline{single bit-flip in one target at a given clock cycle}: for each cycle of the injection window, we do a bit-flip for each bit of every target exhaustively ($nbSimulations = nbCycles * nbBits$),
     \item \underline{single bit-flip in two targets at a given clock cycle}: we take one cycle and a couple of targets' bits (it can be the same target at two different bits) and we bit-flip these two bits ($nbSimulations = nbCycles * C_{2}^k$; with k, the total number of bits in the attacked system),
     \item \underline{single bit-flip in two targets at two different clock cycles}:  we take two different cycles and a couple of targets' bits (it can be the same target at two different bits) and we bit-flip these two bits ($nbSimulations = C_{2}^{nbCycles} * C_{2}^k$; with k, the total number of bits in the attacked system),
-    \item \underline{exhaustive multi-bits faults in one target at a given clock cycle}: we take one cycle and one target and we try exhaustively each combinations of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) and we set the target at each value ($nbSimulations = nbCycles * 2^{targetSize1}$). It is worth nothing that for this fault model, we only take targets between 1 and 16 bits to avoid very big numbers of simulations as $2^{32}$ would be too long to simulate exhaustively,
-    \item \underline{exhaustive multi-bits faults in two targets at a given clock cycle}: we take one cycle and two targets and we try exhaustively each combinations of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) for each target and we set them to each value ($nbSimulations = nbCycles * 2^{targetSize1}* 2^{targetSize2}$). It is worth nothing that for this fault model, we only take targets between 1 and 10 bits to avoid very big numbers of simulations as $2^{32}$ would be too long to simulate exhaustively.
+    \item \underline{exhaustive multi-bits faults in one target at a given clock cycle}: we take one cycle and one target, and we try exhaustively each combination of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) and we set the target at each value ($nbSimulations = nbCycles * 2^{targetSize1}$). It is worth nothing that for this fault model, we only take targets between 1 and 16 bits to avoid very big numbers of simulations as $2^{32}$ would be too long to simulate exhaustively,
+    \item \underline{exhaustive multi-bits faults in two targets at a given clock cycle}: we take one cycle and two targets, and we try exhaustively each combination of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) for each target and we set them to each value ($nbSimulations = nbCycles * 2^{targetSize1}* 2^{targetSize2}$). It is worth nothing that for this fault model, we only take targets between 1 and 10 bits to avoid very big numbers of simulations as $2^{32}$ would be too long to simulate exhaustively.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,7 +229,7 @@ The \textit{TCL Generator} is used to generate the set of TCL script files which
 Figure~\ref{fig:archi_tcl_gen} details the \textit{TCL Generator}. Each blue box represents a python class used to generate the set of output TCL scripts.
 The \textit{initialisation} class gets inputs from a configuration file. This JSON-formatted file includes various parameters such as the targeted HDL simulator, the considered fault model and the injection window(s). Furthermore, it encompasses parameters such as the clock period (in ns) of the HDL design and the maximum number of simulated clock cycles used to stop the simulation in case of divergence due to the injected fault. Moreover, one extra parameter defines the quantity of simulations per TCL file, allowing a simulation parallelism degree.
 Listing~\ref{code:configFile_fissa} shows an extract of a configuration file used for our fault injection campaigns.
-Listing~\ref{code:TargetFile_fissa} shows an extract from a target file according to the configuration file provided previously. This file list each stage of the RISC-V core and for each the HDL path of our targets are writen. Here, in this example, only the list of targets for the \textit{instruction fetch} stage is listed.
+Listing~\ref{code:TargetFile_fissa} shows an extract from a target file according to the configuration file provided previously. This file list each stage of the RISC-V core and for each the HDL path of our targets are written. Here, in this example, only the list of targets for the \textit{instruction fetch} stage is listed.
 
 The \textit{Targets} file contains, in YAML format, the list of the circuit elements (e.g. registers or logic gates) that need to be targeted during the fault injection campaign. For each target, its HDL path and bit-width are specified.
 \textit{TCL Script Generator} class gets the configuration parameters from \textit{Initialisation} class, reads the \textit{Targets'} file and calls three others classes.
@@ -237,7 +237,7 @@ The first one, \textit{Basic Code Generator}, undertakes the fundamental generat
 The second one, \textit{Fault Generator}, produces the TCL code related to fault injection. The \textit{TCL Script Generator} provides specific parameters to the \textit{Fault Generator} to produce code for a designated set of targets and a specified set of clock cycles for fault injection.
 The third one, \textit{Log Generator}, produces the TCL code to produce logs after each simulation.
 Logs comprise the simulation's ID, fault model, faulted targets, injection clock cycle(s), end-of-simulation status, values for all targets, and the end-of-simulation clock cycle. This data constitutes the automated aspect of logging.
-Finally, the \textit{TCL Script Generator} outputs a set of TCL files, each one correspond to a batch of simulations. This allows the user to perform a per batch results analysis. It is worth noting that each batch starts with a reference simulation which means a simulation without any fault injected. It allows to have results for comparison after when a fault occured and determine what happened due to the injected fault.
+Finally, the \textit{TCL Script Generator} outputs a set of TCL files, each one correspond to a batch of simulations. This allows the user to perform a per batch results analysis. It is worth noting that each batch starts with a reference simulation, which means a simulation without any fault injected. It allows having results for comparison after when a fault occurred and determine what happened due to the injected fault.
 Additionally, it generates a target file utilised by TCL scripts to obtain a simplified target list (refer to Subsection~\ref{subsec:FIS}), as the simulation log requires a list of targets without their sizes.
 
 \wip{Modification des Listings~\ref{code:configFile_fissa}, \ref{code:TargetFile_fissa}, \ref{code:logJSONFile_fissa} en les remplaçant par un exemple simple genre additionneur (à la place de le mettre dans la section~\ref{section:exampleApplication_fissa})?}
@@ -249,12 +249,12 @@ Additionally, it generates a target file utilised by TCL scripts to obtain a sim
     \label{fig:archi_tcl_gen}
 \end{figure}
 
-Algorithm~\ref{algo:pseudoCodeSimus} depicts a fault injection simulation pseudo-code, showcasing requirements, and each state with essential parameters. Additionally, the corresponding Python class from Figure~\ref{fig:archi_tcl_gen} is added for each line.
+Algorithm~\ref{algo:pseudoCodeSimus} depicts the pseudocode of a simulation of a fault injection, showcasing requirements, and each state with essential parameters. Additionally, the corresponding Python class from Figure~\ref{fig:archi_tcl_gen} is added for each line.
 Line 5 in Algorithm~\ref{algo:pseudoCodeSimuStages} corresponds to Algorithm~\ref{algo:pseudoCodeSimus}. This algorithm is executed multiple times with different inputs to build a TCL script.
 
 
 \begin{algorithm}
-    \caption{FIA simulation pseudo-code}
+    \caption{FIA simulation pseudocode}
     \label{algo:pseudoCodeSimus}
     \normalsize
     \begin{algorithmic}[1]
@@ -345,7 +345,7 @@ In the input configuration file, a single injection window is set between cycles
 
 Seven FIA simulation campaigns are performed to evaluate the design against the seven fault models.
 We choose to log the values of the \textit{Targets'} file, the simulation's number, targets' value after the injection, the injection cycle and the end-of-simulation status.
-The \textit{Targets'} file is filled with the 55 registers of the DIFT security mechanism representing a total of 127 bits in total.
+The \textit{Targets'} file is filled with the 55 registers of the DIFT security mechanism, representing a total of 127 bits in total.
 
 \subsection{Experimental results} 
 \label{subsec:results}
