@@ -135,10 +135,41 @@ The Raksha prototype is based on the Leon SPARC V8 processor, a 32-bit open-sour
 
 Palmiero et al.~\cite{PDGLC-18-hpec} implemented a DIFT framework, D-RI5CY, on a RISC-V processor and synthesized it on a Field Programmable Gate Array (FPGA) board with a focus on IoT applications. The proposed design tags every word in data memory with a 4-bits tag and every general register with a 1-bit tag. Similarly to~\cite{DKK-07-sigarch}, Palmiero et al.~\cite{PDGLC-18-hpec} also adopted global configuration registers to customise the rule of tag propagation and checking. Each type of instruction has its own rule and can be modified separately. This method provides a more fine-grain tracking than Raksha but lacks flexibility for security policy reconfiguration for different program contexts.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{How DIFT work}
-\wip{expliquer DIFT ici ? en détail avec les schémas explicatifs}
+\subsection{How hardware DIFT work}
+DIFT is a technique used in computer security to monitor the flow of information through a system. It aims to prevent security breaches such as data leaks, unauthorised data manipulation, and execution of untrusted code. In DIFT, each data is associated with a tag that indicates its security level.
+For example, a tag might indicate whether data is 'trusted' or 'untrusted'. When data is input into the system, it is initially tagged based on its source.
+
+As data moves through the system, these tags are tracked to ensure compliance with security policies and to ensure that sensitive information does not get exposed or manipulated improperly. For instance, if an operation involves both trusted and untrusted data, the result might be tagged as untrusted to ensure security.
+
+An example of such security policy can be represented in Table~\ref{table:security_policies}. In this example, if the data comes from the network or if it's manipulated by a user, in the case of a \verb|scanf()| function in C language for example, the data cannot be trusted, while if the data comes from a secure channel or is manipulated by the system itself, the data can be trusted.
+
+\begin{table}[h]
+    \centering
+    \caption{Security policies for different data inputs}
+    \label{table:security_policies}
+    \begin{tabular}{@{}rcc@{}}
+        \toprule
+        \textbf{Data Input} & \textbf{Security Policy} & \textbf{Tag}     \\ \midrule
+        User Input          & User-provided            & Untrusted        \\ \hline
+        Network             & External source          & Untrusted        \\ \hline
+        Internal            & System-provided          & Trusted          \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Figure~\ref{fig:dift_init} illustrates the three main steps of how DIFT works. Firstly, three data, $C_1$, $C_2$, and $C_3$, with their associated tags in three different colours, are initialised on the left side of the figure.
+
+In the second step, when the data is fetched by the core for computation, the associated tags are propagated inside the core and confronted with the propagation policy depending on the operations performed on the data.
+
+Finally, in the last step, on the right side of the figure, there are two data outputs derived from the three initial data. Data $C_4$ results from the combination of data $C_2$ and $C_3$, while data $C_5$ is derived from data $C_1$. Since data $C_1$ has not been modified, its tag remains the same. However, the tag associated with $C_4$ is a mix of tags from $C_2$ and $C_3$. Depending on the security policy, if $C_2$ was trusted and $C_3$ was not, the output tag will be \textit{untrusted}. Consequently, when the tags go through the final step of DIFT, they will be checked, and an exception may be raised or the application may be stopped due to the mixing of \textit{trusted} and \textit{untrusted} values.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=3]{c2_soa/img/schemaDIFT.pdf}
+    \caption{Representation of the DIFT mechanism from initialisation to checking.}
+    \label{fig:dift_init}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Physical Attacks}
