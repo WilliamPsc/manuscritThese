@@ -5,9 +5,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-This chapter provides an overview of related work to contextualize the primary objectives of this thesis. Firstly, in Section~\ref{section:ift}, Information Flow Tracking (IFT) is introduced, detailing the different types and their respective purposes. We will discuss the various levels of monitoring, from program behaviour to the detection of hardware trojans.
+This chapter provides an overview of related work to contextualize the primary objectives of this thesis. Firstly, in Section~\ref{section:ift}, Information Flow Tracking (IFT) is introduced, detailing the different types and their respective purposes. We discuss the various levels of monitoring, from program behaviour to the detection of hardware trojans.
 Then in Section~\ref{section:physicalAttacks}, Physical Attacks are examined, focusing on two main types: Side-Channel Attacks (SCA) and Fault Injection Attacks (FIA).
-Finally in Section~\ref{section:countermeasuresAgainstFIA}, as this work will concentrate on FIA, we will exclusively present countermeasures against Fault Injection Attacks.
+Finally in Section~\ref{section:countermeasuresAgainstFIA}, as this work concentrate on FIA, we exclusively present countermeasures against Fault Injection Attacks.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Information Flow Tracking}
@@ -51,7 +51,7 @@ An Operating System (OS) is a software framework designed to manage hardware res
 
 Tracking information can be performed at various levels, from the application level to the hardware level. Each level offers distinct advantages and disadvantages.
 For instance, application-level tracking might provide detailed insights and user-friendly interfaces, while hardware-level tracking offers more granular data and real-time monitoring but can be more complex and costly.
-The following subsections will explore these different levels, highlighting their respective benefits and limitations.
+The following subsections explore these different levels, highlighting their respective benefits and limitations.
 
 
 \subsubsection{Software-based DIFT}
@@ -119,7 +119,7 @@ The main advantage is that hardware does not need to know DIFT tags or policies 
     \label{fig:offloading_dift}
 \end{figure}
 
-\paragraph{In-Core DIFT} rely on a deeply modified processor pipeline which need to integrate tag computations inside the main core in parallel of data computations. This approach is highly invasive, but does not require any additional cores or coprocessors to operate and introduces no overhead for intercore synchronisation. Overall, its performance impact in terms of clock cycles over native execution is minimal. On the other hand, the integrated approach requires significant modifications to the processor core. All pipeline stages must be modified to add tags, a dedicated register file and first level of caches must be added to store tags in parallel with the regular blocks into the processor core. Figure~\ref{fig:incore_dift} shows the architecture of an In-Core hardware DIFT. When the processor fetches an instruction, its associated tag is sent in parallel. In the decode stage, the instruction is decoded while the security decode module decode the security policy to determine how the tag should be propagated and checked. When the instruction is executed, the tag is sent to a tag ALU to be checked. Then, if the tag is conforming to the security policy, the tag and the ALU output will be saved into the Data-Cache to be used again or stored in memory. Otherwise, if the tag is not conforming, the DIFT mechanism will detect the security violation and can raise an exception, stop the application, depending on what is configured.
+\paragraph{In-Core DIFT} rely on a deeply modified processor pipeline which need to integrate tag computations inside the main core in parallel of data computations. This approach is highly invasive, but does not require any additional cores or coprocessors to operate and introduces no overhead for intercore synchronisation. Overall, its performance impact in terms of clock cycles over native execution is minimal. On the other hand, the integrated approach requires significant modifications to the processor core. All pipeline stages must be modified to add tags, a dedicated register file and first level of caches must be added to store tags in parallel with the regular blocks into the processor core. Figure~\ref{fig:incore_dift} shows the architecture of an In-Core hardware DIFT. When the processor fetches an instruction, its associated tag is sent in parallel. In the decode stage, the instruction is decoded while the security decode module decode the security policy to determine how the tag should be propagated and checked. When the instruction is executed, the tag is sent to a tag ALU to be checked. Then, if the tag is conforming to the security policy, the tag and the ALU output will be saved into the Data-Cache to be used again or stored in memory. Otherwise, if the tag is not conforming, the DIFT mechanism detects the security violation and can raise an exception, stop the application, depending on what is configured.
 
 \begin{figure}[ht]
     \centering
@@ -175,14 +175,56 @@ Finally, in the last step, on the right side of the figure, there are two data o
 \section{Physical Attacks}
 \label{section:physicalAttacks}
 
+This section presents an overview of the state of the art on physical attacks. We present the different types of physical attacks and their methods to recover secret informations. Firstly, we begin with Side-Channel Attacks, how to use information leakage to recover useful informations and how to analyse them.
+Secondly, we introduce Fault Injection Attacks. We define the different possibilities of injection and how to achieve them.
+
+Physical attacks are separated into two main categories: passive attacks and active attacks. Passive attacks are also called Side-Channel Attacks (SCA), and active attacks are often called Fault Injection Attacks (FIA). Figure~\ref{fig:arbo_fia} shows a representation of a taxonomy to classify the different method of physical attacks. Each type of attacks will be explained in this following subsections.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{c2_soa/img/physicalAttacks.pdf}
+    \caption{Taxonomy of fault injection attacks (inspired by~\cite{CKNDCTD-21-compsec})}
+    \label{fig:arbo_fia}
+\end{figure}
+
 \subsection{Side-Channel Attacks}
+These attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic radiation or the execution time of an application.\wip{Ajout d'une image sur les SCA comme figure 1.1 thèse de Noura ?}
+This type of attack does not call into question the theoretical integrity of the implementation, but aims to recover information by devious means. During data processing, the alternation between different states requires time and minimal energy dissipation, the variations of which can be analysed by the attacker.
+These informations allow the attacker to access secret data such as a password, or cryptographic key. The origin of these attacks date back to the TEMPEST program from NSA~\cite{F-72-nsa}. They described the vulnerabilities of a cryptographic implementations from their electromagnetic emissions depending on the input and data.
+
+\paragraph{Power analysis}
+
+\paragraph{Temperature analysis}
+
+\paragraph{Electromagnetic analysis}
+
+\paragraph{Acoustic analysis}
+
+
 \subsection{Fault Injection Attacks}
+\wip{Ajout d'une image sur les FIA comme figure 1.2 thèse de Noura ?}
 \cite{BCNTW-06-procieee}
 
-% A fault is the cause of an error, that is, an incorrect program or circuit state. If the error caused by the fault does not propagate and the application execution ends normally, the fault is ineffective. On the contrary, the fault is effective if the error affects the application’s execution, causing a failure, an observed behavior different from that expected.
+% A fault is the cause of an error, that is, an incorrect program or circuit state. If the error caused by the fault does not propagate and the application execution ends normally, the fault is ineffective. On the contrary, the fault is effective if the error affects the application’s execution, causing a failure, an observed behaviour different from that expected.
 % In the context of electronic circuits, a fault refers to an unintended deviation from the normal operation of the circuit. Faults can occur due to various reasons such as manufacturing defects, environmental factors, ageing, or external interference. These faults can affect the performance, functionality, and reliability of the circuit.
 
 % In fault injection, which is a testing method used to evaluate the robustness and reliability of electronic circuits, a fault is deliberately introduced into the system to observe its behaviour and identify potential vulnerabilities.
+
+\subsubsection{Invasive attacks}
+
+\paragraph{Laser beam}
+
+\paragraph{Focussed ion beam}
+
+\subsubsection{Non-invasive attacks}
+
+\paragraph{Clock glitches}
+
+\paragraph{Voltage glitches}
+
+\paragraph{Heating attacks}
+
+\paragraph{Electromagnetic fault injections (EMFI)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Countermeasures against FIA}
