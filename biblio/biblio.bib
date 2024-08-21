@@ -278,6 +278,20 @@
     doi     = {10.1007/s001450010016}
 }
 
+@article{GST-17-crypto,
+    author  = {
+        Genkin, Daniel and
+        Shamir, Adi and
+        Tromer, Eran
+    },
+    title   = {{Acoustic Cryptanalysis}},
+    journal = {Journal of Cryptology},
+    year    = {2017},
+    pages   = {392-443},
+    volume  = {30},
+    doi     = {10.1007/s00145-015-9224-2}
+}
+
 @Comment{============= IEEE ACCESS =============}
 @ARTICLE{BLK-23-access,
     author={
@@ -565,6 +579,22 @@
     doi      = {https://doi.org/10.1016/j.comnet.2018.11.025}
 }
 
+@article{DD-05-compnet,
+    author   = {
+        David Brumley and
+        Dan Boneh
+    },
+    title    = {Remote timing attacks are practical},
+    journal  = {Computer Networks},
+    volume   = {48},
+    number   = {5},
+    pages    = {701-716},
+    year     = {2005},
+    note     = {Web Security},
+    issn     = {1389-1286},
+    doi      = {https://doi.org/10.1016/j.comnet.2005.01.010}
+}
+
 @Comment{============= Hardware and Systems Security =============}
 @article{YSW-18-hss,
     author   = {
@@ -612,6 +642,33 @@
     doi = {10.1007/s13389-021-00259-6}
 }
 
+@article{KJJ-98-crypto,
+    author = {
+        Kocher, Paul and
+        Jaffe, Joshua and
+        Jun, Benjamin and
+        others},
+    title  = {Introduction to differential power analysis and related attacks},
+    year   = {1998}
+}
+
+@article{KJJR-11-jce,
+    author    = {
+        Kocher, Paul and
+        Jaffe, Joshua and
+        Jun, Benjamin and
+        Rohatgi, Pankaj
+    },
+    title     = {{Introduction to differential power analysis}},
+    journal   = {{Journal of Cryptographic Engineering}},
+    publisher = {{Springer}},
+    volume    = {1},
+    pages     = {5--27},
+    year      = {2011},
+    doi       = {10.1007/s13389-011-0006-y}
+}
+
+
 @Comment{============= Computers & Security =============}
 @article{CKNDCTD-21-compsec,
     author   = {
@@ -630,6 +687,44 @@
     issn     = {0167-4048},
     doi      = {10.1016/j.cose.2021.102471}
 }
+
+@Comment{============= IEEE Design & Test =============}
+@article{HGTVJ-22-dt,
+    author   = {
+        He, Jiaji and
+        Guo, Xiaolong and
+        Tehranipoor, Mark and
+        Vassilev, Apostol and
+        Jin, Yier
+    },
+    title    = {EM Side Channels in Hardware Security: Attacks and Defenses},
+    journal  = {IEEE Design \& Test},
+    year     = {2022},
+    volume   = {39},
+    number   = {2},
+    pages    = {100-111},
+    doi      = {10.1109/MDAT.2021.3135324}
+}
+
+@Comment{============= Transactions on Very Large Scale Integration (VLSI) =============}
+@article{AZRHT-21-tvlsi,
+    author   = {
+        Aljuffri, Abdullah and
+        Zwalua, Marc and
+        Reinbrecht, Cezar Rodolfo Wedig and
+        Hamdioui, Said and
+        Taouil, Mottaqiallah
+    },
+    title    = {Applying Thermal Side-Channel Attacks on Asymmetric Cryptography},
+    journal  = {IEEE Transactions on Very Large Scale Integration (VLSI) Systems},
+    year     = {2021},
+    volume   = {29},
+    number   = {11},
+    pages    = {1930-1942},
+    doi      = {10.1109/TVLSI.2021.3111407}
+}
+
+
 
 @Comment{================================ CONFERENCES ================================}
 @Comment{============= ACM Sensors S&P =============}
@@ -707,6 +802,21 @@
     booktitle={{Smart Card Research and Advanced Applications}},
     year={2022},
     doi={10.1007/978-3-030-97348-3_9}
+}
+
+@inproceedings{HS-14-cardis,
+    author    = {
+        Hutter, Michael and
+        Schmidt, J{\"o}rn-Marc
+    },
+    title     = {The Temperature Side Channel and Heating Fault Attacks},
+    booktitle = {{Smart Card Research and Advanced Applications}},
+    year      = {2014},
+    publisher = {Springer International Publishing},
+    address   = {Cham},
+    pages     = {219--235},
+    isbn      = {978-3-319-08302-5},
+    doi       = {10.1007/978-3-319-08302-5_15}
 }
 
 @Comment{============= CRYPTO Conf =============}
@@ -1161,6 +1271,26 @@
     doi       = {10.48550/arXiv.2302.06932}
 }
 
+@inproceedings{BDGPS-10-usenix,
+    author    = {
+        Backes, Michael and
+        D\"{u}rmuth, Markus and
+        Gerling, Sebastian and
+        Pinkal, Manfred and
+        Sporleder, Caroline
+    },
+    title     = {Acoustic side-channel attacks on printers},
+    year      = {2010},
+    isbn      = {8887666655554},
+    publisher = {USENIX Association},
+    booktitle = {Proceedings of the 19th USENIX Conference on Security},
+    pages     = {20},
+    numpages  = {1},
+    location  = {Washington, DC},
+    series    = {USENIX Security'10},
+    doi       = {10.5555/1929820.1929847}
+}
+
 @Comment{============= CHES =============}
 @inproceedings{ABCMRT-17-ches,
     author    = {
@@ -1175,10 +1305,23 @@
     booktitle = {Cryptographic Hardware and Embedded Systems -- CHES 2017},
     year      = {2017},
     publisher = {Springer International Publishing},
-    address   = {Cham},
     pages     = {175--188},
     isbn      = {978-3-319-66787-4},
     doi       = {10.1007/978-3-319-66787-4_9},
+}
+
+@inproceedings{GP-99-ches,
+    author    = {
+        Goubin, Louis and
+        Patarin, Jacques
+    },
+    title     = {DES and Differential Power Analysis The "Duplication" Method},
+    booktitle = {Cryptographic Hardware and Embedded Systems},
+    year      = {1999},
+    publisher = {Springer Berlin Heidelberg},
+    pages     = {158--172},
+    isbn      = {978-3-540-48059-4},
+    doi       = {10.1007/3-540-48059-5_15}
 }
 
 @Comment{============= IOLTS =============}
@@ -1195,6 +1338,101 @@
     year      = {2023},
     pages     = {1-7},
     doi       = {10.1109/IOLTS59296.2023.10224894}
+}
+
+@Comment{============= Security and Privacy (SP) =============}
+@inproceedings{LKOSECG-21-sp,
+    author    = {
+        Lipp, Moritz and
+        Kogler, Andreas and
+        Oswald, David and
+        Schwarz, Michael and
+        Easdon, Catherine and
+        Canella, Claudio and
+        Gruss, Daniel
+    },
+    title     = {PLATYPUS: Software-based Power Side-Channel Attacks on x86},
+    booktitle = {2021 IEEE Symposium on Security and Privacy (SP)},
+    year      = {2021},
+    pages     = {355-371},
+    doi       = {10.1109/SP40001.2021.00063}
+}
+
+@Comment{============= EuroS&PW =============}
+@inproceedings{HTM-23-eurospw,
+    author    = {
+        Harrison, Joshua and
+        Toreini, Ehsan and
+        Mehrnezhad, Maryam
+    },
+    title     = {A Practical Deep Learning-Based Acoustic Side Channel Attack on Keyboards},
+    booktitle = {2023 IEEE European Symposium on Security and Privacy Workshops (EuroS\&PW)},
+    year      = {2023},
+    pages     = {270-280},
+    doi       = {10.1109/EuroSPW59978.2023.00034}
+}
+
+@Comment{============= Smart Card Programming and Security =============}
+@inproceedings{QS-01-scps,
+    author    = {
+        Quisquater, Jean-Jacques and
+        Samyde, David
+    },
+    title     = {ElectroMagnetic Analysis (EMA): Measures and Counter-measures for Smart Cards},
+    booktitle = {Smart Card Programming and Security},
+    year      = {2001},
+    publisher = {Springer Berlin Heidelberg},
+    pages     = {200--210},
+    isbn      = {978-3-540-45418-2},
+    doi       = {10.1007/3-540-45418-7_17}
+}
+
+@Comment{============= Topics in Cryptology =============}
+@inproceedings{HMHSS-12-tcrypo,
+    author    = {
+        Heyszl, Johann and
+        Mangard, Stefan and
+        Heinz, Benedikt and
+        Stumpf, Frederic and
+        Sigl, Georg
+    },
+    title     = {Localized Electromagnetic Analysis of Cryptographic Implementations},
+    booktitle = {Topics in Cryptology -- CT-RSA 2012},
+    year      = {2012},
+    publisher = {Springer Berlin Heidelberg},
+    address   = {Berlin, Heidelberg},
+    pages     = {231--244},
+    isbn      = {978-3-642-27954-6},
+    doi       = {10.1007/978-3-642-27954-6_15}
+}
+
+@Comment{============= International Conference on Computer-Aided Design (ICCAD) =============}
+@inproceedings{KSTO-17-iccad,
+    author    = {
+        Kumar, Amit and
+        Scarborough, Cody and
+        Yilmaz, Ali and
+        Orshansky, Michael
+    },
+    booktitle = {2017 IEEE/ACM International Conference on Computer-Aided Design (ICCAD)},
+    title     = {Efficient simulation of EM side-channel attack resilience},
+    year      = {2017},
+    pages     = {123-130},
+    doi       = {10.1109/ICCAD.2017.8203769}
+}
+
+@Comment{============= International Conference on New Technologies, Mobility and Security (NTMS) =============}
+@inproceedings{WDL-16-ntms,
+    author    = {
+        Wittke, Christian and
+        Dyka, Zoya and
+        Langendoerfer, Peter
+    },
+    booktitle = {2016 8th IFIP International Conference on New Technologies, Mobility and Security (NTMS)},
+    title     = {Comparison of EM Probes Using SEMA of an ECC Design},
+    year      = {2016},
+    pages     = {1-5},
+    doi       = {10.1109/NTMS.2016.7792439}
 }
 
 

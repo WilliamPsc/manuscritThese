@@ -182,32 +182,59 @@ Physical attacks are separated into two main categories: passive attacks and act
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{c2_soa/img/physicalAttacks.pdf}
-    \caption{Taxonomy of fault injection attacks (inspired by~\cite{CKNDCTD-21-compsec})}
+    \includegraphics[width=\textwidth, page=1]{c2_soa/img/physicalAttacks.pdf}
+    \caption{Taxonomy of the different methods of physical attacks (inspired by~\cite{CKNDCTD-21-compsec})}
     \label{fig:arbo_fia}
 \end{figure}
 
 \subsection{Side-Channel Attacks}
-These attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic radiation or the execution time of an application.\wip{Ajout d'une image sur les SCA comme figure 1.1 thèse de Noura ?}
+These attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic radiation or the execution time of an application.
 This type of attack does not call into question the theoretical integrity of the implementation, but aims to recover information by devious means. During data processing, the alternation between different states requires time and minimal energy dissipation, the variations of which can be analysed by the attacker.
-These informations allow the attacker to access secret data such as a password, or cryptographic key. The origin of these attacks date back to the TEMPEST program from NSA~\cite{F-72-nsa}. They described the vulnerabilities of a cryptographic implementations from their electromagnetic emissions depending on the input and data.
+These informations allow the attacker to access secret data such as a password, or cryptographic key. The origin of these attacks date back to the \mbox{TEMPEST} program from NSA~\cite{F-72-nsa}. They descrbed the vulnerabilities of a cryptographic implementations from their electromagnetic emissions depending on the input and data.
 
-\paragraph{Power analysis}
+Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor. We will go into detail of these different methods in the following text. The main idea is to have an application running on the processor and an attacker will use one method to trace the application multiple times to recover secret informations (e.g. cryptographic key, password, etc).
 
-\paragraph{Temperature analysis}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=3, width=.75\textwidth]{c2_soa/img/physicalAttacks.pdf}
+    \caption{Representation of the different methods of Side-Channel attacks}
+    \label{fig:sca}
+\end{figure}
 
-\paragraph{Electromagnetic analysis} \cite{ANM-19-di}
+\paragraph{Power analysis} exploits time differences in target power consumption during sensitive executions. Modern systems contains billions of transistors (up to 146 billions transistors for AMD Instinct MI300A\footnote{\url{https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html}}). These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, amperemeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets.
+Kocher et al.~\cite{KJJ-98-crypto,KJJR-11-jce} introduced this method of SCA to recover cryptographic key from the analyse of power consumption. They introduced the Simple Power Analysis method (SPA) and Differential Power Analysis (DPA)~\cite{GP-99-ches}. While SPA attacks mainly use visual inspection to identify relevant power variations, DPA attacks use statistical analysis and error correction techniques to extract information correlated to secret keys.
+Lipp et al.~\cite{LKOSECG-21-sp} present an attack, PLATYPUS, a software-based power side-channel attack on Intel server, desktop and laptop CPU. They exploit unprivileged access to the Intel Running Average Power Limit (RAPL) interface. By observing viariations in power consumption, they achieve to monitor the control flow of applications and also infer data and extract cryptographic keys.
 
-\paragraph{Acoustic analysis}
+\paragraph{Execution time analysis} also known as timing attacks and first introduced by Kocher~\cite{K-96-crypto}, takes advantage of the fact that some sensitive computational operations vary in time depending on their secret inputs. An attacker can learn information about these inputs by measuring the running time of the operation. Inherently, these attacks require the attacker to obtain responses from the target to measure its runtime. The works of Kocher~\cite{K-96-crypto}, Brumley and Boneh~\cite{DD-05-compnet} demonstrate attacks on many popular cryptosystems, including DSS, RSA, and OpenSSL.
 
+\paragraph{Electromagnetic analysis} exploits electromagnetic (EM) emissions signatures produced when conducting logic operations. Thus, EM emissions reflects the operations of the system. In 2001, Quisquater and Samyde~\cite{QS-01-scps} extended SCA with EM analysis.
+EM SCA methods can be divided into Simple EM Attack (SEMA) and Differential EM Attack (DEMA) similarly to power attacks~\cite{ANM-19-di}. By observing different signal patterns of collected traces, SEMA can directly interpret cryptographic operations. DEMA extracts secret keys by comparing collected EM traces to hypothesised values and looking for peaks indicative of an accurate prediction~\cite{HGTVJ-22-dt}.
+The attacker collects EM radiation using an EM probe. The probe is placed near the electronic equipment. At this stage, the quality of the collected EM traces, and thus the effectiveness of EM SCA, is strongly affected by several measurement parameters such as EM probe, noise, trigger, sampling rate and frequency band. Recent work has shown that different EM probe characteristics (e.g. diameter, orientation) and spatial location significantly affect EM traces~\cite{HMHSS-12-tcrypo,KSTO-17-iccad, WDL-16-ntms}.
+
+\paragraph{Temperature analysis} exploit the temperature values induced by the activity of the system. This attack is linked to electromagnetic and power analysis as they use traces from the system's execution.Aljuffri et al.~\cite{AZRHT-21-tvlsi} presented a study on thermal analysis where three different power-based SCAs were modified for thermal attacks and applied to a naive RSA implementation. Their experiments were able to retrieve the secret key with an accuracy of 100\%. Another experiment attacked a protected implementation of RSA and achieve the extraction of the key with only five traces. Hutter et al.~\cite{HS-14-cardis} present results of data leakages of CMOS devices from temperature SCA. They study the leakage of processed data by measuring the dissipated heat of the devices.
+
+\paragraph{Acoustic analysis} takes advantage of the analysis of the sound emitted by the systems. This technology has been around for a long time and is used in many fields, such as sonar. The "golden ear" in a submarine listens to the sounds of the sea and is able to detect and distinguish a submarine, a warship, or a merchant vessel by the sound of its turbine alone. It is also able to determine its direction and nationality.
+
+Computers emit high-pitched sounds when they are running. This is due to vibrations in some of their electronic components. These sounds are more than just a nuisance. They can convey information about the software running on the computer. In particular, they can reveal sensitive information about security-related calculations. People have shown that it is possible to recover RSA keys from their sound.
+Backes et al.~\cite{BDGPS-10-usenix} present an attack that retrieves what a dot-matrix printer is printing from a recording of the sound it makes. Their experiments show that they can recover up to 72\% of the words printed, and up to 95\% if they know the context of the text. For this experiment, they used a dictionary-based approach to printed English words.
+Genkin et al.~\cite{GST-17-crypto} demonstrated that RSA key extraction using acoustic cryptanalysis was feasible against a Lenovo laptop from a smartphone nearby. The authors targeted GnuPG's RSA implementation using a laboratory microphone setup and a Samsung Note II, and showed that a 4096-bit key could be recovered within an hour using audible and ultrasonic sound emanations. Harrison et al.~\cite{HTM-23-eurospw} present an implementation of a deep-learning model to classify laptop keystrokes using a microphone. They use the trained model to recognise the keystrokes and they achieve an accuracy of 95\%. They trained their model from a Zoom conference and this time they achieve an accuracy of 93\%. Their results have shown that it is possible to recover password or other secret information of a victim from its keystrokes even without a physical presence.
 
 \subsection{Fault Injection Attacks}
-\wip{Ajout d'une image sur les FIA comme figure 1.2 thèse de Noura ?}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=2, width=.75\textwidth]{c2_soa/img/physicalAttacks.pdf}
+    \caption{Representation of the different methods of Fault Injection attacks}
+    \label{fig:fia}
+\end{figure}
+
 \cite{BCNTW-06-procieee}
 
 \cite{BH-22-access}
 
 \cite{YSW-18-hss}
+
+\cite{BDL-01-crypto}
 % A fault is the cause of an error, that is, an incorrect program or circuit state. If the error caused by the fault does not propagate and the application execution ends normally, the fault is ineffective. On the contrary, the fault is effective if the error affects the application’s execution, causing a failure, an observed behaviour different from that expected.
 % In the context of electronic circuits, a fault refers to an unintended deviation from the normal operation of the circuit. Faults can occur due to various reasons such as manufacturing defects, environmental factors, ageing, or external interference. These faults can affect the performance, functionality, and reliability of the circuit.
 
