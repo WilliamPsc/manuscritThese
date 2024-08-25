@@ -188,11 +188,11 @@ Physical attacks are separated into two main categories: passive attacks and act
 \end{figure}
 
 \subsection{Side-Channel Attacks}
-These attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic radiation or the execution time of an application.
+Side-Channel Attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic radiation or the execution time of an application.
 This type of attack does not call into question the theoretical integrity of the implementation, but aims to recover information by devious means. During data processing, the alternation between different states requires time and minimal energy dissipation, the variations of which can be analysed by the attacker.
 These informations allow the attacker to access secret data such as a password, or cryptographic key. The origin of these attacks date back to the \mbox{TEMPEST} program from NSA~\cite{F-72-nsa}. They descrbed the vulnerabilities of a cryptographic implementations from their electromagnetic emissions depending on the input and data.
 
-Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor. We will go into detail of these different methods in the following text. The main idea is to have an application running on the processor and an attacker will use one method to trace the application multiple times to recover secret informations (e.g. cryptographic key, password, etc).
+Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor. We will go into detail of these different methods in the following text. The main idea is to have an application running on the processor and an attacker will use one method to trace the application multiple times to recover secret informations (e.g. cryptographic key, password, private data, etc.).
 
 \begin{figure}[ht]
     \centering
@@ -220,6 +220,21 @@ Backes et al.~\cite{BDGPS-10-usenix} present an attack that retrieves what a dot
 Genkin et al.~\cite{GST-17-crypto} demonstrated that RSA key extraction using acoustic cryptanalysis was feasible against a Lenovo laptop from a smartphone nearby. The authors targeted GnuPG's RSA implementation using a laboratory microphone setup and a Samsung Note II, and showed that a 4096-bit key could be recovered within an hour using audible and ultrasonic sound emanations. Harrison et al.~\cite{HTM-23-eurospw} present an implementation of a deep-learning model to classify laptop keystrokes using a microphone. They use the trained model to recognise the keystrokes and they achieve an accuracy of 95\%. They trained their model from a Zoom conference and this time they achieve an accuracy of 93\%. Their results have shown that it is possible to recover password or other secret information of a victim from its keystrokes even without a physical presence.
 
 \subsection{Fault Injection Attacks}
+As early as the 1970s, with advances in the space industry, anomalies in the operation of electronic circuits were observed and eventually linked to cosmic radiation outside the Earth's atmosphere~\cite{BSH-75-tns,Z-96-ibm,ZL-79-science}. These disturbances were initially found to affect the performance of electronic systems in space environments, where high-energy particles could disrupt the normal functioning of circuits. However, as transistors became smaller and required less energy to operate, similar phenomena were observed in terrestrial environments and aircraft systems. These transient disturbances, commonly referred to as "\textit{soft errors}", are now recognised as a critical issue in both space and ground electronics, affecting everything from memory chips to complex processors.
+
+However, in addition of these induces cosmic faults, wanted faults exist and are known as Fault Injection Attacks (FIA). FIA involves deliberately introducing a fault into the system to observe its behaviour and identify potential vulnerabilities. If the error caused by the fault does not propagate and execution of the application completes normally, the fault is ineffective. On the other hand, if the fault affects the execution of the application, causing it to fail or behave differently than expected, then the fault is effective. These faults can impact the performance, functionality, and reliability of the circuit. These attacks can induce errors in internal electronic components, which can be utilised to recover cryptographic keys and other secret data.
+These attacks have been vastly studied since the first introduction of these attacks by Boneh et al. in 1997~\cite{BDL-97-eurocrypt,BDL-01-crypto}. Multiple studies or surveys~\cite{ZAV-06-jarab, BCNTW-06-procieee, CKNDCTD-21-compsec, PBR-15-dtis, YSW-18-hss, BH-22-access} present the different sources of FIA.
+Figure~\ref{fig:fia} presents a summary of the different methods of FIA, the figure does not represent all possible methods. Each of these attacks requires equipment that is more or less expensive and easy to acquire ranging from a few hundred euros (clock glitches, voltage glitches) to several hundred thousand (Laser, X-Ray, Focused Ion Beam).
+
+As shown in the Figure~\ref{fig:arbo_fia}, these attacks are categorised as transient or permanent, and invasive or non-invasive.
+The effect of a transient fault lasts for a limited period of time. These faults rarely do any lasting damage to the component affected, although they can induce an erroneous state in the system. Their aim is to temporarily disrupt the program control flow or corrupt the results of an instruction to gain unauthorised access to sensitive code and data.
+By opposition, permanent faults or destructive faults, created by purposely inflicted defects to the chip’s structure, have a permanent effect. Once inflicted, such destructions will affect the chip’s behaviour permanently and persist irrespective of device restarts and resets.
+
+Invasive attacks involve major alteration to the Device Under Test (DUT), such as decapping the System-on-Chip (SoC) to expose its internals and remove any protective layers. These processes risk irreparable damage or destruction of the target under evaluation, potentially leading to permanent data loss.
+
+Non-invasive attacks require no tampering of the DUT. They are able to mask their presence as they have no effect on the system other than the faults they inject.
+
+% As an example, if we take an attacker able to perform FIA using laser shots and want to access a secure system. The objective of the attacker is to bypass the password checking mechanism. Hence, he will inject his fault into this mechanism. While an application is running or a secret is processed (the lock file icon), the attacker will inject a fault using one of the represented method (e.g. clock glitch, laser, X-Ray, etc.). This fault should be injected in the 
 
 \begin{figure}[ht]
     \centering
@@ -227,18 +242,6 @@ Genkin et al.~\cite{GST-17-crypto} demonstrated that RSA key extraction using ac
     \caption{Representation of the different methods of Fault Injection attacks}
     \label{fig:fia}
 \end{figure}
-
-\cite{BCNTW-06-procieee}
-
-\cite{BH-22-access}
-
-\cite{YSW-18-hss}
-
-\cite{BDL-01-crypto}
-% A fault is the cause of an error, that is, an incorrect program or circuit state. If the error caused by the fault does not propagate and the application execution ends normally, the fault is ineffective. On the contrary, the fault is effective if the error affects the application’s execution, causing a failure, an observed behaviour different from that expected.
-% In the context of electronic circuits, a fault refers to an unintended deviation from the normal operation of the circuit. Faults can occur due to various reasons such as manufacturing defects, environmental factors, ageing, or external interference. These faults can affect the performance, functionality, and reliability of the circuit.
-
-% In fault injection, which is a testing method used to evaluate the robustness and reliability of electronic circuits, a fault is deliberately introduced into the system to observe its behaviour and identify potential vulnerabilities.
 
 \subsubsection{Invasive attacks}
 
@@ -248,13 +251,16 @@ Genkin et al.~\cite{GST-17-crypto} demonstrated that RSA key extraction using ac
 
 \paragraph{X-Rays} \cite{ABCMRT-17-ches, TMZHM-23-iolts, GBD-23-paine}
 
-\paragraph{Focussed ion beam}
+\paragraph{Focused ion beam}
 
 \subsubsection{Non-invasive attacks}
 
 \paragraph{Clock glitches}
 
+\wip{insérer image / schéma clock glitch}
+
 \paragraph{Voltage glitches}
+\wip{insérer image / schéma voltage glitch}
 
 \paragraph{Heating attacks}
 

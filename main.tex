@@ -59,8 +59,14 @@
 
 % Inclusion du chapitre remerciement
 % Input acknowledgement chapter
-\clearemptydoublepage\newpage
+\clearemptydoublepage
 \input{./acknowledgement/acknowledgement}
+
+% Inclusion du chapitre remerciement
+% Input acknowledgement chapter
+\clearemptydoublepage
+\input{./acknowledgement/abstract}
+\addcontentsline{toc}{chapter}{Abstract}
 
 % Ne pas oublier cette commande qui g\'{e}n\`{e}re la page de couverture avant
 % This command will generate the front cover
@@ -70,7 +76,7 @@
 
 \newpage
 \renewcommand{\contentsname}{Table of Contents}
-% \addcontentsline{toc}{chapter}{Table of Contents}
+\addcontentsline{toc}{chapter}{Table of Contents}
 \tableofcontents
 
 \newpage
@@ -95,7 +101,7 @@
 \clearemptydoublepage
 \pagenumbering{arabic}
 \setcounter{page}{1}
-\setcounter{mtc}{4}
+\setcounter{mtc}{6}
 \mainmatter
 \input{./c1_intro/Introduction}
 

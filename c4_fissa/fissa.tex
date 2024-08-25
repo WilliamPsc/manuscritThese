@@ -92,7 +92,7 @@ It consists of three different modules: \textit{TCL generator}, \textit{Fault In
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{c4_fissa/img/fissa/archi_fissa.pdf}
+    \includegraphics[width=\textwidth, page=2]{c4_fissa/img/fissa/archi_fissa.pdf}
     \caption{Software architecture of FISSA}
     \label{fig:archi_fissa}
 \end{figure}
@@ -279,6 +279,13 @@ This file encompasses data such as the current simulation number, the executed c
 
 Listing~\ref{code:logJSONFile_fissa} shows a simplified example of an output file from a simulation. Many lines are omitted to simplify the text and its comprehension. In this example, we have the result of the first simulation of the campaign. The fault model is a single bit-flip in one target at a given clock cycle, and the target, which is a register in this case, \texttt{pc\_id\_o\_tag}, has a size of one bit. We attack it at the period time of 137,140 ns. The omitted lines, at line 7, include all registers from the register file, all register file tags, and all registers from the target list. The last line, line 14, shows that this simulation ended with a status equal to 3 (i.e., exception delayed from the reference simulation).
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.5\textwidth, page=4]{c4_fissa/img/fissa/archi_fissa.pdf}
+    \caption{Fault Injection Simulator architecture}
+    \label{fig:archi_fis}
+\end{figure}
+
 It is worth noting that the set of calls to the generated TCL scripts has to be integrated into the designer's existing design flow, allowing the design compilation, initialisation, and management of input stimuli. The use of TCL scripts simplifies such an integration. 
 Once all the fault injection simulations have been performed, the log files can be sent to the \textit{Analyser} which, is described in the following subsection.
 
@@ -311,6 +318,13 @@ Their configuration can be adapted by modifying the \textit{Analyser} Python cod
 In the current configuration, heatmaps highlight the targets leading to a specific end-of-simulation status (e.g. a status identified by the designer as a successful attack).
 %An example of such heatmap is presented in Subsection~\ref{subsec:results}.
 Once the results have been generated, they can easily be inserted into a vulnerability assessment report. 
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.5\textwidth, page=5]{c4_fissa/img/fissa/archi_fissa.pdf}
+    \caption{Analyser architecture}
+    \label{fig:archi_analyser}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extending FISSA}

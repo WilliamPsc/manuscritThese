@@ -176,7 +176,7 @@
 \RequirePackage[hyperref,backend=biber,
   % Exemples de styles: alphabetic, ieee, nature, numeric, verbose-trad1 (en utilisant \footcite{}).
   % https://www.overleaf.com/learn/latex/Biblatex_bibliography_styles
-  style=numeric-comp, bibstyle=ieee, sorting=none
+  style=numeric-comp, sorting=none
   ]{biblatex}
 
 % Style biblatex avec gestion des mots cl\'{e}s des entr\'{e}es bibliographiques
