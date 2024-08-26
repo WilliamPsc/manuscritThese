@@ -244,10 +244,56 @@ Non-invasive attacks require no tampering of the DUT. They are able to mask thei
 \end{figure}
 
 \subsubsection{Invasive attacks}
+Invasive attacks need to decapsulate the chip or the Integrated Circuit (IC).
+Decapsulating a die or integrated circuit (IC) is a process used to expose the internal components of an IC, typically for failure analysis or reverse engineering. The goal is to carefully remove the protective encapsulation, which shields the silicon die and is typically made of epoxy or ceramic, without causing damage to the internal structures. There are several methods to achieve this, each suited to different packaging materials and levels of precision, ranging from chemical processes to advanced techniques like laser ablation and plasma etching.
 
-\paragraph{Camera flash}
+The most common method is chemical decapsulation, which involves etching away the epoxy with concentrated acids such as nitric or sulphuric acid. This process requires safety precautions such as protective clothing and neutralisation of the acids after removal of the encapsulation. It is an effective but dangerous process and require careful control to avoid damaging the die, as over-etching can cause irreversible harm.
 
-\paragraph{Laser beam}
+Another method is laser decapsulation, which uses a precision laser to remove the encapsulation material layer by layer. This technique is highly accurate and reduces the risk of damage to the die, but it is expensive and requires specialised equipment. Mechanical decapsulation involves physically grinding or cutting away the encapsulation, but has a high risk of damaging the die, especially when approaching the final layers.
+
+Plasma etching is a more advanced technique that uses ionised gases to gradually etch away the encapsulation material. It offers high precision but is slower than other methods and is typically used in research or industrial environments. Whichever method is used, safety precautions are essential, especially when dealing with hazardous chemicals and sensitive materials.
+
+Figure~\ref{fig:decapsulating_die} shows three different steps to decapsulate a circuit. To be noted, this processor is the AMD Zen2 EPYC 7702 server processor which is not for embedded systems.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_initial.jpg}
+        \caption{Initial die from an AMD Zen 2 EPYC 7702 server processor}
+        \label{fig:initial_die}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_delidding.jpg}
+        \caption{AMD EPYC 7702 after delidding, with remains of solder thermal interface material (TIM)}
+        \label{fig:delidding_die}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_packagedRemoved.jpg}
+        \caption{Die shot of the center die, after removal from processor package substrate and metallization etching}
+        \label{fig:packagedRemoved_die}
+    \end{subfigure}
+    \caption{Three steps to decapsulate a die (from~\cite{decapping-19-wikipedia})}
+    \label{fig:decapsulating_die}
+\end{figure}
+
+
+\paragraph{Camera flash/light source} is a type of optical attack. The attacker needs to decapsulate the chip, and the strong radiation emitted by the flash directed at the silicon surface can cause the blanking of memory cells where constant values are stored for algorithms execution (e.g., the AES S-Boxes). These attacks are inexpensive, but, in the other hand, they are not very accurate. Skorobogatov et al.~\cite{SA-02-ches} used a flashgun for \$30 while being able to change any bit of an SRAM array.
+
+Schmidt and Hutter~\cite{SH-07-austrochip} present practical attacks on implementations of RSA that use Chinese Remainder Theorem (CRT). These attacks have been performed into a cryptographic device through optical and EM injections. They use a laser diode  as a light source, the diode emitts a light  beam of 100~mW with a wavelength of 785~nm. The light from the diode is guided thanks to a fibre-optic of 1~mm in diameter.
+
+Guillen et al.~\cite{GGD-17-cosade} present a low-cost fault injection setup, around couple hundred euros, which is capable of producing localized faults in modern 8-bit and 32-bit microcontrollers. This setup does not require handling dangerous substances or wearing protection equipment. The fault produced by this setup are able to successfully attack real-world cryptographic implementations, such as the NSA’s Speck lightweight block cipher~\cite{RDJSBL-13-nsa}.
+
+\paragraph{Laser beam} is another type of optical attacks. Using a laser beam, a single bit in a memory can be set (set to 1) or reset (set to 0) by attacking either front side or the back side of the chip.
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{c2_soa/img/LS2.jpeg}
+    \caption{Example of a laser fault injection setup (by Riscure Laser Station 2~\cite{riscure_station})}
+    \label{fig:ls2}
+\end{figure}
 
 \paragraph{X-Rays} \cite{ABCMRT-17-ches, TMZHM-23-iolts, GBD-23-paine}
 
