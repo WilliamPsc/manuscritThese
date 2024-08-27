@@ -144,7 +144,7 @@ As data moves through the system, these tags are tracked to ensure compliance wi
 
 An example of such security policy can be represented in Table~\ref{table:security_policies}. In this example, if the data comes from the network or if it's manipulated by a user, in the case of a \verb|scanf()| function in C language for example, the data cannot be trusted, while if the data comes from a secure channel or is manipulated by the system itself, the data can be trusted.
 
-\begin{table}[h]
+\begin{table}[ht]
     \centering
     \caption{Security policies for different data inputs}
     \label{table:security_policies}
@@ -287,12 +287,18 @@ Guillen et al.~\cite{GGD-17-cosade} present a low-cost fault injection setup, ar
 
 \paragraph{Laser beam} is another type of optical attacks. Using a laser beam, a single bit in a memory can be set (set to 1) or reset (set to 0) by attacking either front side or the back side of the chip.
 
-
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\textwidth]{c2_soa/img/LS2.jpeg}
     \caption{Example of a laser fault injection setup (by Riscure Laser Station 2~\cite{riscure_station})}
     \label{fig:ls2}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{c2_soa/img/lfi_setup.png}
+    \caption{Example of a laser fault injection setup (by~\cite{JHJBC-17-hss})}
+    \label{fig:lfi_setup}
 \end{figure}
 
 \paragraph{X-Rays} \cite{ABCMRT-17-ches, TMZHM-23-iolts, GBD-23-paine}
@@ -312,15 +318,57 @@ Figure~\ref{fig:clock_glitch} represent
     \label{fig:clock_glitch}
 \end{figure}
 
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=5]{c2_soa/img/physicalAttacks.pdf}
+    \caption{Representation of the parameters of a clock glitch attack}
+    \label{fig:clock_glitch_parameters}
+\end{figure}
+
 \paragraph{Voltage glitches}
 \wip{insérer image / schéma voltage glitch}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=6]{c2_soa/img/physicalAttacks.pdf}
+    \caption{Representation of a voltage glitch attack}
+    \label{fig:voltage_glitch}
+\end{figure}
+
 
 \paragraph{Heating attacks}
 
 \paragraph{Electromagnetic fault injections (EMFI)}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.5\textwidth]{c2_soa/img/emfi_riscure_setup.jpg}
+    \caption{Exemple of an EMFI attack setup}
+    \label{fig:emfi_setup}
+\end{figure}
+
 \subsubsection{Summary}
 \wip{Insérer tableau des différentes méthodes de FIA avec comparaisons comme dans article~\cite{CKNDCTD-21-compsec} + article de référence Berenghi 2012}
+
+\begin{table}[ht]
+    \centering
+    \caption{Fault Injection methods summary}
+    \label{tab:fia_techniques}
+    \begin{tabular}{@{}rccccc@{}}
+        \toprule
+        Technique        & Time precision & Space accuracy & Cost & Expertise & Damage risk \\ \midrule
+        Camera flash     & Very low       & Very low       & Very low   & Very low  & High  \\
+        Laser            &                &                &      &           &             \\
+        X-Ray            &                &                &      &           &             \\
+        Focused Ion Beam &                &                &      &           &             \\
+        Clock Glitches   &                &                &      &           &             \\
+        Voltage Glitches &                &                &      &           &             \\
+        Heating attacks  &                &                &      &           &             \\
+        EMFI             &                &                &      &           &             \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \subsubsection{Fault models}
 
