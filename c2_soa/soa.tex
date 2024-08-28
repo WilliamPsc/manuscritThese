@@ -201,7 +201,7 @@ Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor
     \label{fig:sca}
 \end{figure}
 
-\paragraph{Power analysis} exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 146 billions transistors for AMD Instinct MI300A\footnote{\url{https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html}}). These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets.
+\paragraph{Power analysis} exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 146 billions transistors for an AMD CPU Instinct MI300A\footnote{\url{https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html}} or up to 208 billions transistors for a Nvidia GPU GB200 Grace Blackwell\footnote{\url{https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing}}). These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets.
 Kocher et al.~\cite{KJJ-98-crypto,KJJR-11-jce} introduced this method of SCA to recover cryptographic key from the analysis of power consumption. They introduced the Simple Power Analysis method (SPA) and Differential Power Analysis (DPA)~\cite{GP-99-ches}. While SPA attacks mainly use visual inspection to identify relevant power variations, DPA attacks use statistical analysis and error correction techniques to extract information correlated to secret keys.
 Lipp et al.~\cite{LKOSECG-21-sp} present an attack, PLATYPUS, a software-based power side-channel attack on Intel server, desktop, and laptop CPU. They exploit unprivileged access to the Intel Running Average Power Limit (RAPL) interface. By observing variations in power consumption, they achieve to monitor the control flow of applications and also infer data and extract cryptographic keys.
 
@@ -285,7 +285,7 @@ Schmidt and Hutter~\cite{SH-07-austrochip} present practical attacks on implemen
 
 Guillen et al.~\cite{GGD-17-cosade} present a low-cost fault injection setup, around couple hundred euros, which is capable of producing localized faults in modern 8-bit and 32-bit microcontrollers. This setup does not require handling dangerous substances or wearing protection equipment. The fault produced by this setup are able to successfully attack real-world cryptographic implementations, such as the NSA’s Speck lightweight block cipher~\cite{RDJSBL-13-nsa}.
 
-\paragraph{Laser beam} is another type of optical attacks. Using a laser beam, a single bit in a memory can be set (set to 1) or reset (set to 0) by attacking either front side or the back side of the chip.
+\paragraph{Laser beam} is another type of optical attacks. Using a laser beam, a single bit in a memory can be set (from logical 0 to logical 1) or reset (from logical 1 to logical 0) by attacking either front side or the back side of the chip.
 
 \begin{figure}[ht]
     \centering
@@ -331,7 +331,7 @@ Figure~\ref{fig:clock_glitch} represent
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[page=6]{c2_soa/img/physicalAttacks.pdf}
+    \includegraphics[page=6, scale=1.25]{c2_soa/img/physicalAttacks.pdf}
     \caption{Representation of a voltage glitch attack}
     \label{fig:voltage_glitch}
 \end{figure}
@@ -357,15 +357,15 @@ Figure~\ref{fig:clock_glitch} represent
     \label{tab:fia_techniques}
     \begin{tabular}{@{}rccccc@{}}
         \toprule
-        Technique        & Time precision & Space accuracy & Cost & Expertise & Damage risk \\ \midrule
-        Camera flash     & Very low       & Very low       & Very low   & Very low  & High  \\
-        Laser            &                &                &      &           &             \\
-        X-Ray            &                &                &      &           &             \\
-        Focused Ion Beam &                &                &      &           &             \\
-        Clock Glitches   &                &                &      &           &             \\
-        Voltage Glitches &                &                &      &           &             \\
-        Heating attacks  &                &                &      &           &             \\
-        EMFI             &                &                &      &           &             \\
+        \textbf{Technique}        & \begin{tabular}{c}\textbf{Precision}\\{\small\textbf{(time)}}\end{tabular} & \begin{tabular}{c}\textbf{Space}\\\textbf{accuracy} \end{tabular}  & \textbf{Cost}              & \textbf{Expertise} & \begin{tabular}{c}\textbf{Damage}\\\textbf{risk} \end{tabular} \\ \midrule
+        Clock Glitches   & High           & Low             & Low           & Low       & Very low      \\
+        Voltage Glitches & Moderate       & Low             & Low           & Low       & Very low      \\
+        Heating attacks  & Very low       & Very low        & Low           & Very low  & Moderate      \\
+        Camera flash     & Moderate       & Low             & Moderate      & Moderate  & High          \\
+        EMFI             & High           & High            & Moderate      & Moderate  & Low           \\
+        Laser            & Very high      & Very high       & High          & High      & Very high     \\
+        X-Ray            & Very high      & ?               & Very high     & Very high & Moderate      \\
+        Focused Ion Beam & Very high      & Very high       & Highest       & Very high & Very high     \\
         \bottomrule
     \end{tabular}
 \end{table}
