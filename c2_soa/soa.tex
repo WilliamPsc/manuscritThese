@@ -224,7 +224,7 @@ As early as the 1970s, with advances in the space industry, anomalies in the ope
 
 However, in addition to these induces cosmic faults, wanted faults exist and are known as Fault Injection Attacks (FIA). FIA involves deliberately introducing a fault into the system to observe its behaviour and identify potential vulnerabilities. If the error caused by the fault does not propagate and execution of the application completes normally, the fault is ineffective. On the other hand, if the fault affects the execution of the application, causing it to fail or behave differently than expected, then the fault is effective. These faults can impact the performance, functionality, and reliability of the circuit. These attacks can induce errors in internal electronic components, which can be utilised to recover cryptographic keys and other secret data.
 These attacks have been vastly studied since the first introduction of these attacks by Boneh et al. in 1997~\cite{BDL-97-eurocrypt,BDL-01-crypto}. Multiple studies or surveys~\cite{ZAV-06-jarab, BCNTW-06-procieee, CKNDCTD-21-compsec, PBR-15-dtis, YSW-18-hss, BH-22-access} present the different sources of FIA.
-Figure~\ref{fig:fia} presents a summary of the different methods of FIA, the figure does not represent all possible methods. Each of these attacks requires equipment that is more or less expensive and easy to acquire, ranging from a few hundred euros (clock glitches, voltage glitches) to several hundred thousand (Laser, X-Ray, Focused Ion Beam).
+Figure~\ref{fig:fia} presents a summary of the different methods of FIA, the figure does not represent all possible methods. Each of these attacks requires equipment which is more or less expensive and easy to acquire, ranging from a few hundred euros (clock glitches, voltage glitches) to several hundred thousand (Laser, X-Ray, Focused Ion Beam).
 
 As shown in the Figure~\ref{fig:arbo_fia}, these attacks are categorised as transient or permanent, and invasive or non-invasive.
 The effect of a transient fault lasts for a limited period of time. These faults rarely do any lasting damage to the component affected, although they can induce an erroneous state in the system. Their aim is to temporarily disrupt the program control flow or corrupt the results of an instruction to gain unauthorised access to sensitive code and data.
@@ -233,8 +233,6 @@ By opposition, permanent faults or destructive faults, created by purposely infl
 Invasive attacks involve major alteration to the Device Under Test (DUT), such as decapping the System-on-Chip (SoC) to expose its internals and remove any protective layers. These processes risk irreparable damage or destruction of the target under evaluation, potentially leading to permanent data loss.
 
 Non-invasive attacks require no tampering of the DUT. They are able to mask their presence as they have no effect on the system other than the faults they inject.
-
-% As an example, if we take an attacker able to perform FIA using laser shots and want to access a secure system. The objective of the attacker is to bypass the password checking mechanism. Hence, he will inject his fault into this mechanism. While an application is running or a secret is processed (the lock file icon), the attacker will inject a fault using one of the represented method (e.g. clock glitch, laser, X-Ray, etc.). This fault should be injected in the 
 
 \begin{figure}[ht]
     \centering
@@ -281,16 +279,32 @@ Figure~\ref{fig:decapsulating_die} shows three different steps to decapsulate a 
 
 \paragraph{Camera flash/light source} is a type of optical attack. The attacker needs to decapsulate the chip, and the strong radiation emitted by the flash directed at the silicon surface can cause the blanking of memory cells where constant values are stored for algorithms execution (e.g., the AES S-Boxes). These attacks are inexpensive, but, in the other hand, they are not very accurate. Skorobogatov et al.~\cite{SA-02-ches} used a flashgun for \$30 while being able to change any bit of an SRAM array.
 
-Schmidt and Hutter~\cite{SH-07-austrochip} present practical attacks on implementations of RSA that use Chinese Remainder Theorem (CRT). These attacks have been performed into a cryptographic device through optical and EM injections. They use a laser diode  as a light source, the diode emitts a light  beam of 100~mW with a wavelength of 785~nm. The light from the diode is guided thanks to a fibre-optic of 1~mm in diameter.
+Schmidt and Hutter~\cite{SH-07-austrochip} present practical attacks on implementations of RSA that use Chinese Remainder Theorem (CRT). These attacks have been performed into a cryptographic device through optical and EM injections. They use a laser diode  as a light source, the diode emitts a light  beam of \SI{100}{\milli\watt} with a wavelength of \SI{785}{\nano\metre}. The light from the diode is guided thanks to a fibre-optic of 1~mm in diameter.
 
 Guillen et al.~\cite{GGD-17-cosade} present a low-cost fault injection setup, around couple hundred euros, which is capable of producing localized faults in modern 8-bit and 32-bit microcontrollers. This setup does not require handling dangerous substances or wearing protection equipment. The fault produced by this setup are able to successfully attack real-world cryptographic implementations, such as the NSA’s Speck lightweight block cipher~\cite{RDJSBL-13-nsa}.
 
-\paragraph{Laser beam} is another type of optical attacks. Using a laser beam, a single bit in a memory can be set (from logical 0 to logical 1) or reset (from logical 1 to logical 0) by attacking either front side or the back side of the chip.
+\paragraph{Laser beam} is another type of optical attacks.
+The injected fault is similar to the one used with a camera flash, with the exception of which is a lot more precise and is capable of always inducing faults.
+The main downside of this method is that it requires a high expertise.
+Dutertre et al.~\cite{DBCDFFGHLMDPR-18-fdtc} explain the theory behind this technique at the lowest level.
+
+Figure~\ref{fig:ls2} shows an example of a laser fault injection station made by Riscure.
+It contains powerful red and NIR diode lasers (resp.\SI{14}{\watt}, and \SI{20}{\watt}). The red laser is designed for frontside testing of smart card chips and in combination with the optics it produces a spot size of 6 * \SI{1.4}{\micro\metre} on the chip surface. The near-infrared laser is designed for backside testing of smart card chips. This powerful diode laser penetrates the chip substrate to reach the transistors.
+This station automates the surface scanning process, offers precise control of laser power, and injects pulses with a small spot size. It has a precise and fast response thanks to a trigger and the ability to perform multi-glitching.
+
+Using a laser beam, a single bit~\cite{CMDMRD-19-host} in a memory can be set (from logical 0 to logical 1) or reset (from logical 1 to logical 0) by attacking either front side or the back side of the chip.
+Today, the capabilities of laser injection mechanisms make it possible to carry out attacks with multiple faults.
+Colombier et al.~\cite{CGVCBLC-22-cardis} use a four-spot laser bench to inject up to 4 non-contiguous bits in a single cycle, or multiple non-contiguous bits over multiple cycles. This fault injection mechanism therefore makes it possible to construct much more complex attacks, potentially capable of bypassing many countermeasures.
+
+Breier et al.~\cite{JHJBC-17-hss} studied the fault mechanism of circuit logic elements in FPGA environment, and performed a practical laser fault injection into a single bit CED-protected block cipher in Xilinx Virtex-5 FPGA.
+Figure~\ref{fig:lfi_setup} shows their setup to inject fault into a Xilinx Virtex-5 FPGA.
+The chip is preprocessed by a mechanical solution in order to reduce the substrate thickness, to approximatively \SI{100}{\micro\metre}. Thinner substrate leads to easier laser penetration, at the risk of destroying logic resources or routing channels on the chip.
+The laser used is a \SI{20}{\watt} diode pulse laser with 5 times magnification lens, which reduce the effective maximum power to \SI{10}{\watt}. The wavelength is \SI{1064}{\nano\metre} and the spot size of the laser beam is approximatively \SI{840}{\micro\metre}$^2$.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\textwidth]{c2_soa/img/LS2.jpeg}
-    \caption{Example of a laser fault injection setup (by Riscure Laser Station 2~\cite{riscure_station})}
+    \caption{Example of a laser fault injection station (by Riscure Laser Station 2~\cite{riscure_station})}
     \label{fig:ls2}
 \end{figure}
 
@@ -301,12 +315,23 @@ Guillen et al.~\cite{GGD-17-cosade} present a low-cost fault injection setup, ar
     \label{fig:lfi_setup}
 \end{figure}
 
-\paragraph{X-Rays} \cite{ABCMRT-17-ches, TMZHM-23-iolts, GBD-23-paine}
+\paragraph{Focused ion beam} is the most accurate and powerful fault injection technique used. Focused ion beam (FIB) enables an attacker to arbitrarily modify the structure of a circuit, reconstruct missing buses, cut existing wires and rebuild them.
 
-\paragraph{Focused ion beam}
+FIB can operate at a precision of \SI{2.5}{\nano\metre}, which is the size of a transistors in actual IC. FIB workstations require very expensive consumables and a strong technical background to fully exploit their capabilities. The only limit to the FIB technology is the diameter of the atoms whose ions are used as a scalpel. Currently, the most common choice is Gallium, which sets the lower bound to roughly \SI{0.135}{\nano\metre}.
+
+\cite{FVMBMWP-23-wfiot} \wip{vérifier que ça va ici}
 
 \subsubsection{Non-invasive attacks}
 Non-invasive attacks involve inducing errors in a system without physically tampering with the device. These attacks exploit external influences like electromagnetic interference, voltage glitches, or clock signal manipulation to cause faults during the device's operation. Unlike invasive methods, which require dismantling or altering the hardware, non-invasive techniques leave no physical traces, making them harder to detect. By injecting faults at precise moments, attackers can bypass security mechanisms, retrieve sensitive data, or alter the device's intended functionality.
+
+\paragraph{X-Rays} is another approach to inject fault very precisely but this method is not invasive as X-Rays can go through the IC package without the need of decapsulating it. Another advantage is that X-Ray have a lot smaller wavelength, down to \SI{0.01}{\nano\meter}, than laser injection which are limited to the wavelength of their light source, down to \SI{1}{\micro\meter}.
+The injected fault is semi-permanent, and to make it disappear, the attacker has to heat up the device. This differs from other techniques where the fault can disappear a few cycles after injection.
+This technique can be compared as a non-invasive FIB techniques. X-ray provides many opportunities for attacking electronic circuits. Among them, we can note the possibility to cause permanent faults in cryptographic algorithms, deactivation of countermeasures, reprogramming of memories, etc.
+
+Anceau et al.~\cite{ABCMRT-17-ches, BAMCST-23-dft} propose an approach for modifying the behaviour of a transistor in the memory of a circuit using focused X-ray beams. 
+They use the European Synchrotron Radiation Facility (ESRF), in Grenoble, France.
+
+Grandamne et al.~\cite{GBD-23-paine} show efficiency of X-Ray faults injection on flash and EEPROM memories for powered off devices. They also describe a fault model according to their experimental results and propose a solution to correct a part of the fault.
 
 \paragraph{Clock glitches} \wip{à finir}
 
@@ -364,8 +389,8 @@ Figure~\ref{fig:clock_glitch} represent
         Camera flash     & Moderate       & Low             & Moderate      & Moderate  & High          \\
         EMFI             & High           & High            & Moderate      & Moderate  & Low           \\
         Laser            & Very high      & Very high       & High          & High      & Very high     \\
-        X-Ray            & Very high      & ?               & Very high     & Very high & Moderate      \\
-        Focused Ion Beam & Very high      & Very high       & Highest       & Very high & Very high     \\
+        Focused Ion Beam & Very high      & Very high       & Very high     & Very high & Very high     \\
+        X-Ray            & Very high      & Very high       & Highest       & Very high & Very low      \\
         \bottomrule
     \end{tabular}
 \end{table}

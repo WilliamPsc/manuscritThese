@@ -103,6 +103,7 @@
 \RequirePackage{ragged2e}
 \RequirePackage{minitoc}
 \RequirePackage{lscape} % Landscape tables
+\RequirePackage{siunitx} % SIU
 
 \setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{3}
