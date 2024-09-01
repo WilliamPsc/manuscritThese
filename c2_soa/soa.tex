@@ -128,7 +128,7 @@ The main advantage is that hardware does not need to know DIFT tags or policies 
     \label{fig:incore_dift}
 \end{figure}
 
-Suh et al.~\cite{SLD-04-sigplan} proposed an approach in which the OS identifies a set of input channels as spurious, and the processor tracks all information flows from these inputs. Thanks to this tracking, the processor can detect various attacks such as attack targetting instructions or jump addresses. If the security policy detects something malicious in hardware, the OS will process the exception. They use a 1-bit tag, which means only two ways of representing security levels. They present two security policies that track differing sets of dependencies. Implementing the first policy incurs, on average, a memory overhead of 0.26\% and a performance decrease of 0.02\%. The second policy incurs, on average, a memory overhead of 4.48\% and a performance decrease of 0.8\%, and requires binary annotation unlike the first policy.
+Suh et al.~\cite{SLD-04-sigplan} proposed an approach in which the OS identifies a set of input channels as spurious, and the processor tracks all information flows from these inputs. Thanks to this tracking, the processor can detect various attacks such as attack targeting instructions or jump addresses. If the security policy detects something malicious in hardware, the OS will process the exception. They use a 1-bit tag, which means only two ways of representing security levels. They present two security policies that track differing sets of dependencies. Implementing the first policy incurs, on average, a memory overhead of 0.26\% and a performance decrease of 0.02\%. The second policy incurs, on average, a memory overhead of 4.48\% and a performance decrease of 0.8\%, and requires binary annotation unlike the first policy.
 
 Dalton et al.\cite{DKK-07-sigarch} presented a DIFT architecture, Raksha, to support a flexible security configuration at runtime. They extended all storage locations including registers, caches and main memory with tags, they modified the ISA instruction to propagate and check tags. In this solution, they use 4-bits tags for each word. These tags represent the security policy and not the data state (e.g. trusted or untrusted). The authors provided two global sets of configuration registers, i.e., Tag Propagation Registers (TPR) and Tag Check Registers (TCR), to configure the security policy at runtime. There is one pair of TPR/TCR for each of the four security policies. The configuration register could be configured only in trusted mode. Moreover, the tag propagation and check could only be disabled in trusted mode. However, the security policy is difficult to update when the architecture is deployed.
 The Raksha prototype is based on the Leon SPARC V8 processor, a 32-bit open-source synthesizable core, and they mapped the design onto an FPGA board.
@@ -288,6 +288,13 @@ The injected fault is similar to the one used with a camera flash, with the exce
 The main downside of this method is that it requires a high expertise.
 Dutertre et al.~\cite{DBCDFFGHLMDPR-18-fdtc} explain the theory behind this technique at the lowest level.
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{c2_soa/img/LS2.jpeg}
+    \caption{Example of a laser fault injection station (by Riscure Laser Station 2~\cite{riscure_station})}
+    \label{fig:ls2}
+\end{figure}
+
 Figure~\ref{fig:ls2} shows an example of a laser fault injection station made by Riscure.
 It contains powerful red and NIR diode lasers (resp.\SI{14}{\watt}, and \SI{20}{\watt}). The red laser is designed for frontside testing of smart card chips and in combination with the optics it produces a spot size of 6 * \SI{1.4}{\micro\metre} on the chip surface. The near-infrared laser is designed for backside testing of smart card chips. This powerful diode laser penetrates the chip substrate to reach the transistors.
 This station automates the surface scanning process, offers precise control of laser power, and injects pulses with a small spot size. It has a precise and fast response thanks to a trigger and the ability to perform multi-glitching.
@@ -303,23 +310,28 @@ The laser used is a \SI{20}{\watt} diode pulse laser with 5 times magnification 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.5\textwidth]{c2_soa/img/LS2.jpeg}
-    \caption{Example of a laser fault injection station (by Riscure Laser Station 2~\cite{riscure_station})}
-    \label{fig:ls2}
-\end{figure}
-
-\begin{figure}[ht]
-    \centering
     \includegraphics[width=\textwidth]{c2_soa/img/lfi_setup.png}
     \caption{Example of a laser fault injection setup (by~\cite{JHJBC-17-hss})}
     \label{fig:lfi_setup}
 \end{figure}
 
-\paragraph{Focused ion beam} is the most accurate and powerful fault injection technique used. Focused ion beam (FIB) enables an attacker to arbitrarily modify the structure of a circuit, reconstruct missing buses, cut existing wires and rebuild them.
+\paragraph{Focused ion beam} is the most accurate and powerful fault injection technique used. Focused ion beam (FIB) enables an attacker to arbitrarily modify the structure of a circuit, reconstruct missing buses, cut existing wires and rebuild them. FIB systems typically use liquid metal ion sources, where their low atomic mass and relatively low energy of these ions make them suitable for high-resolution imaging and precision milling of materials at the anoscale~\cite{FVMBMWP-23-wfiot}.
 
-FIB can operate at a precision of \SI{2.5}{\nano\metre}, which is the size of a transistors in actual IC. FIB workstations require very expensive consumables and a strong technical background to fully exploit their capabilities. The only limit to the FIB technology is the diameter of the atoms whose ions are used as a scalpel. Currently, the most common choice is Gallium, which sets the lower bound to roughly \SI{0.135}{\nano\metre}.
+FIB can operate at a precision of \SI{2.5}{\nano\metre}, which is the size of a transistor in actual IC.
+FIB workstations require very expensive consumables and a strong technical background to fully exploit their capabilities. The only limit to the FIB technology is the diameter of the atoms whose ions are used as a scalpel. Currently, the most common choice is Gallium, which sets the lower bound to roughly \SI{0.135}{\nano\metre}.
 
-\cite{FVMBMWP-23-wfiot} \wip{vérifier que ça va ici}
+These attacks are out of the scope for classical considered attackers due to the cost of the equipment needed. However, these attacks can be considered for critical systems such as military equipment. The granularity of the faults that can be introduced with FIB makes it possible to emulate both physical defects (such as stuck-at faults) and more complex logical faults.
+
+Figure~\ref{fig:fib_setup} shows the principle of how FIB works. The gallium ($Ga^+$) primary ion beam hits the sample surface and sputters a small amount of material, which leaves the surface as either secondary ions ($i^+$ or $i^-$) or neutral atoms ($n^0$). The primary beam also produces secondary electrons ($e^-$). As the primary beam strikes on the sample surface, the signal from the sputtered ions or secondary electrons is collected to form an image.
+
+Torrance and James~\cite{TJ-09-ches} report a successful reconstruction of an entire read bus of a memory containing a cryptographic key without damaging the contents of the memory.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{c2_soa/img/fib.png}
+    \caption{The principle of FIB (by~\cite{fib-24-wikipedia})}
+    \label{fig:fib_setup}
+\end{figure}
 
 \subsubsection{Non-invasive attacks}
 Non-invasive attacks involve inducing errors in a system without physically tampering with the device. These attacks exploit external influences like electromagnetic interference, voltage glitches, or clock signal manipulation to cause faults during the device's operation. Unlike invasive methods, which require dismantling or altering the hardware, non-invasive techniques leave no physical traces, making them harder to detect. By injecting faults at precise moments, attackers can bypass security mechanisms, retrieve sensitive data, or alter the device's intended functionality.
@@ -331,19 +343,11 @@ This technique can be compared as a non-invasive FIB techniques. X-ray provides 
 Anceau et al.~\cite{ABCMRT-17-ches, BAMCST-23-dft} propose an approach for modifying the behaviour of a transistor in the memory of a circuit using focused X-ray beams. 
 They use the European Synchrotron Radiation Facility (ESRF), in Grenoble, France.
 
-Grandamne et al.~\cite{GBD-23-paine} show efficiency of X-Ray faults injection on flash and EEPROM memories for powered off devices. They also describe a fault model according to their experimental results and propose a solution to correct a part of the fault.
+Grandamme et al.~\cite{GBD-23-paine} show efficiency of X-Ray faults injection on flash and EEPROM memories for powered off devices. They also describe a fault model according to their experimental results and propose a solution to correct a part of the fault.
 
-\paragraph{Clock glitches} \wip{à finir}
+\paragraph{Clock glitches} is a type of fault injection attack that targets the timing of a system's clock signal to introduce errors into its operation. It is primarily used to disrupt the normal execution of a digital circuit, such as a microcontroller or a cryptographic processor, by momentarily altering its clock frequency.
 
-Figure~\ref{fig:clock_glitch} represent
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[page=4]{c2_soa/img/physicalAttacks.pdf}
-    \caption{Representation of a clock glitch attack}
-    \label{fig:clock_glitch}
-\end{figure}
-
+In this attack, the adversary deliberately introduces short pulses or glitches into the clock signal. These glitches can cause the system to either skip instructions, execute them incorrectly, or process data in unintended ways. By carefully timing these glitches, the attacker may manipulate sensitive operations, such as cryptographic computations, potentially exposing vulnerabilities like secret keys, bypassing security checks, or triggering unintended behaviour in the device.
 
 \begin{figure}[ht]
     \centering
@@ -352,8 +356,28 @@ Figure~\ref{fig:clock_glitch} represent
     \label{fig:clock_glitch_parameters}
 \end{figure}
 
-\paragraph{Voltage glitches}
-\wip{insérer image / schéma voltage glitch}
+Figure~\ref{fig:clock_glitch_parameters} represent the three parameters that are taking into account for this kind of attacks:
+\begin{itemize}
+    \item Delay: the time between the rising edge of the trigger signal and the rising edge of the targeted device's clock cycle.
+    \item Offset: determines when the glitch is applied relative to the system's clock cycle.
+    \item Width: the duration of the glitch.
+\end{itemize}
+
+The duration of both offset and width can not be too large or too short. Because too short values will lead to too short range to obtain a timing violation and too large values will not modify the instruction bahaviour.
+
+Figure~\ref{fig:clock_glitch} represent an example of a clock glitch attack where you can see the \textit{Normal Clock} is not faulted and its bahaviour is very regular. While, the \textit{Glitched Clock} suffer from a glitch where an abnormal cycle is introduced and its induce an additional instruction execution. Under real conditions, the injected clock cycle would not last long enough for the instructions to execute normally. Hence, in this conditions, an instruction skip would happen.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=4]{c2_soa/img/physicalAttacks.pdf}
+    \caption{Representation of a clock glitch attack}
+    \label{fig:clock_glitch}
+\end{figure}
+
+Balasch et al.~\cite{BGV-11-fdtc} show clock glitches can cause an instruction skip during the execution of a program.
+
+\paragraph{Voltage glitches} exploits the power supply of a digital system to introduce errors in its operation. Instead of manipulating the clock signal, this technique involves deliberately varying the voltage supplied to the system, typically by creating sharp, transient drops or spikes in the power supply (i.e. under- or overvolting)~\cite{BBPP-09-fdtc}, or redirecting it to ground to generate voltage drops, known as "glitches" in order to generate faults of one or multiple bits. This can corrupt the contents of memory units or force microprocessors to misinterpret or even skip program instructions.
+Such as clock glitches, voltage glitches can be used to bypass authentication mechanisms, extract cryptographic keys, or cause logic errors that undermine the security of a device. It's a widely recognised threat in hardware security, especially in applications where physical access to devices is possible, such as smart cards, IoT devices, and hardware security modules.
 
 \begin{figure}[ht]
     \centering
@@ -362,24 +386,53 @@ Figure~\ref{fig:clock_glitch} represent
     \label{fig:voltage_glitch}
 \end{figure}
 
+Figure~\ref{fig:voltage_glitch} represent the three parameters that are taking into account for this kind of attacks:
+\begin{itemize}
+    \item Delay: the time between the rising edge of a trigger signal and the injection.
+    \item Amplitude: the voltage value of the injection or the drop introduced. In Figure~\ref{fig:voltage_glitch} a drop in the voltage is represented but the spike could be in the positive axis and then introduce a overvoltage in the circuit.
+    \item Length: the time duration of the applied power variation.
+\end{itemize}
 
-\paragraph{Heating attacks}
+Timmers and Mune~\cite{TM-17-fdtc} demonstrated voltage FIAs for Linux-based privilege escalation on an undisclosed ARM Cortex-A9-based SoC. The authors targeted the open syscall when an unprivileged application attempted to access physical memory. The application was instrumented to trigger the fault during the kernel’s access control check, which caused it to be skipped.
 
-\paragraph{Electromagnetic fault injections (EMFI)}
+Timmers et al.~\cite{TSW-16-fdtc} show the use of glitch injections on the power supply to change the CPU PC register to a predetermined address while executing random kernel syscalls, generating system crashes.
+
+\paragraph{Heating attacks} involve deliberately raising the temperature of a digital system or its components to induce malfunctions and errors. This type of attack exploits the fact that many electronic devices and integrated circuits are sensitive to temperature variations and may not operate reliably when subjected to abnormal thermal conditions.
+
+On the other hand, these attacks have limitations in terms of both temporal and spatial precision. In other words, heating or cooling a device takes a long time due to thermal inertia compared to the speed of the device's calculation and hence precise attack can not be executed.
+
+Anagnostopoulos et al.~\cite{AARSGK-18-dsd} present a study of data remanence effects on SRAM memories devices for temperature ranging between \SI{-110}{\degreeCelsius} and \SI{-40}{\degreeCelsius}. From their results they assess potentiel countermeasures against a new attack defined from data remanence.
+
+Hutter et al.~\cite{HS-14-cardis} heat up a microcontroller beyond operating temperature and manage to attack an RSA software implementation.
+
+\paragraph{Electromagnetic fault injections (EMFI)} disrupt the normal operation of a digital system. In this attack, an attacker generates short bursts of strong electromagnetic fields aimed at a specific part of the device, such as a microcontroller or a processor, in order to induce faults in its execution.
+
+The goal of EMFI is to cause unintended behaviour in the target system by disturbing its internal electrical circuits. These disruptions can lead to various faults, such as skipping instructions, corrupting data, triggering incorrect logic states, or bypassing security checks. By carefully controlling the timing, location, and intensity of the EM pulses, the attacker can influence critical operations within the device, potentially gaining access to sensitive information or compromising the system's security.
+
+EMFI is particularly effective because it does not require direct physical contact with the system. Additionally, it can be applied to a wide range of devices, including embedded systems, smart cards, and secure hardware modules. Like other fault injection techniques, EMFI targets the hardware layer, bypassing software-level protections and exploiting the physical characteristics of the device to induce vulnerabilities. The state-of-the-art EMFI setups provide millimeter-level precision in spatial location and nanosecond-level precision in the temporal location of the EM pulse.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.5\textwidth]{c2_soa/img/emfi_riscure_setup.jpg}
-    \caption{Example of an EMFI attack setup}
+    \caption{Example of an EMFI attack setup (by~\cite{riscure_emfi})}
     \label{fig:emfi_setup}
 \end{figure}
 
-\subsubsection{Summary}
+Dehbaoui et al.~\cite{DMMDT-13-cosade} succeeded in recovering the encryption key of an AES software implementation by injecting a short EM pulse on a 32-bit microcontroller.
+
+Schmidt et al.~\cite{SH-07-austrochip} use a simple gas lighter to induce EM pulses onto an 8-bit microcontroller with low spatial and temporal precision.
+
+Trouchkine et al.~\cite{TBELB-21-jce} present an approach to recover an AES key, using EMFI, by targeting the cache hierarchy and the MMU.
+
+\subsubsection{Fault Injection techniques summary}
+Table~\ref{table:fia_techniques} shows a summary of all presented techniques to realise a Fault Injection Attack. Depending on the budget available for the attacker, and the required need for spatial and timing accuracy, the technique can be different.
+
+Clock glitches, voltage glitches, heating attacks and camera flash can cost from few dizens of Euros / US Dollars (USD) to less than \$3,000. For EMFI attacks, Chip Shouter~\cite{chipshouter} cost around \$3,000 and more precise setup can cost \$30,000~\cite{BH-22-access}. These techniques are accurate and require a low expertise on the equipment and techniques. On the other hand, for even more precise techniques, such as laser, FIB, or even X-Ray, the cost can go up to millions of USD/Euros as the equipment can be a lot more expensive, such as the equipment needed for X-Ray injection, but an attacker can recover a lot of secret data thanks to these attacks.
 
 \begin{table}[ht]
     \centering
     \caption{Fault Injection methods summary}
-    \label{tab:fia_techniques}
+    \label{table:fia_techniques}
     \begin{tabular}{@{}rccccc@{}}
         \toprule
         \textbf{Technique}        & \begin{tabular}{c}\textbf{Precision}\\{\small\textbf{(time)}}\end{tabular} & \begin{tabular}{c}\textbf{Space}\\\textbf{accuracy} \end{tabular}  & \textbf{Cost}              & \textbf{Expertise} & \begin{tabular}{c}\textbf{Damage}\\\textbf{risk} \end{tabular} \\ \midrule
