@@ -9,7 +9,7 @@ This chapter provides an overview of related work to contextualize the primary o
 Then in Section~\ref{section:physicalAttacks}, Physical Attacks are examined, focusing on two main types: Side-Channel Attacks (SCA) and Fault Injection Attacks (FIA).
 Finally in Section~\ref{section:countermeasuresAgainstFIA}, as this work concentrate on FIA, we exclusively present existing countermeasures against Fault Injection Attacks.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Information Flow Tracking}
 \label{section:ift}
 The concept of \textit{Information Flow Tracking} has been introduced by the work of Bell and LaPadula~\cite{BLP-76-military} and by Denning~\cite{D-76-commacm} in 1976.
@@ -26,6 +26,43 @@ Static Information Flow Tracking (SIFT) is a security technique used to analyse 
 Dynamic Information Flow Tracking (DIFT) is a powerful security technique that monitors and analyses, in real-time, the flow of information within a program during its execution~\cite{CGDJ-21-micromac}. DIFT operates by tagging or labelling input data from potentially untrusted sources and tracking how this data propagates through the system~\cite{SLD-04-sigplan}. As the program executes, DIFT maintains metadata about the tagged information, updating it as operations are performed on the data. This allows the system to detect when tainted data is used in security-critical operations, such as modifying control flow or accessing sensitive resources. DIFT can be implemented at various levels, including hardware, software, or a combination of both. Hardware-based implementations often offer better performance but require specialized processor modifications, while software-based approaches provide more flexibility but may incur higher overhead~\cite{CGDJ-21-micromac}. DIFT has proven effective in detecting and preventing a wide range of security vulnerabilities, including buffer overflows, format string attacks, and code injection attacks~\cite{SLD-04-sigplan}. However, DIFT also faces challenges, such as handling implicit information flows, managing performance overhead, and addressing over-tainting issues.
 This approach might not cover all potential data paths, as it is dependent on the specific conditions and inputs provided during the monitoring period.
 Despite these challenges, DIFT remains a valuable tool for software security, particularly for runtime attack detection in modern systems.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{How hardware DIFT work}
+DIFT is a technique used in computer security to monitor the flow of information through a system. It aims to prevent security breaches such as data leaks, unauthorised data manipulation, and execution of untrusted code. In DIFT, each data is associated with a tag that indicates its security level.
+For example, a tag might indicate whether data is 'trusted' or 'untrusted'. When data is input into the system, it is initially tagged based on its source.
+
+As data moves through the system, these tags are tracked to ensure compliance with security policies and to ensure that sensitive information does not get exposed or manipulated improperly. For instance, if an operation involves both trusted and untrusted data, the result might be tagged as untrusted to ensure security.
+
+An example of such security policy can be represented in Table~\ref{table:security_policies}. In this example, if the data comes from the network or if it's manipulated by a user, in the case of a \verb|scanf()| function in C language for example, the data cannot be trusted, while if the data comes from a secure channel or is manipulated by the system itself, the data can be trusted.
+
+\begin{table}[ht]
+    \centering
+    \caption{Security policies for different data inputs}
+    \label{table:security_policies}
+    \begin{tabular}{@{}rcc@{}}
+        \toprule
+        \textbf{Data Input} & \textbf{Security Policy} & \textbf{Tag}     \\ \midrule
+        User Input          & User-provided            & Untrusted        \\ \hline
+        Network             & External source          & Untrusted        \\ \hline
+        Internal            & System-provided          & Trusted          \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\wip{Example ci-dessous à changer, pour exemple plus parlant ? Mais trop proche de HardBlare non ?}
+Figure~\ref{fig:dift_init} illustrates the three main steps of how DIFT works. Firstly, three data, $C_1$, $C_2$, and $C_3$, with their associated tags in three different colours, are initialised on the left side of the figure.
+
+In the second step, when the data is fetched by the core for computation, the associated tags are propagated inside the core and confronted with the propagation policy depending on the operations performed on the data.
+
+Finally, in the last step, on the right side of the figure, there are two data outputs derived from the three initial data. Data $C_4$ results from the combination of data $C_2$ and $C_3$, while data $C_5$ is derived from data $C_1$. Since data $C_1$ has not been modified, its tag remains the same. However, the tag associated with $C_4$ is a mix of tags from $C_2$ and $C_3$. Depending on the security policy, if $C_2$ was trusted and $C_3$ was not, the output tag will be \textit{untrusted}. Consequently, when the tags go through the final step of DIFT, they will be checked, and an exception may be raised or the application may be stopped due to the mixing of \textit{trusted} and \textit{untrusted} values.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=3]{c2_soa/img/schemaDIFT.pdf}
+    \caption{Representation of the DIFT mechanism from initialisation to checking.}
+    \label{fig:dift_init}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 \subsection{Different levels of DIFT}
@@ -60,7 +97,7 @@ One application for DIFT at application level is language-based. Several securit
 JFlow~\cite{M-99-popl} is one of the first works that has described an extension of the Java language by adding statically-checked information flow annotations.
 
 Multiples works introduce DIFT extensions for different languages, for example, such as JavaScript~\cite{CN-15-ccs, AF-09-plas}.
-Austin et al.~\cite{AF-09-plas} propose a method for tracking information flow in dynamically-typed languages, focusing on addressing issues with implicit paths through a dynamic check. This approach avoids the necessity for approximate static analyses while still ensuring non-interference. The method employs sparse information labelling, keeping flow labels implicit where possible and introducing explicit labels only for values crossing security domains.
+Austin et al.~\cite{AF-09-plas} propose a method for tracking information flow in dynamically typed languages, focusing on addressing issues with implicit paths through a dynamic check. This approach avoids the necessity for approximate static analyses while still ensuring non-interference. The method employs sparse information labelling, keeping flow labels implicit where possible and introducing explicit labels only for values crossing security domains.
 Kemerlis et al.~\cite{KPJK-12-sigplan} provide a framework, \textit{libdft}, which is fast and reusable and applicable to software and hardware. \textit{libdft} provides an API for building DFT-enabled tools that work on unmodified binaries.
 
 \paragraph{OS level and System-based DIFT} track and tag files (read or written) used by the application.
@@ -98,11 +135,11 @@ This coprocessor handles all DIFT functionalities, synchronizing with the main p
     \label{fig:offcore_dift}
 \end{figure}
 
-Wahab et al.~\cite{WCAHBLG-18-reconfig,WCAHLG-17-fpl} developed a DIFT using the ARM CoreSight debug component to extract a trace.
-However, the debug component could only extract limited information about the application executing on the core. Therefore, some instrumentations have been required to recover the complete program trace. The information obtained from the trace is then sent to a dedicated DIFT coprocessor, which analyses the instruction trace and propagates tags according to a security policy. In terms of performance and area footprint, \cite{WCAHLG-17-fpl} gives around 5\% communication overhead and an area overhead of 0.47\% and a power consumption increased by 16\%; while~\cite{WCAHBLG-18-reconfig} gives a communication overhead of 335\%, an area increased by 0.95\% and a power consumption increased by 16.2\%. These results can not be compared to the initial design, as they use a coprocessor without the ARM core results.
+Wahab et al.~\cite{WCAHLG-17-fpl, WCAHBLG-18-reconfig} developed a DIFT using the ARM CoreSight debug component to extract a trace.
+However, the debug component could only extract limited information about the application executing on the core. Therefore, some instrumentations have been required to recover the complete program trace. The information obtained from the trace is then sent to a dedicated DIFT coprocessor, which analyses the instruction trace and propagates tags according to a security policy. In terms of performance and area footprint, \cite{WCAHLG-17-fpl} gives around 5\% communication overhead and an area overhead of 0.47\% from the baseline CPU, i.e. Cortex-A9 without a DIFT, and a power consumption increased by 16\%; while~\cite{WCAHBLG-18-reconfig} gives a communication overhead of 335\%, an area increased by 0.95\% and a power consumption increased by 16.2\%.
 
-\paragraph{Off-Loading DIFT} use a dedicated core of a multicore CPU~\cite{CKSFGMRRRV-08-sigarch,VHYR-08-cca,RGMRCKR-08-spaa}. Figure~\ref{fig:offloading_dift} represents how Off-Loading DIFT works with a core running the application and another, in parallel, run the DIFT analysis on the application trace. The application core is modified to create a trace and compress it. The trace includes executed instructions and packs main information such as PC address, register operands. This trace is then sent to the DIFT core via the L2 cache. Finally, the security core will decompress the trace and realizes tag computation in order to check whether an illegal information flow has been done. The notion of illegal information flow is specified thanks to a DIFT security policy.
-The main advantage is that hardware does not need to know DIFT tags or policies and does not need a coprocessor with the management of the synchronisation between the two processors.  But the main drawback is that it requires a multicore CPU but reduces the number of core available and doubles the energy consumption due to the application trace analysis. In an embedded system where consumption is a critical factor, this solution is difficult to consider.
+\paragraph{Off-Loading DIFT} uses a dedicated core of a multicore CPU~\cite{CKSFGMRRRV-08-sigarch,VHYR-08-cca,RGMRCKR-08-spaa}. Figure~\ref{fig:offloading_dift} represents Off-Loading DIFT principle with a core running the application and another, in parallel, run the DIFT analysis on the application trace. The application core is instrumented in order to generate a trace and compress it. The trace includes executed instructions and packs main information such as PC address, register operands. This trace is then sent to the DIFT core via the L2 cache. Finally, the security core will decompress the trace and realizes tag computation in order to check whether an illegal information flow has been done. The notion of illegal information flow is specified thanks to a DIFT security policy.
+The main advantage is that hardware does not need to know DIFT tags or policies and does not need a coprocessor with the management of the synchronisation between the two processors.  But the main drawback is that it requires a multicore CPU reducing the number of core available and increasing the energy consumption due to the application trace analysis. In an embedded system where consumption is a critical factor, this solution is difficult to consider.
 
 \begin{figure}[ht]
     \centering
@@ -111,7 +148,7 @@ The main advantage is that hardware does not need to know DIFT tags or policies 
     \label{fig:offloading_dift}
 \end{figure}
 
-\paragraph{In-Core DIFT} rely on a deeply modified processor pipeline which need to integrate tag computations inside the main core in parallel of data computations. This approach is highly invasive, but does not require any additional cores or coprocessors to operate and introduces no overhead for intercore synchronisation. Overall, its performance impact in terms of clock cycles over native execution is minimal. On the other hand, the integrated approach requires significant modifications to the processor core. All pipeline stages must be modified to add tags, a dedicated register file and first level of caches must be added to store tags in parallel with the regular blocks into the processor core. Figure~\ref{fig:incore_dift} shows the architecture of an In-Core hardware DIFT. When the processor fetches an instruction, its associated tag is sent in parallel. In the decode stage, the instruction is decoded while the security decode module decode the security policy to determine how the tag should be propagated and checked. When the instruction is executed, the tag is sent to a tag ALU to be checked. Then, if the tag is conforming to the security policy, the tag and the ALU output will be saved into the Data-Cache to be used again or stored in memory. Otherwise, if the tag is not conforming, the DIFT mechanism detects the security violation and can raise an exception, stop the application, depending on what is configured.
+\paragraph{In-Core DIFT} relies on a deeply modified processor pipeline which needs to integrate tag computations inside the main core in parallel of data computations. This approach is highly invasive, but does not require any additional cores or coprocessors to operate and introduces no overhead for intercore synchronisation. Overall, its performance impact in terms of clock cycles over native execution is minimal. On the other hand, the integrated approach requires significant modifications to the processor core. All pipeline stages must be modified to add tags, a dedicated register file, a tag computation unit, and first level of caches must be added to store tags in parallel with the regular blocks into the processor core. Figure~\ref{fig:incore_dift} shows the architecture of an In-Core hardware DIFT. When the processor fetches an instruction, its associated tag is sent in parallel. In the decode stage, the instruction is decoded while the security decode module decode the security policy to determine how the tag should be propagated and checked. When the instruction is executed, the tag is sent to a tag ALU to be checked. Then, if the tag conforms the security policy, the tag and the ALU output are saved into the Tag Register File, or eventually, stored in memory. Otherwise, if the tag does not conform, the DIFT mechanism detects the security violation and can raise an exception. The DIFT reaction policy is not an integral part of DIFT but depends on the higher-level OS or software.
 
 \begin{figure}[ht]
     \centering
@@ -120,53 +157,18 @@ The main advantage is that hardware does not need to know DIFT tags or policies 
     \label{fig:incore_dift}
 \end{figure}
 
-Suh et al.~\cite{SLD-04-sigplan} proposed an approach in which the OS identifies a set of input channels as spurious, and the processor tracks all information flows from these inputs. Thanks to this tracking, the processor can detect various attacks such as attack targeting instructions or jump addresses. If the security policy detects something malicious in hardware, the OS will process the exception. They use a 1-bit tag, which means only two ways of representing security levels. They present two security policies that track differing sets of dependencies. Implementing the first policy incurs, on average, a memory overhead of 0.26\% and a performance decrease of 0.02\%. The second policy incurs, on average, a memory overhead of 4.48\% and a performance decrease of 0.8\%, and requires binary annotation unlike the first policy.
+Suh et al.~\cite{SLD-04-sigplan} proposed an approach in which the OS identifies a set of input channels as spurious, and the processor tracks all information flows from these inputs. Thanks to this tracking, the processor can detect various threats such as attacks targeting instructions or jump addresses. If the security policy detects something malicious in hardware, the OS will process the exception. They use a 1-bit tag, which means only two ways of representing security levels. They present two security policies that track differing sets of dependencies. Implementing the first policy incurs, on average, a memory overhead of 0.26\% and a performance decrease of 0.02\%. The second policy incurs, on average, a memory overhead of 4.48\% and a performance decrease of 0.8\%, and requires binary annotation unlike the first policy.
 
-Dalton et al.\cite{DKK-07-sigarch} presented a DIFT architecture, Raksha, to support a flexible security configuration at runtime. They extended all storage locations including registers, caches and main memory with tags, they modified the ISA instruction to propagate and check tags. In this solution, they use 4-bits tags for each word. These tags represent the security policy and not the data state (e.g. trusted or untrusted). The authors provided two global sets of configuration registers, i.e., Tag Propagation Registers (TPR) and Tag Check Registers (TCR), to configure the security policy at runtime. There is one pair of TPR/TCR for each of the four security policies. The configuration register could be configured only in trusted mode. Moreover, the tag propagation and check could only be disabled in trusted mode. However, the security policy is difficult to update when the architecture is deployed.
-The Raksha prototype is based on the Leon SPARC V8 processor, a 32-bit open-source synthesizable core, and they mapped the design onto an FPGA board.
+Dalton et al.\cite{DKK-07-sigarch} presented a DIFT architecture, Raksha, to support a flexible security configuration at runtime. They extended all storage locations including registers, caches and main memory with tags, they modified the ISA instruction to propagate and check tags. In this solution, they use 4-bits tags for each word. %These tags represent the security policy and not the data state (e.g. trusted or untrusted).
+The authors provided two global sets of configuration registers, i.e., Tag Propagation Registers (TPR) and Tag Check Registers (TCR), to configure the security policy at runtime. There is one pair of TPR/TCR for each of the four security policies. The configuration register could be configured only in high processor privilege (trusted) mode. Moreover, the tag propagation and check could only be disabled in trusted mode. However, the security policy is difficult to update when the architecture is deployed.
+The Raksha prototype is based on the Leon SPARC V8 processor, a 32-bit open-source synthesizable core, and implemented onto an FPGA board.
 
-Palmiero et al.~\cite{PDGLC-18-hpec} implemented a DIFT framework, D-RI5CY, on a RISC-V processor and synthesized it on a Field Programmable Gate Array (FPGA) board with a focus on IoT applications. The proposed design tags every word in data memory with a 4-bits tag and every general register with a 1-bit tag. Similarly to~\cite{DKK-07-sigarch}, Palmiero et al.~\cite{PDGLC-18-hpec} also adopted global configuration registers to customise the rule of tag propagation and checking. Each type of instruction has its own rule and can be modified separately. This method provides a more fine-grain tracking than Raksha but lacks flexibility for security policy reconfiguration for different program contexts.
+Palmiero et al.~\cite{PDGLC-18-hpec} implemented a DIFT framework, D-RI5CY, on a RISC-V processor and synthesized it on a Field Programmable Gate Array (FPGA) board with a focus on IoT applications. The proposed design tags every word in data memory with a 4-bits tag and every general register with a 1-bit tag. Similarly to~\cite{DKK-07-sigarch}, Palmiero et al.~\cite{PDGLC-18-hpec} also adopted global configuration registers to customise the rule of tag propagation and checking. Each type of instruction has its own rule and can be modified separately. This method provides a more fine-grain tracking than Raksha. This solution is described in detail in Chapter~ref{section:driscy}.
 
 \paragraph{Gate-Level DIFT} includes gate-level netlist, and RTL designs. The goal is to protect against hardware trojans and unauthorized behaviours. To achieve that, during the creation of the circuit, additional logic is added for each gate used in the design.
 
 GLIFT~\cite{TWMMCS-09-asplos} is a well-established IFT technique. The goal is to protect against hardware trojans and unauthorized behaviours. All information flows, both explicit and implicit, are unified at the gate level. GLIFT employs a detailed initialisation and propagation policy to precisely track each bit of information flow, by adding additional logic for each gate used in the design. By analysing how inputs influence outputs, GLIFT accurately measures true information flows and substantially reduces the false positives typically associated with conservative IFT techniques.
 Hu et al.~\cite{HOITSMK-11-tcad} established the theoretical foundation for GLIFT. They introduced several algorithms for generating GLIFT logic in large digital circuits. Additionally, the authors identified the primary source of precision discrepancies in GLIFT logic produced by various methods as static logic hazards or variable correlation due to reconvergent fan-outs. Many other works have been done on GLIFT to attempt a decrease of the logic complexity.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{How hardware DIFT work}
-DIFT is a technique used in computer security to monitor the flow of information through a system. It aims to prevent security breaches such as data leaks, unauthorised data manipulation, and execution of untrusted code. In DIFT, each data is associated with a tag that indicates its security level.
-For example, a tag might indicate whether data is 'trusted' or 'untrusted'. When data is input into the system, it is initially tagged based on its source.
-
-As data moves through the system, these tags are tracked to ensure compliance with security policies and to ensure that sensitive information does not get exposed or manipulated improperly. For instance, if an operation involves both trusted and untrusted data, the result might be tagged as untrusted to ensure security.
-
-An example of such security policy can be represented in Table~\ref{table:security_policies}. In this example, if the data comes from the network or if it's manipulated by a user, in the case of a \verb|scanf()| function in C language for example, the data cannot be trusted, while if the data comes from a secure channel or is manipulated by the system itself, the data can be trusted.
-
-\begin{table}[ht]
-    \centering
-    \caption{Security policies for different data inputs}
-    \label{table:security_policies}
-    \begin{tabular}{@{}rcc@{}}
-        \toprule
-        \textbf{Data Input} & \textbf{Security Policy} & \textbf{Tag}     \\ \midrule
-        User Input          & User-provided            & Untrusted        \\ \hline
-        Network             & External source          & Untrusted        \\ \hline
-        Internal            & System-provided          & Trusted          \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-Figure~\ref{fig:dift_init} illustrates the three main steps of how DIFT works. Firstly, three data, $C_1$, $C_2$, and $C_3$, with their associated tags in three different colours, are initialised on the left side of the figure.
-
-In the second step, when the data is fetched by the core for computation, the associated tags are propagated inside the core and confronted with the propagation policy depending on the operations performed on the data.
-
-Finally, in the last step, on the right side of the figure, there are two data outputs derived from the three initial data. Data $C_4$ results from the combination of data $C_2$ and $C_3$, while data $C_5$ is derived from data $C_1$. Since data $C_1$ has not been modified, its tag remains the same. However, the tag associated with $C_4$ is a mix of tags from $C_2$ and $C_3$. Depending on the security policy, if $C_2$ was trusted and $C_3$ was not, the output tag will be \textit{untrusted}. Consequently, when the tags go through the final step of DIFT, they will be checked, and an exception may be raised or the application may be stopped due to the mixing of \textit{trusted} and \textit{untrusted} values.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[page=3]{c2_soa/img/schemaDIFT.pdf}
-    \caption{Representation of the DIFT mechanism from initialisation to checking.}
-    \label{fig:dift_init}
-\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Physical Attacks}
@@ -184,12 +186,16 @@ Physical attacks are separated into two main categories: passive attacks and act
     \label{fig:arbo_fia}
 \end{figure}
 
+\subsection{Reverse Engineering}
+Reverse engineering refers to the process of information retrieval from a product, ranging from aircrafts to modern Integrated Circuits (IC). Reverse engineering of IC is a complex process that involves analysing and understanding the design, functionality, and operation of existing hardware. This technique is used for various purposes in the electronics industry such as to gain a full understanding of its construction and or functionality~\cite{QCFASWCT-16-emergTech}.
+To reverse engineering a chip~\cite{FSKWERP-17-ivsw}, an attacker need to depackage the chip in order to observe it thanks to a scanning electron microscope (SEM) or another method Focused Ion Beam (this method is explain in Chapter~\ref{subsubsection:invasiveAttacks}). Also knowing the region of interest is beneficial as the planar surface can be reduced significantly.
+
 \subsection{Side-Channel Attacks}
-Side-Channel Attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic radiation or the execution time of an application.
-This type of attack does not call into question the theoretical integrity of the implementation, but aims to recover information by devious means. During data processing, the alternation between different states requires time and minimal energy dissipation, the variations of which can be analysed by the attacker.
+Side-Channel Attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic (EM) radiation or the execution time of an application.
+This type of attack does not call into question the theoretical integrity of the target algorithm, but aims to recover information by devious means due to its implementation. During data processing, the alternation between different states requires time and minimal energy dissipation, the variations of which can be analysed by the attacker.
 This information allows the attacker to access secret data such as a password, or cryptographic key. The origin of these attacks date back to the \mbox{TEMPEST} program from NSA~\cite{F-72-nsa}. They described the vulnerabilities of a cryptographic implementation from their electromagnetic emissions, depending on the input and data.
 
-Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor. We will go into detail of these different methods in the following text. The main idea is to have an application running on the processor and an attacker will use one method to trace the application multiple times to recover secret information (e.g. cryptographic key, password, private data, etc.).
+Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor. The main idea is to have an application running on the processor and an attacker will use one method to trace the application multiple times to recover secret information (e.g. cryptographic key, password, private data, etc.).
 
 \begin{figure}[ht]
     \centering
@@ -198,23 +204,32 @@ Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor
     \label{fig:sca}
 \end{figure}
 
-\paragraph{Power analysis} exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 146 billions transistors for an AMD CPU Instinct MI300A\footnote{\url{https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html}} or up to 208 billions transistors for a Nvidia GPU GB200 Grace Blackwell\footnote{\url{https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing}}). These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets.
-Kocher et al.~\cite{KJJ-98-crypto,KJJR-11-jce} introduced this method of SCA to recover cryptographic key from the analysis of power consumption. They introduced the Simple Power Analysis method (SPA) and Differential Power Analysis (DPA)~\cite{GP-99-ches}. While SPA attacks mainly use visual inspection to identify relevant power variations, DPA attacks use statistical analysis and error correction techniques to extract information correlated to secret keys.
-Lipp et al.~\cite{LKOSECG-21-sp} present an attack, PLATYPUS, a software-based power side-channel attack on Intel server, desktop, and laptop CPU. They exploit unprivileged access to the Intel Running Average Power Limit (RAPL) interface. By observing variations in power consumption, they achieve to monitor the control flow of applications and also infer data and extract cryptographic keys.
+Multiples possiblities exist to exploit SCA.
+As seen on Figure~\ref{fig:sca}, power analysis exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 208 billions transistors for a Nvidia GPU GB200 Grace Blackwell\footnote{\url{https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing}}).
+These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets~\cite{KJJ-98-crypto,KJJR-11-jce,GP-99-ches,LKOSECG-21-sp}.
 
-\paragraph{Execution time analysis} also known as timing attacks and first introduced by Kocher~\cite{K-96-crypto}, takes advantage of the fact that some sensitive computational operations vary in time depending on their secret inputs. An attacker can learn information about these inputs by measuring the running time of the operation. Inherently, these attacks require the attacker to obtain responses from the target to measure its runtime. The works of Kocher~\cite{K-96-crypto}, Brumley and Boneh~\cite{DD-05-compnet} demonstrate attacks on many popular cryptosystems, including DSS, RSA, and OpenSSL.
+Another possibility is to analyse the execution time of a program also known as timing attacks and first introduced by Kocher~\cite{K-96-crypto}, takes advantage of the fact that some sensitive computational operations vary in time depending on their secret inputs~\cite{DD-05-compnet}.
+A third possibility is to exploit electromagnetic (EM)~\cite{ANM-19-di,HMHSS-12-tcrypo,KSTO-17-iccad, WDL-16-ntms,HGTVJ-22-dt} emissions signatures produced when conducting logic operations. Thus, EM emissions reflect the operations of the system. In 2001, Quisquater and Samyde~\cite{QS-01-scps} extended SCA with EM analysis.
+Another method is to analyse to exploit the temperature~\cite{HS-14-cardis,AZRHT-21-tvlsi} values induced by the activity of the system. This method is linked to EM emissions and power analysis, as they use traces from the system's execution.
+Finally, last but not least, an attacker could use acoustic analysis~\cite{BDGPS-10-usenix,GST-17-crypto,HTM-23-eurospw} to extract confidential secret from the sound emitted by the system. This technology has been around for a long time and is used in many fields, such as sonar when the system is a submarine, a warship, or a ship to distinguish one from another.
 
-\paragraph{Electromagnetic analysis} exploits electromagnetic (EM) emissions signatures produced when conducting logic operations. Thus, EM emissions reflect the operations of the system. In 2001, Quisquater and Samyde~\cite{QS-01-scps} extended SCA with EM analysis.
-EM SCA methods can be divided into Simple EM Attack (SEMA) and Differential EM Attack (DEMA) similarly to power attacks~\cite{ANM-19-di}. By observing different signal patterns of collected traces, SEMA can directly interpret cryptographic operations. DEMA extracts secret keys by comparing collected EM traces to hypothesised values and looking for peaks indicative of an accurate prediction~\cite{HGTVJ-22-dt}.
-The attacker collects EM radiation using an EM probe. The probe is placed near the electronic equipment. At this stage, the quality of the collected EM traces, and thus the effectiveness of EM SCA, is strongly affected by several measurement parameters such as EM probe, noise, trigger, sampling rate and frequency band. Recent work has shown that different EM probe characteristics (e.g. diameter, orientation) and spatial location significantly affect EM traces~\cite{HMHSS-12-tcrypo,KSTO-17-iccad, WDL-16-ntms}.
+% \paragraph{Power analysis} exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 146 billions transistors for an AMD CPU Instinct MI300A\footnote{\url{https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html}} or up to 208 billions transistors for a Nvidia GPU GB200 Grace Blackwell\footnote{\url{https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing}}). These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets.
+% Kocher et al.~\cite{KJJ-98-crypto,KJJR-11-jce} introduced this method of SCA to recover cryptographic key from the analysis of power consumption. They introduced the Simple Power Analysis method (SPA) and Differential Power Analysis (DPA)~\cite{GP-99-ches}. While SPA attacks mainly use visual inspection to identify relevant power variations, DPA attacks use statistical analysis and error correction techniques to extract information correlated to secret keys.
+% Lipp et al.~\cite{LKOSECG-21-sp} present an attack, PLATYPUS, a software-based power side-channel attack on Intel server, desktop, and laptop CPU. They exploit unprivileged access to the Intel Running Average Power Limit (RAPL) interface. By observing variations in power consumption, they achieve to monitor the control flow of applications and also infer data and extract cryptographic keys.
 
-\paragraph{Temperature analysis} exploit the temperature values induced by the activity of the system. This attack is linked to electromagnetic and power analysis, as they use traces from the system's execution. Aljuffri et al.~\cite{AZRHT-21-tvlsi} presented a study on thermal analysis where three different power-based SCAs were modified for thermal attacks and applied to a naive RSA implementation. Their experiments were able to retrieve the secret key with an accuracy of 100\%. Another experiment attacked a protected implementation of RSA and completed the extraction of the key with only five traces. Hutter et al.~\cite{HS-14-cardis} present results of data leakages of CMOS devices from temperature SCA. They study the leakage of processed data by measuring the dissipated heat of the devices.
+% \paragraph{Execution time analysis} also known as timing attacks and first introduced by Kocher~\cite{K-96-crypto}, takes advantage of the fact that some sensitive computational operations vary in time depending on their secret inputs. An attacker can learn information about these inputs by measuring the running time of the operation. Inherently, these attacks require the attacker to obtain responses from the target to measure its runtime. The works of Kocher~\cite{K-96-crypto}, Brumley and Boneh~\cite{DD-05-compnet} demonstrate attacks on many popular cryptosystems, including DSS, RSA, and OpenSSL.
 
-\paragraph{Acoustic analysis} takes advantage of the analysis of the sound emitted by the systems. This technology has been around for a long time and is used in many fields, such as sonar. The "golden ear" in a submarine listens to the sounds of the sea and is able to detect and distinguish a submarine, a warship, or a merchant vessel by the sound of its turbine alone. It is also able to determine its direction and nationality.
+% \paragraph{Electromagnetic analysis} exploits electromagnetic emissions signatures produced when conducting logic operations. Thus, EM emissions reflect the operations of the system. In 2001, Quisquater and Samyde~\cite{QS-01-scps} extended SCA with EM analysis.
+% EM SCA methods can be divided into Simple EM Attack (SEMA) and Differential EM Attack (DEMA) similarly to power attacks~\cite{ANM-19-di}. By observing different signal patterns of collected traces, SEMA can directly interpret cryptographic operations. DEMA extracts secret keys by comparing collected EM traces to hypothesised values and looking for peaks indicative of an accurate prediction~\cite{HGTVJ-22-dt}.
+% The attacker collects EM radiation using an EM probe. The probe is placed near the electronic equipment. At this stage, the quality of the collected EM traces, and thus the effectiveness of EM SCA, is strongly affected by several measurement parameters such as EM probe, noise, trigger, sampling rate and frequency band. Recent work has shown that different EM probe characteristics (e.g. diameter, orientation) and spatial location significantly affect EM traces~\cite{HMHSS-12-tcrypo,KSTO-17-iccad, WDL-16-ntms}.
 
-Computers emit high-pitched sounds when they are running. This is due to vibrations in some of their electronic components. These sounds are more than just a nuisance. They can convey information about the software running on the computer. In particular, they can reveal sensitive information about security-related calculations. People have shown that it is possible to recover RSA keys from their sound.
-Backes et al.~\cite{BDGPS-10-usenix} present an attack that retrieves what a dot-matrix printer is printing from a recording of the sound it makes. Their experiments show that they can recover up to 72\% of the words printed, and up to 95\% if they know the context of the text. For this experiment, they used a dictionary-based approach to printed English words.
-Genkin et al.~\cite{GST-17-crypto} demonstrated that RSA key extraction using acoustic cryptanalysis was feasible against a Lenovo laptop from a smartphone nearby. The authors targeted GnuPG's RSA implementation using a laboratory microphone setup and a Samsung Note II, and showed that a 4096-bit key could be recovered within an hour using audible and ultrasonic sound emanations. Harrison et al.~\cite{HTM-23-eurospw} present an implementation of a deep-learning model to classify laptop keystrokes using a microphone. They use the trained model to recognise the keystrokes, and they achieve an accuracy of 95\%. They trained their model from a Zoom conference and this time they achieve an accuracy of 93\%. Their results have shown that it is possible to recover password or other secret information of a victim from its keystrokes even without a physical presence.
+% \paragraph{Temperature analysis} exploit the temperature values induced by the activity of the system. This attack is linked to electromagnetic and power analysis, as they use traces from the system's execution. Aljuffri et al.~\cite{AZRHT-21-tvlsi} presented a study on thermal analysis where three different power-based SCAs were modified for thermal attacks and applied to a naive RSA implementation. Their experiments were able to retrieve the secret key with an accuracy of 100\%. Another experiment attacked a protected implementation of RSA and completed the extraction of the key with only five traces. Hutter et al.~\cite{HS-14-cardis} present results of data leakages of CMOS devices from temperature SCA. They study the leakage of processed data by measuring the dissipated heat of the devices.
+
+% \paragraph{Acoustic analysis} takes advantage of the analysis of the sound emitted by the systems. This technology has been around for a long time and is used in many fields, such as sonar. The "golden ear" in a submarine listens to the sounds of the sea and is able to detect and distinguish a submarine, a warship, or a merchant vessel by the sound of its turbine alone. It is also able to determine its direction and nationality.
+
+% Computers emit high-pitched sounds when they are running. This is due to vibrations in some of their electronic components. These sounds are more than just a nuisance. They can convey information about the software running on the computer. In particular, they can reveal sensitive information about security-related calculations. People have shown that it is possible to recover RSA keys from their sound.
+% Backes et al.~\cite{BDGPS-10-usenix} present an attack that retrieves what a dot-matrix printer is printing from a recording of the sound it makes. Their experiments show that they can recover up to 72\% of the words printed, and up to 95\% if they know the context of the text. For this experiment, they used a dictionary-based approach to printed English words.
+% Genkin et al.~\cite{GST-17-crypto} demonstrated that RSA key extraction using acoustic cryptanalysis was feasible against a Lenovo laptop from a smartphone nearby. The authors targeted GnuPG's RSA implementation using a laboratory microphone setup and a Samsung Note II, and showed that a 4096-bit key could be recovered within an hour using audible and ultrasonic sound emanations. Harrison et al.~\cite{HTM-23-eurospw} present an implementation of a deep-learning model to classify laptop keystrokes using a microphone. They use the trained model to recognise the keystrokes, and they achieve an accuracy of 95\%. They trained their model from a Zoom conference and this time they achieve an accuracy of 93\%. Their results have shown that it is possible to recover password or other secret information of a victim from its keystrokes even without a physical presence.
 
 \subsection{Fault Injection Attacks}
 As early as the 1970s, with advances in the space industry, anomalies in the operation of electronic circuits were observed and possibly linked to cosmic radiation outside the Earth's atmosphere~\cite{BSH-75-tns,Z-96-ibm,ZL-79-science}. These disturbances were initially found to affect the performance of electronic systems in space environments, where high-energy particles could disrupt the normal functioning of circuits. However, as transistors became smaller and required less energy to operate, similar phenomena were observed in terrestrial environments and aircraft systems. These transient disturbances, commonly referred to as "\textit{soft errors}", are now recognised as a critical issue in both space and ground electronics, affecting everything from memory chips to complex processors.
@@ -239,8 +254,9 @@ Non-invasive attacks require no tampering of the DUT. They are able to mask thei
 \end{figure}
 
 \subsubsection{Invasive attacks}
+\label{subsubsection:invasiveAttacks}
 Invasive attacks need to decapsulate the chip or the Integrated Circuit (IC).
-Decapsulating a die or integrated circuit (IC) is a process used to expose the internal components of an IC, typically for failure analysis or reverse engineering. The goal is to carefully remove the protective encapsulation, which shields the silicon die and is typically made of epoxy or ceramic, without causing damage to the internal structures. There are several methods to achieve this, each suited to different packaging materials and levels of precision, ranging from chemical processes to advanced techniques like laser ablation and plasma etching.
+Decapsulating a die or an IC is a process used to expose the internal components of an IC, typically for failure analysis or reverse engineering. The goal is to carefully remove the protective encapsulation, which shields the silicon die and is typically made of epoxy or ceramic, without causing damage to the internal structures. There are several methods to achieve this, each suited to different packaging materials and levels of precision, ranging from chemical processes to advanced techniques like laser ablation and plasma etching.
 
 The most common method is chemical decapsulation, which involves etching away the epoxy with concentrated acids such as nitric or sulphuric acid. This process requires safety precautions such as protective clothing and neutralisation of the acids after removal of the encapsulation. It is an effective but dangerous process and require careful control to avoid damaging the die, as over-etching can cause irreversible harm.
 
@@ -254,19 +270,19 @@ Figure~\ref{fig:decapsulating_die} shows three different steps to decapsulate a 
     \centering
     \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_initial.jpg}
-        \caption{Initial die from an AMD Zen 2 EPYC 7702 server processor}
+        \caption{Initial die from an AMD Zen 2 EPYC 7702 server processor.}
         \label{fig:initial_die}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_delidding.jpg}
-        \caption{AMD EPYC 7702 after delidding, with remains of solder thermal interface material (TIM)}
+        \caption{AMD EPYC 7702 after delidding.}
         \label{fig:delidding_die}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_packagedRemoved.jpg}
-        \caption{Die shot of the centre die, after removal from processor package substrate and metallization etching}
+        \caption{Die shot of the centre die, after removal from processor package.}
         \label{fig:packagedRemoved_die}
     \end{subfigure}
     \caption{Three steps to decapsulate a die (from~\cite{decapping-19-wikipedia})}
@@ -446,6 +462,9 @@ Clock glitches, voltage glitches, heating attacks and camera flash can cost from
 \end{table}
 
 \subsubsection{Fault models}
+Breier et al.~\cite{BH-22-access} present a small overview on different fault model for Fault Injection Attacks.
+\wip{voir \cite{BH-22-access}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Countermeasures against FIA}

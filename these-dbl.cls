@@ -24,7 +24,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{these-dbl}[11/07/2021 v5.1]
 
-\LoadClass[twoside,10pt,a4paper]{report}	% notez le "twoside", essentiellement pour alterner les en-tete et pieds de page gauche et droit si on veut utliser les fancyhead. 
+\LoadClass[twoside,11pt,a4paper]{report}	% notez le "twoside", essentiellement pour alterner les en-tete et pieds de page gauche et droit si on veut utliser les fancyhead. 
 
 \RequirePackage[utf8]{inputenc} 
 \RequirePackage[french, english]{babel} % Last language is the default, use \selectlanguage{english} to switch
@@ -55,6 +55,7 @@
 
 \RequirePackage{setspace} % permet d'utiliser les commandes \spacing, doublespace (double interligne), singlespace (simple interligne) et onehalfspace (un interligne et demi)
 
+\PassOptionsToPackage{hyphens}{url}
 \RequirePackage{hyperref} %Utiliser pour une bibliographie interactive + sommaire et TOC interactifs (pour une sortie PDF, par exemple).
 \hypersetup{
   colorlinks=true,
