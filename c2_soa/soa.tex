@@ -14,18 +14,6 @@ Finally in Section~\ref{section:countermeasuresAgainstFIA}, as this work concent
 \label{section:ift}
 The concept of \textit{Information Flow Tracking} has been introduced by the work of Bell and LaPadula~\cite{BLP-76-military} and by Denning~\cite{D-76-commacm} in 1976.
 This section introduces Information Flow Tracking mechanisms, explains how they work, and presents the various types of IFT with their different functional levels.
-    
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Different types of IFT}
-There are two distinct types of IFT approaches: static and dynamic, each with its own specific objectives.
-
-\subsubsection{Static IFT}
-Static Information Flow Tracking (SIFT) is a security technique used to analyse and control the flow of information within a program or system without executing it, by examining the source code or compiled binary~\cite{HAK-21-acmcsur}. This method is particularly useful for identifying theoretical vulnerabilities, ensuring compliance with design principles, and preventing unauthorised information leaks before deployment. SIFT is comprehensive, covering all possible execution paths and detecting both explicit information flows (direct data assignments) and implicit flows (leaks through control flow structures). By performing checks at compile-time, SIFT helps developers address potential security issues early, enforcing principles like non-interference and data confidentiality through security policies. However, static analysis may generate false positives by flagging theoretical flows that might not occur in practice and may struggle with certain dynamic language features or runtime-dependent behaviours. SIFT is employed in various contexts~\cite{LMLW-08-pepm}, such as verifying secure information flow in operating systems, programming languages with built-in information flow controls, and hardware design for secure systems~\cite{FXZMS-17-sigarch}.
-
-\subsubsection{Dynamic IFT}
-Dynamic Information Flow Tracking (DIFT) is a powerful security technique that monitors and analyses, in real-time, the flow of information within a program during its execution~\cite{CGDJ-21-micromac}. DIFT operates by tagging or labelling input data from potentially untrusted sources and tracking how this data propagates through the system~\cite{SLD-04-sigplan}. As the program executes, DIFT maintains metadata about the tagged information, updating it as operations are performed on the data. This allows the system to detect when tainted data is used in security-critical operations, such as modifying control flow or accessing sensitive resources. DIFT can be implemented at various levels, including hardware, software, or a combination of both. Hardware-based implementations often offer better performance but require specialized processor modifications, while software-based approaches provide more flexibility but may incur higher overhead~\cite{CGDJ-21-micromac}. DIFT has proven effective in detecting and preventing a wide range of security vulnerabilities, including buffer overflows, format string attacks, and code injection attacks~\cite{SLD-04-sigplan}. However, DIFT also faces challenges, such as handling implicit information flows, managing performance overhead, and addressing over-tainting issues.
-This approach might not cover all potential data paths, as it is dependent on the specific conditions and inputs provided during the monitoring period.
-Despite these challenges, DIFT remains a valuable tool for software security, particularly for runtime attack detection in modern systems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{How hardware DIFT work}
@@ -55,7 +43,7 @@ Figure~\ref{fig:dift_init} illustrates the three main steps of how DIFT works. F
 
 In the second step, when the data is fetched by the core for computation, the associated tags are propagated inside the core and confronted with the propagation policy depending on the operations performed on the data.
 
-Finally, in the last step, on the right side of the figure, there are two data outputs derived from the three initial data. Data $C_4$ results from the combination of data $C_2$ and $C_3$, while data $C_5$ is derived from data $C_1$. Since data $C_1$ has not been modified, its tag remains the same. However, the tag associated with $C_4$ is a mix of tags from $C_2$ and $C_3$. Depending on the security policy, if $C_2$ was trusted and $C_3$ was not, the output tag will be \textit{untrusted}. Consequently, when the tags go through the final step of DIFT, they will be checked, and an exception may be raised or the application may be stopped due to the mixing of \textit{trusted} and \textit{untrusted} values.
+Finally, in the last step, on the right side of the figure, there are two data outputs derived from the three initial data. Data $C_4$ results from the combination of data $C_2$ and $C_3$, while data $C_5$ is derived from data $C_1$. Since data $C_1$ has not been modified, its tag remains the same. However, the tag associated with $C_4$ is a mix of tags from $C_2$ and $C_3$. Depending on the security policy, if $C_2$ was trusted and $C_3$ was not, the output tag will be \textit{untrusted}. Consequently, when the tags go through the final step of DIFT, they will be checked, and an exception may be raised, or the application may be stopped due to the mixing of \textit{trusted} and \textit{untrusted} values.
 
 \begin{figure}[ht]
     \centering
@@ -63,6 +51,18 @@ Finally, in the last step, on the right side of the figure, there are two data o
     \caption{Representation of the DIFT mechanism from initialisation to checking.}
     \label{fig:dift_init}
 \end{figure}
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Different types of IFT}
+There are two distinct types of IFT approaches: static and dynamic, each with its own specific objectives.
+
+\subsubsection{Static IFT}
+Static Information Flow Tracking (SIFT) is a security technique used to analyse and control the flow of information within a program or system without executing it, by examining the source code or compiled binary~\cite{HAK-21-acmcsur}. This method is particularly useful for identifying theoretical vulnerabilities, ensuring compliance with design principles, and preventing unauthorised information leaks before deployment. SIFT is comprehensive, covering all possible execution paths and detecting both explicit information flows (direct data assignments) and implicit flows (leaks through control flow structures). By performing checks at compile-time, SIFT helps developers address potential security issues early, enforcing principles like non-interference and data confidentiality through security policies. However, static analysis may generate false positives by flagging theoretical flows that might not occur in practice and may struggle with certain dynamic language features or runtime-dependent behaviours. SIFT is employed in various contexts~\cite{LMLW-08-pepm}, such as verifying secure information flow in operating systems, programming languages with built-in information flow controls, and hardware design for secure systems~\cite{FXZMS-17-sigarch}.
+
+\subsubsection{Dynamic IFT}
+Dynamic Information Flow Tracking (DIFT) is a powerful security technique that monitors and analyses, in real-time, the flow of information within a program during its execution~\cite{CGDJ-21-micromac}. DIFT operates by tagging or labelling input data from potentially untrusted sources and tracking how this data propagates through the system~\cite{SLD-04-sigplan}. As the program executes, DIFT maintains metadata about the tagged information, updating it as operations are performed on the data. This allows the system to detect when tainted data is used in security-critical operations, such as modifying control flow or accessing sensitive resources. DIFT can be implemented at various levels, including hardware, software, or a combination of both. Hardware-based implementations often offer better performance but require specialized processor modifications, while software-based approaches provide more flexibility but may incur higher overhead~\cite{CGDJ-21-micromac}. DIFT has proven effective in detecting and preventing a wide range of security vulnerabilities, including buffer overflows, format string attacks, and code injection attacks~\cite{SLD-04-sigplan}. However, DIFT also faces challenges, such as handling implicit information flows, managing performance overhead, and addressing over-tainting issues.
+This approach might not cover all potential data paths, as it is dependent on the specific conditions and inputs provided during the monitoring period.
+Despite these challenges, DIFT remains a valuable tool for software security, particularly for runtime attack detection in modern systems.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 \subsection{Different levels of DIFT}
