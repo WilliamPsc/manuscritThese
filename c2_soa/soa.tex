@@ -418,11 +418,10 @@ Anagnostopoulos et al.~\cite{AARSGK-18-dsd} present a study of data remanence ef
 
 Hutter et al.~\cite{HS-14-cardis} heat up a microcontroller beyond operating temperature and manage to attack an RSA software implementation.
 
-\paragraph{Electromagnetic fault injections (EMFI)} disrupt the normal operation of a digital system. In this attack, an attacker generates short bursts of strong electromagnetic fields aimed at a specific part of the device, such as a microcontroller or a processor, in order to induce faults in its execution.
+\paragraph{Electromagnetic fault injections (EMFI)} disrupt the normal operation of a system. In this attack, an attacker generates short bursts of strong electromagnetic fields aimed at a specific part of the device, such as a microcontroller or a processor, in order to induce faults in its execution.
 
 The goal of EMFI is to cause unintended behaviour in the target system by disturbing its internal electrical circuits. These disruptions can lead to various faults, such as skipping instructions, corrupting data, triggering incorrect logic states, or bypassing security checks. By carefully controlling the timing, location, and intensity of the EM pulses, the attacker can influence critical operations within the device, potentially gaining access to sensitive information or compromising the system's security.
-
-EMFI is particularly effective because it does not require direct physical contact with the system. Additionally, it can be applied to a wide range of devices, including embedded systems, smart cards, and secure hardware modules. Like other fault injection techniques, EMFI targets the hardware layer, bypassing software-level protections and exploiting the physical characteristics of the device to induce vulnerabilities. The state-of-the-art EMFI setups provide millimetre-level precision in spatial location and nanosecond-level precision in the temporal location of the EM pulse.
+EMFI is particularly effective because it does not require direct physical contact with the system. The state-of-the-art EMFI setups provide millimetre-level precision in spatial location and nanosecond-level precision in the temporal location of the EM pulse. It is worth noting that EMFI can also be considered as invasive, some people classify EMFI into a third class, semi-invasive attacks, because in order to have a better efficiency and accuracy of the EM pulse, the package can be removed to have a direct access to the IC.
 
 \begin{figure}[ht]
     \centering
@@ -462,12 +461,47 @@ Clock glitches, voltage glitches, heating attacks and camera flash can cost from
 \end{table}
 
 \subsubsection{Fault models}
-Breier et al.~\cite{BH-22-access} present a small overview on different fault model for Fault Injection Attacks.
-\wip{voir \cite{BH-22-access}}
+In the context of physical attacks, a fault model is a conceptual representation of how faults can occur and the effects they can have on the operation of a system. In simple terms, it describes the various ways in which a system can be altered when subjected to external perturbations.
+We will present the most popular fault models, which have been used extensively in the literature.
+
+Multiples studies~\cite{BH-22-access,GMA-22-electronics,KSV-13-tvlsi,ZAV-06-jarab,YSW-18-hss} present a small overview on different fault model for Fault Injection Attacks. Different possiblities exist depending on the equipment and the effect targeted. Otto~\cite{O-05-phd} presented a deep study and definitions of fault models.
+
+With a low cost equipment, an attacker can achieve instruction skip, random byte attacks, execution faults. While with higher cost equipment, this attacker is able to create bit-flip into the architecture, bit set/reset, or stuck-at-fault, temporel bit-flip, or spatial bit-flip.
+
+Bit-flip~\cite{CMDMRD-19-host} is the modification of a bit value to the logical opposite ($0 \Rightarrow 1$ or $1 \Rightarrow 0$).
+Multiple bit-flips~\cite{CGVCBLC-22-cardis} are also in this category as long as all the target bits are selected by the attacker.
+There is also, spatial bit-flips change the value of two bits in one or two registers at the same clock cycle.
+And finally, temporal bit-flips that change the value of two bits in one or two registers at two clock cycles.
+Bit set/reset~\cite{BS-03-financialcrypto} is the modification of the bit value either to logical \texttt{1} (set) or logical \texttt{0} (reset). Again, this bit can be precisely targeted by the attacker.
+Random byte~\cite{LFZD-16-fdtc} is less accurate than the previous ones as the attacker will target a byte and some its value to another random value (for example, in binary, from \texttt{0b01010101} to \texttt{0b00111001}).
+Instruction skip~\cite{MDPRD-20-dtis} ignores the execution of the current processed instruction.
+Stuck-at faults~\cite{MABGHMRSYV-18-fdtc} permanently set the targeted data to another value.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Countermeasures against FIA}
 \label{section:countermeasuresAgainstFIA}
+In the previous section, we showed the need to protect against fault injection attacks.
+In this section, we will only present the countermeasures to protect a system against fault injection attacks.
+Countermeasures can be implemented in software, in hardware, or even in the physical layer.
 
+The objectives when implementing countermeasures are:
+\begin{itemize}
+    \item to detect faults and react in accordance with a security policy (for example, tolerate them or attempt to correct them);
+    \item to ensure that incorrect results are not usable by the attacker. 
+\end{itemize}
+
+Countermeasures can be implemented in the physical layer such as sensors that detect a perturbation. He et al.~\cite{HBB-16-space} propose a full-digital detection logic against laser fault injection. El-Baze et al.~\cite{ERM-16-date} present and validates a new sensor allowing to detect EMFI. Muttaki et al.~\cite{MZTF-22-host} introduce an universal Fault-to-Time Converter sensor that can effectively detect FIA (clock glitch, voltage glitch, laser, EMFI) while requiring minimal overhead.
+
+Software countermeasures target vulnerable parts of the code (loops, memory access, etc.). They are often relatively easy to implement compared with hardware countermeasures. However, they are more likely to be bypassed, as their implementation does not take account of the system's microarchitecture.
+In addition, the cost to the performance of the system to be protected is significant in terms of memory requirements and execution time. The principle of duplication, for example, doubles both the memory space required and the execution time for the protected sections.
+Moro et al.~\cite{MHDRE-14-host} propose the evaluation of two software countermeasures against EMFI.
+Chamelot et al.~\cite{CCH-22-date} present SCI-FI, a countermeasure for Control Signal, Code, and Control-Flow Integrity against Fault Injection attacks.
+Laurent et al.~\cite{LBDPP-19-microproc} analyse some of these countermeasures and see how they handle precise faults extracted from the processor.
+A classic technique is to use temporal or spatial redundancy. Barenghi et al.~\cite{BBKPR-10-wess} suggest tripling instructions by storing the results in different registers.
+Some countermeasures propose solutions to protect the data linked to the control flow. Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches.
+
+Hardware countermeasures 
+
+Manssour et al.~\cite{NLGT-22-ddecs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
