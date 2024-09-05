@@ -38,7 +38,6 @@ An example of such security policy can be represented in Table~\ref{table:securi
     \end{tabular}
 \end{table}
 
-\wip{Example ci-dessous à changer, pour exemple plus parlant ? Mais trop proche de HardBlare non ?}
 Figure~\ref{fig:dift_init} illustrates the three main steps of how DIFT works. Firstly, three data, $C_1$, $C_2$, and $C_3$, with their associated tags in three different colours, are initialised on the left side of the figure.
 
 In the second step, when the data is fetched by the core for computation, the associated tags are propagated inside the core and confronted with the propagation policy depending on the operations performed on the data.
@@ -293,7 +292,6 @@ Figure~\ref{fig:decapsulating_die} shows three different steps to decapsulate a 
 \paragraph{Camera flash/light source} is a type of optical attack. The attacker needs to decapsulate the chip, and the strong radiation emitted by the flash directed at the silicon surface can cause the blanking of memory cells where constant values are stored for algorithms execution (e.g., the AES S-Boxes). These attacks are inexpensive, but, in the other hand, they are not very accurate. Skorobogatov et al.~\cite{SA-02-ches} used a flashgun for \$30 while being able to change any bit of an SRAM array.
 
 Schmidt and Hutter~\cite{SH-07-austrochip} present practical attacks on implementations of RSA that use Chinese Remainder Theorem (CRT). These attacks have been performed into a cryptographic device through optical and EM injections. They use a laser diode  as a light source, the diode emits a light  beam of \SI{100}{\milli\watt} with a wavelength of \SI{785}{\nano\metre}. The light from the diode is guided thanks to a fibre-optic of 1~mm in diameter.
-
 Guillen et al.~\cite{GGD-17-cosade} present a low-cost fault injection setup, around a couple of hundred euros, which is capable of producing localized faults in modern 8-bit and 32-bit microcontrollers. This setup does not require handling dangerous substances or wearing protection equipment. The fault produced by this setup are able to successfully attack real-world cryptographic implementations, such as the NSA’s Speck lightweight block cipher~\cite{RDJSBL-13-nsa}.
 
 \paragraph{Laser beam} is another type of optical attacks.
@@ -355,7 +353,6 @@ This technique can be compared as a non-invasive FIB techniques. X-ray provides 
 
 Anceau et al.~\cite{ABCMRT-17-ches, BAMCST-23-dft} propose an approach for modifying the behaviour of a transistor in the memory of a circuit using focused X-ray beams. 
 They use the European Synchrotron Radiation Facility (ESRF), in Grenoble, France.
-
 Grandamme et al.~\cite{GBD-23-paine} show efficiency of X-Ray faults injection on flash and EEPROM memories for powered off devices. They also describe a fault model according to their experimental results and propose a solution to correct a part of the fault.
 
 \paragraph{Clock glitches} are a type of fault injection attack that targets the timing of a system's clock signal to introduce errors into its operation. It is primarily used to disrupt the normal execution of a digital circuit, such as a microcontroller or a cryptographic processor, by momentarily altering its clock frequency.
@@ -407,7 +404,6 @@ Figure~\ref{fig:voltage_glitch} represent the three parameters that are taking i
 \end{itemize}
 
 Timmers and Mune~\cite{TM-17-fdtc} demonstrated voltage FIAs for Linux-based privilege escalation on an undisclosed ARM Cortex-A9-based SoC. The authors targeted the open syscall when an unprivileged application attempted to access physical memory. The application was instrumented to trigger the fault during the kernel’s access control check, which caused it to be skipped.
-
 Timmers et al.~\cite{TSW-16-fdtc} show the use of glitch injections on the power supply to change the CPU PC register to a predetermined address while executing random kernel syscalls, generating system crashes.
 
 \paragraph{Heating attacks} involve deliberately raising the temperature of a digital system or its components to induce malfunctions and errors. This type of attack exploits the fact that many electronic devices and integrated circuits are sensitive to temperature variations and may not operate reliably when subjected to abnormal thermal conditions.
@@ -431,9 +427,7 @@ EMFI is particularly effective because it does not require direct physical conta
 \end{figure}
 
 Dehbaoui et al.~\cite{DMMDT-13-cosade} succeeded in recovering the encryption key of an AES software implementation by injecting a short EM pulse on a 32-bit microcontroller.
-
 Schmidt et al.~\cite{SH-07-austrochip} use a simple gas lighter to induce EM pulses onto an 8-bit microcontroller with low spatial and temporal precision.
-
 Trouchkine et al.~\cite{TBELB-21-jce} present an approach to recover an AES key, using EMFI, by targeting the cache hierarchy and the MMU.
 
 \subsubsection{Fault Injection techniques summary}
@@ -483,7 +477,7 @@ Stuck-at faults~\cite{MABGHMRSYV-18-fdtc} permanently set the targeted data to a
 \label{section:countermeasuresAgainstFIA}
 In the previous section, we showed the need to protect against fault injection attacks.
 In this section, we will only present the countermeasures to protect a system against fault injection attacks.
-Countermeasures can be implemented in software, in hardware, or even in the physical layer.
+Countermeasures can be implemented in software, in hardware, or even in the physical layer~\cite{BCNTW-06-procieee}.
 
 The objectives when implementing countermeasures are:
 \begin{itemize}
@@ -494,24 +488,46 @@ The objectives when implementing countermeasures are:
 Countermeasures can be implemented in the physical layer, such as sensors that detect a perturbation. He et al.~\cite{HBB-16-space} propose a full-digital detection logic against laser fault injection. El-Baze et al.~\cite{ERM-16-date} present and validates a new sensor allowing to detect EMFI. Muttaki et al.~\cite{MZTF-22-host} introduce a universal Fault-to-Time Converter sensor that can effectively detect FIA (clock glitch, voltage glitch, laser, EMFI) while requiring minimal overhead.
 
 Software countermeasures target vulnerable parts of the code (loops, memory access, etc.). They are often relatively easy to implement compared with hardware countermeasures. However, they are more likely to be bypassed, as their implementation does not take account of the system's microarchitecture.
-In addition, the cost to the performance of the system to be protected is significant in terms of memory requirements and execution time. The principle of duplication, for example, doubles both the memory space required and the execution time for the protected sections.
-Moro et al.~\cite{MHDRE-14-host} propose the evaluation of two software countermeasures against EMFI.
+In addition, the cost to the performance of the system is significant in terms of memory requirements and execution time~\cite{BCNTW-06-procieee}. The principle of duplication, for example, doubles both the memory space required and the execution time for the protected sections.
+A classic technique is to use temporal or spatial redundancy. Barenghi et al.~\cite{BBKPR-10-wess} suggest tripling instructions by storing the results in different registers. If these registers are different, it means a fault occured.
+% Moro et al.~\cite{MHDRE-14-host} propose the evaluation of two software countermeasures against EMFI.
 Chamelot et al.~\cite{CCH-22-date} present SCI-FI, a countermeasure for Control Signal, Code, and Control-Flow Integrity against Fault Injection attacks.
-Laurent et al.~\cite{LBDPP-19-microproc} analyse some of these countermeasures and see how they handle precise faults extracted from the processor.
-A classic technique is to use temporal or spatial redundancy. Barenghi et al.~\cite{BBKPR-10-wess} suggest tripling instructions by storing the results in different registers.
+Laurent et al.~\cite{LBDPP-19-microproc} analyse some of the existing countermeasures and show how they handle precise faults extracted from the processor.
 Some countermeasures propose solutions to protect the data linked to the control flow. Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches.
 
-Hardware countermeasures consist of adding hardware mechanisms to the system architecture, which makes them more effective. Adding a countermeasure introduces a loss of performance into the target system. Its implementation usually involves increasing the size of the hardware's area, reducing the maximum frequency, or increasing the power consumption. Once the implementation is done, an evaluation of the protection is usually done to compare it and give some indications in terms of area, performance, or efficiency.
-In the state of the art, multiple solutions exist to protect a system against FIA such as Error Correcting Code (ECC), spatial redundancy, temporal redundancy, or obfuscation.
+Hardware countermeasures consist of adding hardware mechanisms to the system architecture, which makes them more effective. Adding a countermeasure introduces a loss of performance into the target system. Its implementation usually involves increasing the size of the hardware's area, reducing the maximum frequency, or increasing the power consumption. However, once the implementation is done, an evaluation of the protection is usually done to compare it and give some indications in terms of area, performance, or efficiency.
+In the state of the art, multiple solutions exist to protect a system against FIA such as Error Correcting Code (ECC), spatial or hardware redundancy, temporal redundancy, and obfuscation.
 
-Spatial redundancy
+Spatial redundancy~\cite{BCNTW-06-procieee, PTAJC-22-appSci} countermeasure consists of duplicating the protected circuit or part of it to compare the result obtained after computation to check if there is a difference. Figure~\ref{fig:spatial_redundancy} represents the spatial redundancy. An input is sent to two modules (i.e. computation blocks) and the output results will be compared, to check if an error occured.
+This type of countermeasure is the most direct and simplest, but at the same time, it is the one with the highest resource cost.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=1]{c2_soa/img/redundancy.pdf}
+    \caption{Representation of hardware spatial redundancy}
+    \label{fig:spatial_redundancy}
+\end{figure}
+
+Temporal redundancy~\cite{BCNTW-06-procieee, PTAJC-22-appSci}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=2]{c2_soa/img/redundancy.pdf}
+    \caption{Representation of hardware temporal redundancy}
+    \label{fig:temporal_redundancy}
+\end{figure}
+
 
 Manssour et al.~\cite{NLGT-22-ddecs}
 
-Simple parity is a class of countermeasure that only add one bit to the protected target (i.e. register).
+Simple parity is a class of countermeasure that only compute the parity (odd or even) of the protected target (i.e. register). This method can only detect an error without the possibility of correcting it. This method will be developed in Chapter~\ref{chapter:countermeasures}.
 
 Error Correction Code (ECC) (hamming code, secded, Reed-Salomon, LDPC, BCH)
 
 Obfuscation
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Summary}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
