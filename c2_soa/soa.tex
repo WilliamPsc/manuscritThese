@@ -485,21 +485,27 @@ The objectives when implementing countermeasures are:
     \item to ensure that incorrect results are not usable by the attacker. 
 \end{itemize}
 
+\subsection{Countermeasures in the physical layer}
 Countermeasures can be implemented in the physical layer, such as sensors that detect a perturbation. He et al.~\cite{HBB-16-space} propose a full-digital detection logic against laser fault injection. El-Baze et al.~\cite{ERM-16-date} present and validates a new sensor allowing to detect EMFI. Muttaki et al.~\cite{MZTF-22-host} introduce a universal Fault-to-Time Converter sensor that can effectively detect FIA (clock glitch, voltage glitch, laser, EMFI) while requiring minimal overhead.
 
+\subsection{Software countermeasures}
 Software countermeasures target vulnerable parts of the code (loops, memory access, etc.). They are often relatively easy to implement compared with hardware countermeasures. However, they are more likely to be bypassed, as their implementation does not take account of the system's microarchitecture.
 In addition, the cost to the performance of the system is significant in terms of memory requirements and execution time~\cite{BCNTW-06-procieee}. The principle of duplication, for example, doubles both the memory space required and the execution time for the protected sections.
 A classic technique is to use temporal or spatial redundancy. Barenghi et al.~\cite{BBKPR-10-wess} suggest tripling instructions by storing the results in different registers. If these registers are different, it means a fault occured.
+Theißing et al.~\cite{TMSSS-13-date} implemented and systematically analysed a comprehensive set of 19 different software countermeasure strategies for protection effectiveness, time, and memory efficiency.
 % Moro et al.~\cite{MHDRE-14-host} propose the evaluation of two software countermeasures against EMFI.
 Chamelot et al.~\cite{CCH-22-date} present SCI-FI, a countermeasure for Control Signal, Code, and Control-Flow Integrity against Fault Injection attacks.
 Laurent et al.~\cite{LBDPP-19-microproc} analyse some of the existing countermeasures and show how they handle precise faults extracted from the processor.
 Some countermeasures propose solutions to protect the data linked to the control flow. Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches.
 
-Hardware countermeasures consist of adding hardware mechanisms to the system architecture, which makes them more effective. Adding a countermeasure introduces a loss of performance into the target system. Its implementation usually involves increasing the size of the hardware's area, reducing the maximum frequency, or increasing the power consumption. However, once the implementation is done, an evaluation of the protection is usually done to compare it and give some indications in terms of area, performance, or efficiency.
-In the state of the art, multiple solutions exist to protect a system against FIA such as Error Correcting Code (ECC), spatial or hardware redundancy, temporal redundancy, and obfuscation.
+\subsection{Hardware countermeasures}
+Hardware countermeasures~\cite{BCNTW-06-procieee, PTAJC-22-appSci} consist of adding hardware mechanisms to the system architecture, which makes them more effective. Adding a countermeasure introduces a loss of performance into the target system. Its implementation usually involves increasing the size of the hardware's area, reducing the maximum frequency, or increasing the power consumption. However, once the implementation is done, an evaluation of the protection is usually done to compare it and give some indications in terms of area, performance, or efficiency.
+In the state of the art, multiple solutions exist to protect a system against FIA such as information redundancy, spatial or hardware redundancy, temporal redundancy, and obfuscation.
 
-Spatial redundancy~\cite{BCNTW-06-procieee, PTAJC-22-appSci} countermeasure consists of duplicating the protected circuit or part of it to compare the result obtained after computation to check if there is a difference. Figure~\ref{fig:spatial_redundancy} represents the spatial redundancy. An input is sent to two modules (i.e. computation blocks) and the output results will be compared, to check if an error occured.
+\subsubsection{Hardware redundancy}
+Hardware redundancy~\cite{JMR-07-iet, DFR-07-dsn, NDFR-08-ets} countermeasure consists of duplicating the protected circuit or part of it to compare the result obtained after computation to check if there is a difference. Figure~\ref{fig:spatial_redundancy} represents the spatial redundancy. An input is sent to two or more modules (i.e. computation blocks) and the output results will be compared, to check if an error occured.
 This type of countermeasure is the most direct and simplest, but at the same time, it is the one with the highest resource cost.
+One of the most common techniques used to implement hardware redundancy is Triple Modular Redundancy (TMR). TMR involves tripling the logic and using voters to correct the error based on the majority. This means that in order to produce the correct output, two out of three signals must function correctly. However, there are large penalties in terms of area and power consumption with this method.
 
 \begin{figure}[ht]
     \centering
@@ -508,7 +514,8 @@ This type of countermeasure is the most direct and simplest, but at the same tim
     \label{fig:spatial_redundancy}
 \end{figure}
 
-Temporal redundancy~\cite{BCNTW-06-procieee, PTAJC-22-appSci}
+\subsubsection{Temporal redundancy}
+Temporal redundancy~\cite{RBMK-10-host, MVL-07-fdtc, GK-13-tcad}  is based on repeating operations in reverse. In this way, it is possible to check the result of an operation with its previous value. Although it has a low resource cost, it significantly increases the time required. This is because it takes twice as long to perform reverse verification operations. Furthermore, protection can be achieved with more or less resources, depending on security and redundancy levels. Figure~\ref{fig:temporal_redundancy} show how the input is saved into a register, then the value is sent to a computation module to be outputed and reversed in a reverse computation module to compare the value from the saved valued in the register. If the register's value differs from the value computed by the reverse module, it means that an error occured and then an error signal is emitted.
 
 \begin{figure}[ht]
     \centering
@@ -517,17 +524,28 @@ Temporal redundancy~\cite{BCNTW-06-procieee, PTAJC-22-appSci}
     \label{fig:temporal_redundancy}
 \end{figure}
 
+\subsubsection{Instruction replay}
+Another type of redundancy is to execute multiple times the same instruction or block of instructions. This redundancy, called instruction replay or instruction duplication/triplication, can be executed on one or more instructions and can be decided in software or in hardware. This solution has many advantages in terms of efficiency but it induces large overhead in terms of performance, and area.
+Manssour et al.~\cite{NLGT-22-ddecs} present a solution to avoid large performance overhead by using dedicated instructions on a RISC-V processor. While using a very small processor, 2 stages, they have a 30\% increase of area and 10\% of frequency decrease. The hardware replay allows reducing the execution time and code size compared to a full software protection (for execution time, from a factor of 3 to a factor or 2, and, for code size, from a factor of 2 to a factor or 1.3).
 
-Manssour et al.~\cite{NLGT-22-ddecs}
+\subsubsection{Information redundancy}
+Another approach of security is the redundancy of the information. This means that additional information is added to the data to enable error detection or correction. The most important techniques in this area are Error Detection Codes (EDC) and Error Correcting Codes (ECC).
 
-Simple parity is a class of countermeasure that only compute the parity (odd or even) of the protected target (i.e. register). This method can only detect an error without the possibility of correcting it. This method will be developed in Chapter~\ref{chapter:countermeasures}.
+EDC~\cite{APHBML-16-date,MKBM-14-sta,BBKMP-03-toc} is a class of countermeasures that computes the parity (odd or even) of the protected target (e.g. registers). EDC, such as parity bits, checksums, or cyclic redundancy checks (CRC), can detect these manipulations by checking the integrity of the data or computations against redundant bits or codes. The main advantage of these countermeasures is that they inevitably detect single-bit faults with a very small overhead, unlike other previous methods. This method can only detect an error but is unable of correcting it. This method will be further developed in Chapter~\ref{chapter:simpleparity} with an implementation of a simple parity code.
 
-Error Correction Code (ECC) (hamming code, secded, Reed-Salomon, LDPC, BCH)
+Error Correcting Code (ECC)~\cite{PTCVAJ-20-iscas,DGMMNM-20-arcs,CB-06-toc}, or sometimes referred to as Error Detection And Correction Code (EDAC), ensures that even if faults are injected, the system can recover the original data or identify the presence of an error by encoding the original data with additional bits (e.g. redundancy bits). This makes ECC a robust defence mechanism against fault injection attacks, improving both data integrity and system reliability. ECC can be divided into two main families and a hybrid family: Linear Block Codes, Convolutional Codes and the hybrid Turbo or Concatenated codes. Some examples of such codes are Hamming Codes, Single Error Correction Double Error Detection (SECDED), Reed-Solomon, Low-Density Parity-Check (LDPC), BCH code, and Cyclic Redundancy Check (CRC). CRC can be considered as EDC as well as ECC. This method will be developed in Chapter~\ref{chapter:hammingcode} with the implementation and detailed presentation of Hamming Code.
 
-Obfuscation
+\subsubsection{Obfuscation}
+Obfuscation is a technique that includes the addition of dummy cycles, during which the processor performs operations that are irrelevant to the current calculation. Another strategy is to shuffle the data to make it more difficult for the attacker to determine where to inject faults. Their effectiveness depends on their random nature. If the obfuscation is based on a constant, the attacker will only have to identify this constant to bypass the protection. On the other hand, if the obfuscation is random, the attacker will have to repeat the identification process for each new attack.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
+This chapter has provided an overview of the three main areas of my PhD thesis work: information flow tracking, physical attacks and countermeasures against fault injection.
 
+The security mechanism, DIFT, is used to protect a system against software attacks such as buffer overflow, SQL injection and malware. In the remainder of this work, we are using a DIFT mechanism integrated into the hardware processor (hardware in-core DIFT) on a RISC-V processor, enabling access to the core's HDL code.
+
+The physical attacks are diverse, ranging from the analysis of the sounds of a system or the analyse of its power consumption to fault injection using a laser or even X-rays. Their study is constantly evolving, enabling vulnerabilities in today's embedded systems to be identified with increasingly limited resources. This increases the number of potential attackers, making it all the more necessary to incorporate the concept of integrated security at the design stage, with the addition of robust countermeasures.
+
+Finally, we provide an overview of the various existing software, hardware, and physical sensor countermeasures against fault injection attacks. These countermeasures must be integrated within certain constraints, such as effectiveness, area overhead or performance decrease.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
