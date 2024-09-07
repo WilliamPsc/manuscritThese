@@ -106,7 +106,7 @@
 \RequirePackage{lscape} % Landscape tables
 \RequirePackage{siunitx} % SIU
 
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 
 
