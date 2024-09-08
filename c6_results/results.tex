@@ -4,37 +4,53 @@
 \minitoc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+The previous chapter presented two countermeasures against fault injection attacks and taking into account simple fault models, such as single-bit flip error inside one register at a given clock cycle. These countermeasures have been implemented by grouping the different registers in order to reduce the number of parity and redundancy bits. However nowadays, studies~\cite{CGVCBLC-22-cardis,VDSPB-24-jce} have shown that is it possible to fault multiple bits precisely.
+
+In this chapter, we present four different implementations of countermeasures to better protect the D-RI5CY mechanism against more complex fault models. Each implementation will be presented in their respective section. Next, we implement another version of Hamming code to detect double-bit errors and correct single-bit errors, this method is called SECDED for \textit{Single Error Correction, Double Error Detection}.
+
+The first section of this chapter presents the different fault models considered. Then, the second section explains the 4 different implementations of Hamming code and gives the results associated to the fault models. The third section introduces SECDED countermeasure and gives the results associated to the five re-implementations done for this new protection. Finally,  we compare the results obtained from these two countermeasures and evaluate them in terms of efficiency, performance and area overhead.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fault models used in this chapter}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Countermeasure 1: Simple Parity}
+
+\subsection{Implementation 1: Optimisation of redundancy bits}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Countermeasure 2: Hamming Code}
 
-    \subsection{Implementation 2: Protection by pipeline stage}
+\subsection{Implementation 2: Protection by pipeline stage}
 
-    \subsection{Implementation 3: Protection of all registers individually}
+\subsection{Implementation 3: Protection of all registers individually}
 
-    \subsection{Implementation 4: Protection of all registers individually with CSRs slicing}
+\subsection{Implementation 4: Protection of all registers individually with CSRs slicing}
 
-    \subsection{Implementation 5: Smart protection by pipeline stage}
+\subsection{Implementation 5: Cooking spaghetti is not forbidden}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Countermeasure 3: Hamming Code - SECDED}
 
-    \subsection{Implementation 1: Optimisation of redundancy bits}
+\subsection{Implementation 1: Optimisation of redundancy bits}
 
-    \subsection{Implementation 2: Protection by pipeline stage}
+\subsection{Implementation 2: Protection by pipeline stage}
 
-    \subsection{Implementation 3: Protection of all registers individually}
+\subsection{Implementation 3: Protection of all registers individually}
 
-    \subsection{Implementation 4: Protection of all registers individually with CSRs slicing}
+\subsection{Implementation 4: Protection of all registers individually with CSRs slicing}
 
-    \subsection{Implementation 5: Smart protection by pipeline stage}
+\subsection{Implementation 5: Smart protection by pipeline stage}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

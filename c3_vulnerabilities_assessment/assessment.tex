@@ -3,6 +3,8 @@
 \label{chapter:dift_assessment}
 \minitoc
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
 This chapter provides the background of this thesis and the vulnerability assessment. The first section offers a description of the RISC-V Instruction Set Architecture (ISA) and an overview of the specific RISC-V DIFT design under consideration.
 The second section details and describes the considered uses cases of this thesis.
 Finally, the third section assesses the vulnerabilities of the D-RI5CY, using these three cases.
@@ -388,7 +390,7 @@ Furthermore, Table~\ref{tab:end_sim_from_time_fault_register_bo} shows that five
 \begin{table}[t]
     \small
     \centering
-    \setlength{\tabcolsep}{4pt}
+    \setlength{\tabcolsep}{2pt}
     \caption{Buffer overflow: success per register, fault type and simulation time}
     \label{tab:end_sim_from_time_fault_register_bo}
     \begin{tabular}{@{}lccccccccccccccc@{}}
@@ -528,7 +530,7 @@ Finally, faults in \textit{tpr\_q} and \textit{tcr\_q} are successful, since the
    \centering
    \caption{Compare/compute: number of faults per register, per fault type and per cycle}
    \label{tab:end_sim_from_time_fault_register_secpoV3}
-   \setlength{\tabcolsep}{4pt}
+   \setlength{\tabcolsep}{3pt}
    \begin{tabular}{@{}lcccccccccccc@{}}
         \toprule
         & \multicolumn{3}{c}{Cycle 832} & \multicolumn{3}{c}{Cycle 833} & \multicolumn{3}{c}{Cycle 834} & \multicolumn{3}{c}{Cycle 835} \\\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
