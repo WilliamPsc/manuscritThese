@@ -105,6 +105,7 @@
 \RequirePackage{minitoc}
 \RequirePackage{lscape} % Landscape tables
 \RequirePackage{siunitx} % SIU
+\RequirePackage{arydshln}
 
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}

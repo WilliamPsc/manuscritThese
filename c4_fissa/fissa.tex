@@ -7,44 +7,30 @@
 \section{Introduction}
 This chapter introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation.
 This work has been published in DSD 2024~\cite{PLG-24-dsd}.
-The first section presents the state of the art of existing tools for FIA campaigns in emulation, formal methods or even perform real world attacks.
-The second section presents the architecture and details how FISSA works and presents how to extend it depending on other needs.
-The third section presents an example to present how FISSA work in real conditions with a use case from Section~\ref{section:uses_cases}.
-Finally, we will discuss and draw some perspectives for the tool's development and usability.
+The first section presents the state of the art of existing tools for FIA campaigns in emulation, formal methods, simulation, or even perform real world attacks.
+The second section presents FISSA software architecture, details how FISSA works, and presents how to extend it.
+The third section illustrates FISSA capacity through a use case from Section~\ref{section:uses_cases}.
+Finally, the last section discusses and draws some perspectives for the tool's development and usability.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simulation tools for Fault Injection}
 
-Addressing fault injection vulnerabilities is crucial. Historically, fault attacks have been conducted using physical equipment. Nonetheless, a modern approach has emerged that leverages simulators for fault testing. The main advantages of using simulators are they cost less money than physical setups, it is easier to make them work as they do not need specific skills, and they can be used during the conceptual stage.
+Addressing fault injection vulnerabilities is crucial. In general, fault attacks are conducted using physical equipment. Nonetheless, another approach exists that leverages simulators for fault testing. The main advantages of using simulators are they cost less money than physical setups, it is easier to make them work as they do not need specific skills, and they can be used during the conceptual stage.
 
 This section presents recent works related to methods and tools for vulnerability assessment when considering fault injection attacks. For such vulnerability assessment, main strategies include actual fault injections, emulations, formal methods and simulations.
-\wip{Ajouter état de l'art plus complet sur cette partie}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics{c4_fissa/img/fissa/anatomy.pdf}
-    \caption{Anatomy of a Fault Injection tool}
-    \label{fig:anatomy_tool}
-\end{figure}
-
-The diagram presented in Figure~\ref{fig:anatomy_tool} illustrates the process of a fault injection. The process begins with an \textit{Application}, which represents the target system under test. This application is then passed to the \textit{Mutate} state, where faults are introduced based on a predefined \textit{Fault Model}. 
-This fault model provides parameters such as the \texttt{target} to be attacked or the list of targets, the type of \texttt{fault} (set to 0/1, bit-flip, etc), and the \texttt{clock cycle} that guide the mutation process.
-
-After the fault is injected, the faulted application is executed, the \textit{Execute} state. The results of this execution are captured by the \textit{Record} module, which logs the outcomes for further analysis.
-
-Finally, the recorded data is saved in the \textit{Save} module, completing the fault injection cycle. The dashed arrow from the \textit{Record} module back to the \textit{Mutate} module indicates a feedback loop, where the results of the execution can influence subsequent fault injections. This iterative process helps in thoroughly evaluating the resilience and fault tolerance of the application.
+\wip{Ajouter état de l'art plus complet sur cette partie}\wip{1 mot sur simulations pour la safety}
 
 \wip{ajout de \cite{TMZHM-23-iolts} sur un outil de simulation d'injection de faute X-Ray}
 
 \begin{table}[t]
     \centering
+    \footnotesize
     \caption{Fault Injection based methods for vulnerability assessment comparison}
     \label{table:FI_type_comparison}
-    \normalsize
     \setlength{\tabcolsep}{1pt}
     \begin{tabular}{@{}lccccccc@{}}
         \toprule
-                          & References  & Cost                                & \begin{tabular}[c]{@{}c@{}}Control over\\fault scenarios\end{tabular}       & Scalability                         & Speed of execution                                      & Realism                             & Expertise \\ \midrule
+                          & References  & Cost                                & \begin{tabular}[c]{@{}c@{}}Control over\\fault scenarios\end{tabular}       & Scalability                         & \begin{tabular}[c]{@{}c@{}}Speed of\\ execution\end{tabular}                                      & Realism                             & Expertise \\ \midrule
         Formal Methods    & \cite{BSSMG-21-tches, ANR-18-ices, BBCFGS-19-esorics, SVPMRDKMS-24-eprint}     & \textcolor{ForestGreen}{Very low}  & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very low}           & \textcolor{red}{Low}                                    & \textcolor{red}{Low}                & \textcolor{red}{Very high} \\
         Simulations  & \cite{AB-23-acns, fisim, AWMN-20-host}     & \textcolor{ForestGreen}{Very low}       & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Low}                & \textcolor{red}{Low}/\textcolor{ForestGreen}{Moderate}  & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{Low} \\
         Emulations        & \cite{CMLCVR-11-crypto, HGASO-21-fdtc,BLK-23-access, NNHRS-14-dsd}     & \textcolor{Red}{High}           & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{High}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{High}       & \textcolor{red}{Moderate} \\
@@ -64,17 +50,18 @@ However, configuring an emulation environment can be complex and time-consuming.
 Formal methods provide an advantage with mathematical proofs, ensuring a rigorous verification of the system's behaviour during fault injection experiments. Formal methods approaches such as~\cite{BSSMG-21-tches} allow the analysis of a circuit design in order to detect sensitive logic or sequential hardware elements. \cite{ANR-18-ices}, \cite{BBCFGS-19-esorics} and~\cite{SVPMRDKMS-24-eprint} present formal verification methods to analyse the behaviour of HDL implementation.
 However, this type of tool usually suffers from restrictions limiting its actual usage on a complete processor.
 Conventional formal approaches encounter scalability challenges due to limitations in verification techniques.
-In particular, the circuit structure it can analyse is usually limited.
+In particular, the circuit structure it can analyse is usually limited (e.g. if there is a loop in the design).
 
 Fault Injections simulations can be performed at processor instructions level. Authors of~\cite{AB-23-acns} explore the impact of fault injection attacks on software security. They evaluate four open-source fault simulators, comparing their techniques and suggest enhancing them with AI methods inspired by advances in cryptographic fault simulation. \cite{fisim} is an open-source deterministic fault attack simulator prototype utilising the Unicorn Framework and Capstone disassembler.
 \cite{AWMN-20-host} introduces VerFI, a gate-level granularity fault simulator for hardware implementations. For instance, it has been used to spot an implementation mistake in ParTI~\cite{SMG-16-crypto}.
 However, this tool has been developed to check if implemented countermeasures can really protect against fault injection on cryptographic implementations, but it cannot evaluate components such as registers or memories.
-In this paper, we focus on CABA simulations, which provides a controlled virtual environment for injecting faults. There are several solutions of simulations in an HDL simulator like Questasim, Vivado, etc. \textit{Behavioural} simulation is used to detect functional issues and ensuring that the design behaves as expected. \textit{Post-synthesis} simulation verifies that the synthesised netlist matches the expected functionality. \textit{Timed} simulation is used to ensure that the design meets timing requirements and can operate at the specified clock frequency. And finally, \textit{post-implementation} simulations are used to verify that the implemented design meets all requirements and constraints, including those related to the physical layout on the target.
-Simulation-based fault injection offers the advantage of enabling designers to test their system throughout the design cycle, providing valuable insights and uncovering potential vulnerabilities early in the development process. However, a limitation lies in the potential lack of absolute fidelity to actual conditions, as simulations might not perfectly replicate all hardware intricacies, introducing a slight risk of overlooking certain faults that could manifest in the actual hardware.
+In this work, we focus on RTL simulations, which provides a controlled virtual environment for injecting faults. There are several solutions of simulations in an HDL simulator like Questasim, Vivado, etc. \textit{Behavioural} simulation is used to detect functional issues and ensuring that the design behaves as expected. \textit{Post-synthesis} simulation verifies that the synthesised netlist matches the expected functionality. \textit{Timed} simulation is used to ensure that the design meets timing requirements and can operate at the specified clock frequency. And finally, \textit{post-implementation} simulations are used to verify that the implemented design meets all requirements and constraints, including those related to the physical layout on the target.
+Post-synthesis and following simulations can be more difficult to apprehend. This is because HDL synthesis alters the names of the various hardware elements, making it more difficult to find the various elements targeted in the behavioural section.
+Behavioural simulation-based fault injection offers the advantage of enabling designers to test their system at the early beginning of the design cycle, providing valuable insights and uncovering potential vulnerabilities early in the development process. However, a limitation lies in the potential lack of absolute fidelity to actual conditions, as simulations might not perfectly replicate all hardware intricacies, introducing a slight risk of overlooking certain faults that could manifest in the actual hardware.
 
 Table~\ref{table:FI_type_comparison} shows a comparison between these four methods for vulnerability assessment when considering FIA regarding six metrics. These metrics are the financial cost of setting up the fault injection campaign, the control over fault scenarios (how configurable are the scenarios), scalability which refers to the method capacity to be applied to systems of different sizes or complexities, speed of execution of the campaign, realism of the fault injection campaign and the level of required expertise.
-Table~\ref{table:FI_type_comparison} shows that no method is completely optimal. Each method has its own advantages and disadvantages and must be chosen by the designer according to the requirements and the available financial and human resources. Indeed, setting up an actual fault injection campaign requires much more expertise in this domain and also requires costly equipment, whereas setting up a simulation campaign can be easier for a circuit designer familiar with HDL simulation tools such as Questasim.
-Table~\ref{table:FI_type_comparison} shows that CABA simulation offers a good compromise to assess the security level of a circuit design. In particular, it provides an efficient solution for investigating security throughout the design cycle, enabling the concept of “Security by Design”.
+Table~\ref{table:FI_type_comparison} shows that no method is completely optimal. Each method has its own advantages and disadvantages and must be chosen by the designer according to the requirements and the available financial and human resources. Indeed, setting up an actual fault injection campaign requires much more expertise in this domain and also requires costly equipment, whereas setting up a simulation campaign can be easier for a circuit designer familiar with HDL simulation tools.
+Table~\ref{table:FI_type_comparison} shows that simulation offers a good compromise to assess the security level of a circuit design. In particular, it provides an efficient solution for investigating security throughout the design cycle, enabling the concept of “Security by Design”.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{FISSA}
@@ -82,7 +69,7 @@ This section presents our open-source tool, FISSA, available on GitHub~\cite{fis
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Main software architecture}
-FISSA is designed to help circuit designers to analyse, throughout the design cycle, the sensitivity to FIA of the developed circuit.
+FISSA is designed to help circuit designers to analyse, at the early beginning of the development, the sensitivity to FIA of the developed circuit. FISSA relies on behavioural simulations.
 Figure~\ref{fig:archi_fissa} presents the software architecture of FISSA.
 It consists of three different modules: \textit{TCL generator}, \textit{Fault Injection Simulator} and \textit{Analyser}. The first and third modules correspond to a set of Python classes.
 
@@ -100,8 +87,10 @@ It consists of three different modules: \textit{TCL generator}, \textit{Fault In
     \label{fig:archi_fissa}
 \end{figure}
 
-Algorithm~\ref{algo:pseudoCodeSimuStages} shows a representation of a fault injection campaign. The algorithm requires a set of targets  (i.e. hardware elements in which a fault should be
-injected), the fault model and the considered injection window(s) which identifies the period(s), in number of clock cycles, in which fault injections are performed.
+Algorithm~\ref{algo:pseudoCodeSimuStages} shows a representation of a fault injection campaign. The algorithm requires the name(s) of the use case(s) on which the campaign will be, a set of targets (i.e. hardware elements into which a fault is to be injected), the number of bits of each target, the fault model and the injection window(s) under consideration, which identify the period(s), in a time interval between start ($\Delta_s$) and end ($\Delta_e$) in nanosecond, into which fault injections are carried out.
+The number of bits for the campaign, will be called '$\kappa$', and '$\kappa_i$' the number of bit of one target.
+The injection window will be used to calculate the number of cycle with the CPU period ($\varUpsilon_{cpu}$). So, the number of cycle can be determined by $nbCycles = (\Delta_e - \Delta_s) / \varUpsilon_{cpu}$.
+
 Then, it runs a first simulation with no fault injected, which is used as a reference for comparison with the following simulations to determine end-of-simulation statuses. 
 Then, for each target, each fault model and for each clock cycle within the injection window, the corresponding simulation is executed, and the corresponding logs are stored in a dedicated file.
 
@@ -139,12 +128,12 @@ A set of fault models has already been integrated into FISSA for different needs
 Currently, supported fault models are:
 \begin{itemize}
     \justifying
-    \item \underline{target set to 0/1}: for each cycle of the injection window and for each target, we set them individually to 0 or 1, in turn exhaustively ($nbSimulations = nbCycles * nbTargets$),
-    \item \underline{single bit-flip in one target at a given clock cycle}: for each cycle of the injection window, we do a bit-flip for each bit of every target exhaustively ($nbSimulations = nbCycles * nbBits$),
-    \item \underline{single bit-flip in two targets at a given clock cycle}: we take one cycle and a couple of targets' bits (it can be the same target at two different bits) and we bit-flip these two bits ($nbSimulations = nbCycles * C_{2}^k$; with k, the total number of bits in the attacked system),
-    \item \underline{single bit-flip in two targets at two different clock cycles}:  we take two different cycles and a couple of targets' bits (it can be the same target at two different bits) and we bit-flip these two bits ($nbSimulations = C_{2}^{nbCycles} * C_{2}^k$; with k, the total number of bits in the attacked system),
-    \item \underline{exhaustive multi-bits faults in one target at a given clock cycle}: we take one cycle and one target, and we try exhaustively each combination of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) and we set the target at each value ($nbSimulations = nbCycles * 2^{targetSize1}$). It is worth nothing that for this fault model, we only take targets between 1 and 16 bits to avoid very big numbers of simulations as $2^{32}$ would be too long to simulate exhaustively,
-    \item \underline{exhaustive multi-bits faults in two targets at a given clock cycle}: we take one cycle and two targets, and we try exhaustively each combination of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) for each target and we set them to each value ($nbSimulations = nbCycles * 2^{targetSize1}* 2^{targetSize2}$). It is worth nothing that for this fault model, we only take targets between 1 and 10 bits to avoid very big numbers of simulations as $2^{32}$ would be too long to simulate exhaustively.
+    \item \underline{target set to 0/1}: for each cycle of the injection window (i.e. ) and for each target, we set them individually to 0 or 1, in turn exhaustively ($nbSimulations = nbCycles * nbTargets$),
+    \item \underline{single bit-flip in one target at a given clock cycle}: for each cycle of the injection window, we do a bit-flip for each bit of every target exhaustively ($nbSimulations = nbCycles * \kappa$),
+    \item \underline{single bit-flip in two targets at a given clock cycle}: we select one cycle and a couple of targets' bits (it can be the same target at two different bits) and we bit-flip these two bits ($nbSimulations = nbCycles * C_{2}^\kappa$; with $\kappa$, the sum of the bits of each target),
+    \item \underline{single bit-flip in two targets at two different clock cycles}:  we select two different cycles and a couple of targets' bits (it can be the same target at two different bits) and we bit-flip these two bits ($nbSimulations = C_{2}^{nbCycles} * C_{2}^\kappa$),
+    \item \underline{exhaustive multi-bits faults in one target at a given clock cycle}: we select one cycle and one target, and we try exhaustively each combination of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) and we set the target at each value ($nbSimulations = nbCycles * 2^{\kappa_i}$). It is worth nothing that for this fault model, we only take targets between 1 and 16 bits to avoid very big numbers of simulations as $2^{32}$ would be too long to simulate exhaustively,
+    \item \underline{exhaustive multi-bits faults in two targets at a given clock cycle}: we select one cycle and two targets, and we try exhaustively each combination of bits (for example for a 2 bits target, it would be: 00, 01, 10, 11) for each target and we set them to each value (nbSimulations = $nbCycles * 2^{\kappa_{1i}}* 2^{\kappa_{2i}}$). The user must be vigilant about the size of their targets, as a register can be 32 bits or even up to 64 bits. Exhaustively testing each possible value for such large registers can be extremely time-consuming. For a 32-bit register, for example, the total number of simulations would reach $2^{32}$ (around 4 billion), which could lead to an astronomical amount of time and computational effort.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,7 +218,7 @@ LSU:
 ...\end{lstlisting}
 
 The \textit{TCL Generator} is used to generate the set of TCL script files which drive the \textit{fault injection simulator}. This module requires two input files.
-Figure~\ref{fig:archi_tcl_gen} details the \textit{TCL Generator}. Each blue box represents a python class used to generate the set of output TCL scripts.
+Figure~\ref{fig:archi_tcl_gen} details the \textit{TCL Generator} software architecture. Each blue box represents a python class used to generate the set of output TCL scripts.
 The \textit{initialisation} class gets inputs from a configuration file. This JSON-formatted file includes various parameters such as the targeted HDL simulator, the considered fault model and the injection window(s). Furthermore, it encompasses parameters such as the clock period (in ns) of the HDL design and the maximum number of simulated clock cycles used to stop the simulation in case of divergence due to the injected fault. Moreover, one extra parameter defines the quantity of simulations per TCL file, allowing a simulation parallelism degree.
 Listing~\ref{code:configFile_fissa} shows an extract of a configuration file used for our fault injection campaigns.
 Listing~\ref{code:TargetFile_fissa} shows an extract from a target file according to the configuration file provided previously. This file list each stage of the RISC-V core and for each the HDL path of our targets are written. Here, in this example, only the list of targets for the \textit{instruction fetch} stage is listed.
@@ -240,8 +229,7 @@ The first one, \textit{Basic Code Generator}, undertakes the fundamental generat
 The second one, \textit{Fault Generator}, produces the TCL code related to fault injection. The \textit{TCL Script Generator} provides specific parameters to the \textit{Fault Generator} to produce code for a designated set of targets and a specified set of clock cycles for fault injection.
 The third one, \textit{Log Generator}, produces the TCL code to produce logs after each simulation.
 Logs comprise the simulation's ID, fault model, faulted targets, injection clock cycle(s), end-of-simulation status, values for all targets, and the end-of-simulation clock cycle. This data constitutes the automated aspect of logging.
-Finally, the \textit{TCL Script Generator} outputs a set of TCL files, each one correspond to a batch of simulations. This allows the user to perform a per batch results analysis. It is worth noting that each batch starts with a reference simulation, which means a simulation without any fault injected. It allows having results for comparison after when a fault occurred and determine what happened due to the injected fault.
-Additionally, it generates a target file utilised by TCL scripts to obtain a simplified target list (refer to Subsection~\ref{subsec:FIS}), as the simulation log requires a list of targets without their sizes.
+Finally, the \textit{TCL Script Generator} outputs a set of TCL files, each one correspond to a batch of simulations. This allows the user to perform a per batch results analysis. It is worth noting that each batch starts with a reference simulation, which means a simulation without any fault injected. This approach allows for obtaining comparative results after a fault has occurred, making it possible to determine the specific effects and consequences of the injected fault. By comparing the system's behaviour before and after the fault injection, it becomes easier to identify what was impacted and how the fault influenced the system's operation.
 
 \wip{Modification des Listings~\ref{code:configFile_fissa}, \ref{code:TargetFile_fissa}, \ref{code:logJSONFile_fissa} en les remplaçant par un exemple simple genre additionneur (à la place de le mettre dans la section~\ref{section:exampleApplication_fissa})?}
 
@@ -398,30 +386,30 @@ For instance, Table~\ref{table:end_sim_by_status} illustrates that the '\texttt{
 
 To further assess vulnerabilities, the designers can utilise Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip}, which provides detailed information on the register and cycle locations of faults for models with fewer successful outcomes. For fault models with a high number of successes, where the table may become unwieldy, Figures~\ref{fig:heatmap_spatial}, \ref{fig:heatmap_temporel} or~\ref{fig:heatmap_multi_reg_multi} serve as a more accessible reference. These figures help in visualising and interpreting the spatial distribution of vulnerabilities effectively.
 
-\begin{table*}
+\begin{table}
     \centering
-    \small
+    \footnotesize
     \caption{Results of fault injection simulation campaigns}
     \label{table:end_sim_by_status}
     \setlength{\tabcolsep}{3pt}
-    \begin{tabular}{@{}rccccc@{}}
+    \begin{tabular}{@{}rcccccc@{}}
         \toprule
-                                                                          Fault model  & Crash & Silent    & Delay & Success           & Total     \\
+        Fault model                                                        & Crash & Silent  & Delay & Success        & Total   & \begin{tabular}[c]{@{}c@{}}Simulation\\ time\end{tabular} \\
         \midrule
-        Set to 0                                                            & 0     & 320       & 1     & 9 (2.73\%)        & 330       \\
-        Set to 1                                                            & 0     & 320       & 7     & 3 (0.91\%)        & 330       \\
-        Single bit-flip in one target at a given clock cycle                & 0     & 738       & 12    & 12 (1.57\%)       & 762       \\
-        Single bit-flip in two targets at a given clock cycle               & 0     & 45,097    & 1,503 & 1,406 (2.93\%)    & 48,006    \\
-        Single bit-flip in two targets at two different clock cycles        & 0     & 238,633   & 1,143 & 2,159 (0.89\%)    & 241,935   \\
-        Exhaustive multi-bits faults in one target at a given clock cycle   & 0     & 927       & 6     & 3 (0.32\%)        & 936       \\
-        Exhaustive multi-bits faults in two targets at a given clock cycle  & 0     & 67,072    & 926   & 450 (0.66\%)      & 68,448    \\
+        Set to 0                                                           & 0     & 320     & 1     & 9 (2.73\%)     & 330     & 0h04            \\%\hdashline
+        Set to 1                                                           & 0     & 320     & 7     & 3 (0.91\%)     & 330     & 0h04            \\%\hdashline
+        Single bit-flip in one target at a given clock cycle               & 0     & 738     & 12    & 12 (1.57\%)    & 762     & 0h11            \\%\hdashline
+        Single bit-flip in two targets at a given clock cycle              & 0     & 45,097  & 1,503 & 1,406 (2.93\%) & 48,006  & 13h43           \\\hdashline
+        \begin{tabular}[c]{@{}r@{}}Single bit-flip in two targets\\ at two different clock cycles\end{tabular}       & 0     & 238,633 & 1,143 & 2,159 (0.89\%) & 241,935 & 42h12           \\\hdashline
+        \begin{tabular}[c]{@{}r@{}}Exhaustive multi-bits faults in\\ one target at a given clock cycle\end{tabular}  & 0     & 927     & 6     & 3 (0.32\%)     & 936     & 0h08            \\\hdashline
+        \begin{tabular}[c]{@{}r@{}}Exhaustive multi-bits faults\\ in two targets at a given clock cycle\end{tabular} & 0     & 67,072  & 926   & 450 (0.66\%)   & 68,448  & 11h11           \\
         \bottomrule
     \end{tabular}
-\end{table*}
+\end{table}
 
 \begin{table*}[t]
     \centering
-    \small
+    \footnotesize
     \caption{Buffer overflow: success per register, fault type and simulation time}
     \label{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip}
     \setlength{\tabcolsep}{1pt}
@@ -467,14 +455,12 @@ While Table~\ref{table:end_sim_by_status} provides the total number of \textit{s
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion and Perspectives}
 
-% \subsection{Discussion}
 In this section, we will discuss this proposed tool and draw some perspectives for the long-term development.
 In terms of execution time, we did in total around 24,000,000 simulations for approximatively 3 seconds for each simulation in average spanning from initialisation to data recording.
-The execution time is contingent upon various parameters, including the design's size, the specific simulation case, and the number of targets involve. For example, as we have three different use cases, it goes from an average of 0.4 second to 5.8 seconds per simulation.
+The execution time is contingent upon various parameters, including the design's size, the specific simulation case, and the number of targets involve. %For example, as we have three different use cases, it goes from an average of 0.4 second to 5.8 seconds per simulation.
 In emulation campaigns, FPGA-based fault emulation is four times faster than simulation-based techniques, as noted in paper~\cite{NNHRS-14-dsd}. Actual FIAs are faster than simulations, taking about 0.35 seconds per injection in our tests, relying on the ChipWhisperer-lite platform for clock glitching injection.
 While simulations may be slower, they offer the benefit of not requiring an FPGA prototype or the final circuit. Furthermore, it allows integrating vulnerability assessment in the first stages of the development flow and provides a rich set of information for the designer in order to understand sources of vulnerabilities in his design.
 
-% \subsection{Perspectives}
 As perspectives, we plan to extend FISSA to support new fault models and HDL simulators such as Vivado or Verilator.
 Additionally, we intend to enhance integration into the design workflow by adding more automatisation. This may include the management of HDL sources compilation, design's input stimuli or the development of a graphical user interface to improve the overall user experience.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
