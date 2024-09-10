@@ -388,9 +388,9 @@ To bypass the DIFT mechanism, the main attacker's goal is to prevent an exceptio
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{First use case: Buffer overflow}
-Table~\ref{tab:end_sim_from_time_fault_register_bo} shows that 22 fault injections in four different DIFT-related registers can lead to a successful attack despite the DIFT mechanism (i.e., DIFT protection is bypassed). 
+Table~\ref{tab:end_sim_from_time_fault_register_bo} shows that 24 fault injections in five different DIFT-related registers can lead to a successful attack despite the DIFT mechanism (i.e., DIFT protection is bypassed). 
 For example, it shows that a fault injection targeting the~\textit{pc\_if\_o\_tag} register can defeat the DIFT protection if a fault is injected at cycle 3431 using a bit-flip or a set to 0 fault type.
-Furthermore, Table~\ref{tab:end_sim_from_time_fault_register_bo} shows that five different cycles can be targeted for the attack to succeed. In most cases, \textit{bit-flip} leads to a successful injection with 11 successes over 22. Faults in \textit{tpr\_q} and \textit{tcr\_q} are successful, since these registers maintain the propagation rules and the security policy configuration (see Table~\ref{tab:tpr} and Table~\ref{tab:tcr} for more details about each bit position). Both \textit{pc\_if\_o\_tag} and \textit{rf\_reg[1]} are also critical registers for this use case. Indeed, \textit{pc\_if\_o\_tag} allows the propagation of the PC tag while \textit{rf\_reg[1]} stores the tag of the return address register $ra$.
+Furthermore, Table~\ref{tab:end_sim_from_time_fault_register_bo} shows that five different cycles can be targeted for the attack to succeed. In most cases, \textit{bit-flip} leads to a successful injection with 12 successes over 24. Faults in \textit{tpr\_q} and \textit{tcr\_q} are successful, since these registers maintain the propagation rules and the security policy configuration (see Table~\ref{tab:tpr} and Table~\ref{tab:tcr} for more details about each bit position). Both \textit{pc\_if\_o\_tag} and \textit{rf\_reg[1]} are also critical registers for this use case. Indeed, \textit{pc\_if\_o\_tag} allows the propagation of the PC tag while \textit{rf\_reg[1]} stores the tag of the return address register $ra$. It is worth noting that register \textit{memory\_set\_o\_tag} is not in the Figure~\ref{fig:study_buffer_overflow_tag_propagation} of tag propagation but is vulnerable and create a success for bypassing the DIFT in our tests in simulation.
 
 \begin{figure}[ht]
     \centering
@@ -400,8 +400,8 @@ Furthermore, Table~\ref{tab:end_sim_from_time_fault_register_bo} shows that five
 \end{figure}
 
 \begin{table}[t]
-    \small
     \centering
+    \footnotesize
     \setlength{\tabcolsep}{2pt}
     \caption{Buffer overflow: success per register, fault type and simulation time}
     \label{tab:end_sim_from_time_fault_register_bo}
@@ -411,6 +411,7 @@ Furthermore, Table~\ref{tab:end_sim_from_time_fault_register_bo} shows that five
          & set0 & set1 & bit-flip & set0 & set1 & bit-flip & set0 & set1 & bit-flip & set0 & set1 & bit-flip & set0 & set1 & bit-flip \\
         \midrule
         pc\_if\_o\_tag &  &  &  &  &  &  &  &  &  & \checkmark &  & \checkmark &  &  &  \\
+        memory\_set\_o\_tag &  & \checkmark & \checkmark &  &  &  &  &  &  &  &  &  &  &  &  \\
         rf\_reg[1] &  &  &  &  &  &  & \checkmark &  & \checkmark &  &  &  &  &  &  \\
         tcr\_q & \checkmark &  &  & \checkmark &  &  & \checkmark &  &  & \checkmark &  &  & \checkmark &  &  \\
         \rowcolor{LightGray} tcr\_q[21] &&& \checkmark &&& \checkmark &&& \checkmark &&& \checkmark &&& \checkmark \\
@@ -639,5 +640,5 @@ In this chapter, we described the processor we focus on, with its implementation
 
 Tables~\ref{table:end_sim_by_status_wop_1_set0}, \ref{table:end_sim_by_status_wop_1_set1}, \ref{table:end_sim_by_status_wop_1_bitflip} present the results obtained from the campaign with their respectives fault model.
 This vulnerability analysis revealed that the majority of weaknesses in this mechanism are caused by single bit-flips, with 51 successful faults out of 95. Furthermore, the registers involved in this mechanism are predominantly 1-bit registers, as they are used for the tag data path. This indicates that, to effectively safeguard the mechanism, the primary focus should be on protecting it against single bit-flip errors.
-            
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

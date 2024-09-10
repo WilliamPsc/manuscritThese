@@ -18,9 +18,10 @@ Finally, the last section discusses and draws some perspectives for the tool's d
 Addressing fault injection vulnerabilities is crucial. In general, fault attacks are conducted using physical equipment. Nonetheless, another approach exists that leverages simulators for fault testing. The main advantages of using simulators are they cost less money than physical setups, it is easier to make them work as they do not need specific skills, and they can be used during the conceptual stage.
 
 This section presents recent works related to methods and tools for vulnerability assessment when considering fault injection attacks. For such vulnerability assessment, main strategies include actual fault injections, emulations, formal methods and simulations.
-\wip{Ajouter état de l'art plus complet sur cette partie}\wip{1 mot sur simulations pour la safety}
+Another objective of fault injection in simulation is to address safety~\cite{FTMLLE-21-icsrs}. Safety concerns revolve around unintended, accidental faults, with a focus on system reliability and resilience. The aim is to verify the system’s capability to detect and recover from these faults, ensuring that no catastrophic consequences occur as a result of such failures. This process is crucial for validating the robustness of safety mechanisms in place.\wip{voir pour meilleur article ?}
 
-\wip{ajout de \cite{TMZHM-23-iolts} sur un outil de simulation d'injection de faute X-Ray}
+We explain the difference between a simulator and an emulator in this paragraph. They both recreate the behaviour of systems but serve different purposes. A simulator mimics the environment and external behaviour of a system without replicating its internal processes. It's commonly used for training, testing, or experimentation, such as flight simulators, where the focus is on replicating real-world scenarios.
+In contrast, an emulator aims to replicate the exact internal workings of a system, allowing software or hardware designed for one platform to function on another. Emulators are typically used for running applications from one system on another, such as playing old video games on modern computers. While simulators provide an approximation, emulators offer a more precise and accurate reproduction of the system being emulated.
 
 \begin{table}[t]
     \centering
@@ -32,8 +33,8 @@ This section presents recent works related to methods and tools for vulnerabilit
         \toprule
                           & References  & Cost                                & \begin{tabular}[c]{@{}c@{}}Control over\\fault scenarios\end{tabular}       & Scalability                         & \begin{tabular}[c]{@{}c@{}}Speed of\\ execution\end{tabular}                                      & Realism                             & Expertise \\ \midrule
         Formal Methods    & \cite{BSSMG-21-tches, ANR-18-ices, BBCFGS-19-esorics, SVPMRDKMS-24-eprint}     & \textcolor{ForestGreen}{Very low}  & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very low}           & \textcolor{red}{Low}                                    & \textcolor{red}{Low}                & \textcolor{red}{Very high} \\
-        Simulations  & \cite{AB-23-acns, fisim, AWMN-20-host}     & \textcolor{ForestGreen}{Very low}       & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Low}                & \textcolor{red}{Low}/\textcolor{ForestGreen}{Moderate}  & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{Low} \\
-        Emulations        & \cite{CMLCVR-11-crypto, HGASO-21-fdtc,BLK-23-access, NNHRS-14-dsd}     & \textcolor{Red}{High}           & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{High}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{High}       & \textcolor{red}{Moderate} \\
+        Simulations       & \cite{AB-23-acns, AWMN-20-host,TMZHM-23-iolts,WLRTF-22-tcad,GS-21-jcrypto}     & \textcolor{ForestGreen}{Very low}       & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Low}                & \textcolor{red}{Low}/\textcolor{ForestGreen}{Moderate}  & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{Low} \\
+        Emulations        & \cite{CMLCVR-11-crypto, HGASO-21-fdtc,BLK-23-access, NNHRS-14-dsd,fisim,HSP-21-ifs}     & \textcolor{Red}{High}           & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{High}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{High}       & \textcolor{red}{Moderate} \\
         Actual FIA        & \cite{BCNTW-06-procieee, BFP-19-tches, GBD-23-paine, CGVCBLC-22-cardis}     & \textcolor{Red}{Very high}           & \textcolor{Red}{Very low}           & \textcolor{ForestGreen}{Very high}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very high} \\
         \bottomrule
     \end{tabular}
@@ -44,7 +45,7 @@ This approach offers valuable insights into the real impact of faults on hardwar
 However, a significant drawback of actual fault injections is that they demand considerable expertise to prepare the target, involving intricate setup procedures.
 Additionally, this approach can only be executed once the physical circuit is available, potentially delaying the vulnerability assessment process until later stages of development.
 
-Fault emulation can, for instance, rely on FPGA~\cite{CMLCVR-11-crypto}, or on an emulator such as QEMU~\cite{HGASO-21-fdtc,BLK-23-access} to perform fault injection campaigns. This approach is four times faster than simulation-based techniques~\cite{NNHRS-14-dsd}, and unlike simulation-based or formal method-based fault injections techniques, the size of the evaluated circuit has no major impact on the fault injection campaign timing performances.
+Fault emulation can, for instance, rely on FPGA~\cite{CMLCVR-11-crypto}, or on an emulator such as QEMU~\cite{HGASO-21-fdtc,BLK-23-access} to perform fault injection campaigns. This approach is four times faster than simulation-based techniques~\cite{NNHRS-14-dsd}, and unlike simulation-based or formal method-based fault injections techniques, the size of the evaluated circuit has no major impact on the fault injection campaign timing performances. \cite{fisim} is an open-source deterministic fault attack simulator prototype utilising the Unicorn Framework and Capstone disassembler.
 However, configuring an emulation environment can be complex and time-consuming. Achieving an accurate representation of the target system may require detailed configuration and parameter tuning. The accuracy of emulation is contingent on the quality of the models used to replicate the target hardware. If the models are inaccurate or incomplete, the results of fault injections may not precisely reflect actual behaviour.
 
 Formal methods provide an advantage with mathematical proofs, ensuring a rigorous verification of the system's behaviour during fault injection experiments. Formal methods approaches such as~\cite{BSSMG-21-tches} allow the analysis of a circuit design in order to detect sensitive logic or sequential hardware elements. \cite{ANR-18-ices}, \cite{BBCFGS-19-esorics} and~\cite{SVPMRDKMS-24-eprint} present formal verification methods to analyse the behaviour of HDL implementation.
@@ -52,11 +53,15 @@ However, this type of tool usually suffers from restrictions limiting its actual
 Conventional formal approaches encounter scalability challenges due to limitations in verification techniques.
 In particular, the circuit structure it can analyse is usually limited (e.g. if there is a loop in the design).
 
-Fault Injections simulations can be performed at processor instructions level. Authors of~\cite{AB-23-acns} explore the impact of fault injection attacks on software security. They evaluate four open-source fault simulators, comparing their techniques and suggest enhancing them with AI methods inspired by advances in cryptographic fault simulation. \cite{fisim} is an open-source deterministic fault attack simulator prototype utilising the Unicorn Framework and Capstone disassembler.
-\cite{AWMN-20-host} introduces VerFI, a gate-level granularity fault simulator for hardware implementations. For instance, it has been used to spot an implementation mistake in ParTI~\cite{SMG-16-crypto}.
-However, this tool has been developed to check if implemented countermeasures can really protect against fault injection on cryptographic implementations, but it cannot evaluate components such as registers or memories.
+Many simulators for fault injection attacks exist at different levels, to achieve different objectives, such as security at gate-level, cryptographic systems, study the impact of clock glitches, or even X-Ray. They can use AI to enhance the detection.
+Fault Injections simulations can be performed at processor instructions level. Authors of~\cite{AB-23-acns} explore the impact of fault injection attacks on software security. They evaluate four open-source fault simulators, comparing their techniques and suggest enhancing them with AI methods inspired by advances in cryptographic fault simulation. 
+\cite{AWMN-20-host} introduces VerFI, a gate-level granularity fault simulator for hardware implementations. For instance, it has been used to spot an implementation mistake in ParTI~\cite{SMG-16-crypto}. However, this tool has been developed to check if implemented countermeasures can really protect against fault injection on cryptographic implementations, but it cannot evaluate components such as registers or memories.
+Tebina et al.~\cite{TMZHM-23-iolts} introduce Ray-Spect, a tool to simulate fault injection using parametric degradation of MOSFETs transistors, which is typical of X-ray fault injection.
+Wang et al.~\cite{WLRTF-22-tcad} developed a framework for fault injection assessment at gate-level with design specific security properties.
+Grycel et al.~\cite{GS-21-jcrypto} present SimpliFI, a simulation methodology to test fault attacks on embedded software using a hardware simulation of the processor running the software. It relies on post-layout netlist simulations to study the impact of fault injection techniques such as clock glitches.
+
 In this work, we focus on RTL simulations, which provides a controlled virtual environment for injecting faults. There are several solutions of simulations in an HDL simulator like Questasim, Vivado, etc. \textit{Behavioural} simulation is used to detect functional issues and ensuring that the design behaves as expected. \textit{Post-synthesis} simulation verifies that the synthesised netlist matches the expected functionality. \textit{Timed} simulation is used to ensure that the design meets timing requirements and can operate at the specified clock frequency. And finally, \textit{post-implementation} simulations are used to verify that the implemented design meets all requirements and constraints, including those related to the physical layout on the target.
-Post-synthesis and following simulations can be more difficult to apprehend. This is because HDL synthesis alters the names of the various hardware elements, making it more difficult to find the various elements targeted in the behavioural section.
+Post-synthesis, timed, and post-implementation simulations can be more difficult to apprehend. This is because HDL synthesis alters the names of the various hardware elements, making it more difficult to find the various elements targeted in the behavioural section.
 Behavioural simulation-based fault injection offers the advantage of enabling designers to test their system at the early beginning of the design cycle, providing valuable insights and uncovering potential vulnerabilities early in the development process. However, a limitation lies in the potential lack of absolute fidelity to actual conditions, as simulations might not perfectly replicate all hardware intricacies, introducing a slight risk of overlooking certain faults that could manifest in the actual hardware.
 
 Table~\ref{table:FI_type_comparison} shows a comparison between these four methods for vulnerability assessment when considering FIA regarding six metrics. These metrics are the financial cost of setting up the fault injection campaign, the control over fault scenarios (how configurable are the scenarios), scalability which refers to the method capacity to be applied to systems of different sizes or complexities, speed of execution of the campaign, realism of the fault injection campaign and the level of required expertise.
@@ -78,7 +83,6 @@ It consists of three different modules: \textit{TCL generator}, \textit{Fault In
 \textit{Fault Injection Simulator}, detailed in Section~\ref{subsec:FIS}, performs the fault injection simulation campaign based on inputs files from \textit{TCL generator} for a circuit design described through HDL files and memory initialisation files. For that purpose it relies on an existing HDL simulator such as Questasim~\cite{questasim}, Verilator~\cite{verilator}, or Vivado~\cite{vivado} to simulate the design according to the TCL script and generates JSON files to log each simulation.
 
 \textit{The Analyser}, detailed in Section~\ref{subsec:analyser}, evaluates the outcomes of the simulations and generates a set of files that allows the designers to examine fault injection effects on their designs through various information.
-
 
 \begin{figure}[ht]
     \centering
@@ -231,7 +235,7 @@ The third one, \textit{Log Generator}, produces the TCL code to produce logs aft
 Logs comprise the simulation's ID, fault model, faulted targets, injection clock cycle(s), end-of-simulation status, values for all targets, and the end-of-simulation clock cycle. This data constitutes the automated aspect of logging.
 Finally, the \textit{TCL Script Generator} outputs a set of TCL files, each one correspond to a batch of simulations. This allows the user to perform a per batch results analysis. It is worth noting that each batch starts with a reference simulation, which means a simulation without any fault injected. This approach allows for obtaining comparative results after a fault has occurred, making it possible to determine the specific effects and consequences of the injected fault. By comparing the system's behaviour before and after the fault injection, it becomes easier to identify what was impacted and how the fault influenced the system's operation.
 
-\wip{Modification des Listings~\ref{code:configFile_fissa}, \ref{code:TargetFile_fissa}, \ref{code:logJSONFile_fissa} en les remplaçant par un exemple simple genre additionneur (à la place de le mettre dans la section~\ref{section:exampleApplication_fissa})?}
+% \wip{Modification des Listings~\ref{code:configFile_fissa}, \ref{code:TargetFile_fissa}, \ref{code:logJSONFile_fissa} en les remplaçant par un exemple simple genre additionneur (à la place de le mettre dans la section~\ref{section:exampleApplication_fissa})?}
 
 \begin{figure}[ht]
     \centering
@@ -307,7 +311,6 @@ The current configuration captures and counts the diverse end-of-simulation stat
 Heatmaps are generated for multi-target fault models. For instance, when considering a 2 faults scenario disturbing two hardware elements, a 2-dimension heatmap allows the user to identify sensitive couples of hardware elements leading to a potential vulnerability.
 Their configuration can be adapted by modifying the \textit{Analyser} Python code. Heatmaps generation is based on \textit{Seaborn}~\cite{seaborn} which relies on \textit{Matplotlib}~\cite{matplotlib}. This library provides a high-level interface for drawing attractive and informative statistical graphics and save them in different formats like PDF, PNG, etc.
 In the current configuration, heatmaps highlight the targets leading to a specific end-of-simulation status (e.g. a status identified by the designer as a successful attack).
-%An example of such heatmap is presented in Subsection~\ref{subsec:results}.
 Once the results have been generated, they can easily be inserted into a vulnerability assessment report. 
 
 \begin{figure}[ht]
@@ -327,15 +330,15 @@ The \textit{Log Generator} automates the extraction of specific segments from th
 
 \textit{Analyser} can be extended to produce additional \LaTeX~tables, heatmaps or any other way of results visualisation. This can be achieved by either modifying the existing methods or by developing new ones.
 
-An integral aspect of expanding FISSA involves adjusting functions depending on the used HDL simulator. Despite the definition of the TCL language, specific commands vary between simulators. %For instance, in Questasim, injecting a fault into a target can be accomplished with the command: “\textit{force \textless object\_name\textgreater \textless value\textgreater -freeze -cancel \textless time\_info\textgreater}”~\cite{modelsim-force}, whereas in Vivado, the equivalent command is: “\textit{add\_force \textless hdl\_object\textgreater \textless values\textgreater -cancel\_after \textless time\_info\textgreater}”~\cite{vivado-force}.
+An integral aspect of expanding FISSA involves adjusting functions depending on the used HDL simulator. Despite the definition of the TCL language, specific commands vary between simulators. For instance, in Questasim, injecting a fault into a target can be accomplished with the command: “\textit{force \textless object\_name\textgreater \textless value\textgreater -freeze -cancel \textless time\_info\textgreater}”~\cite{modelsim-force}, whereas in Vivado, the equivalent command is: “\textit{add\_force \textless hdl\_object\textgreater \textless values\textgreater -cancel\_after \textless time\_info\textgreater}”~\cite{vivado-force}.
+There are some subtle differences between these two software applications that need to be taken into consideration in order to extend FISSA. These distinctions may affect the functionality or compatibility, so addressing them is crucial for a successful adaptation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Use case example}
 \label{section:exampleApplication_fissa}
 This section presents a case study to demonstrate the use of FISSA in real conditions. It focuses on the evaluation of the robustness of the DIFT mechanism integrated in the D-RI5CY processor with the Buffer overflow use case from Section~\ref{section:uses_cases}.
 
-\wip{Est ce que je laisse cet exemple qui est le même que celui de DSD ou j'ajoute un exemple plus simple où j'attaque un additionneur avec 3 registres avec quelques modèles de fautes ?}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{FISSA's configuration}
 \label{subsec:tool_config}
 
@@ -345,46 +348,31 @@ The second status, identified as a \textit{silent} fault (status 2), signifies t
 Status 3, termed a \textit{delay}, denotes that the fault has delayed the DIFT-related exception, meaning the exception is not raised at the same clock cycle as in the reference simulation.
 The final status is referred to as a \textit{success} (status 4), indicating a bypass of the DIFT mechanism and thereby marking a successful attack. This status corresponds to the detection of the end of the simulated program, with no exception being raised.
 
+In the input configuration file, a single injection window is set between cycles 3428 and 3434, the maximum number of simulated clock cycles is set to 100 from the start of the injection window, this allows us to detect if there were a control flow deviation, the design period is set to 40~ns, the number of simulations per TCL script is set to 2,200. The considered fault models are four on the seven fault models defined in Section~\ref{subsec:supported_fault_models}: \textit{target set to 0}, \textit{target set to 1}, \textit{single bit-flip in one target at a given cycle}, and \textit{single bit-flip in two targets at a given cycle}.
 
-In the input configuration file, a single injection window is set between cycles 3428 and 3434, the maximum number of simulated clock cycles is set to 100 from the start of the injection window, this allows us to detect if there were a control flow deviation, the design period is set to 40~ns, the number of simulations per TCL script is set to 2,200. The considered fault models are the seven fault models defined in Section~\ref{subsec:supported_fault_models}: \textit{target set to 0}, \textit{target set to 1}, \textit{single bit-flip in one target at a given cycle}, \textit{single bit-flip in two targets at a given cycle}, \textit{single bit-flip in two targets at two different cycles}, \textit{exhaustive multi-bits faults in one target at a given cycle}, \textit{exhaustive multi-bits faults in two targets at a given cycle}.
-
-Seven FIA simulation campaigns are performed to evaluate the design against the seven fault models.
+Four FIA simulation campaigns are performed to evaluate the design against the four fault models.
 We choose to log the values of the \textit{Targets'} file, the simulation's number, targets' value after the injection, the injection cycle and the end-of-simulation status.
 The \textit{Targets'} file is filled with the 55 registers of the DIFT security mechanism, representing a total of 127 bits in total.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experimental results} 
 \label{subsec:results}
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\textwidth]{c4_fissa/img/heatmap/heatmap_buffer_overflow_wop_1_single_bitflip_spatial_2.pdf}
-    \caption{Heatmap generated according to the single bit-flip in two targets at a given clock cycle fault model}
+    \includegraphics[width=.95\textwidth]{c4_fissa/img/heatmap/heatmap_buffer_overflow_wop_1_single_bitflip_spatial_2.pdf}
+    \caption{Extract of the heatmap generated according to the single bit-flip in two targets at a given clock cycle fault model}
     \label{fig:heatmap_spatial}
 \end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\textwidth]{c4_fissa/img/heatmap/heatmap_buffer_overflow_wop_1_single_bitflip_temporel_2.pdf}
-    \caption{Heatmap generated according to the single bit-flip in two targets at two different clock cycles fault model}
-    \label{fig:heatmap_temporel}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=.5\linewidth]{c4_fissa/img/heatmap/heatmap_buffer_overflow_wop_1_multi_bitflip_reg_multi_2.pdf}
-    \caption{Heatmap generated according to the exhaustive multi-bits faults in two targets at a given clock cycle fault model}
-    \label{fig:heatmap_multi_reg_multi}
-\end{figure}
-
 
 This section presents results obtained using FISSA on the considered use case.
 All experiments are performed on a server with the following configuration: Xeon Gold 5220 (2,2~GHz, 18C/36T), 128~GB RAM, Ubuntu 20.04.6 LTS and Questasim 10.6e.
 
-Table~\ref{table:end_sim_by_status} summarises the outcomes of the seven previously described fault injection campaigns, with each row representing a distinct fault model. Table~\ref{table:end_sim_by_status}'s columns delineate the potential end statuses for each simulation. This table is an essential tool for the designers, enabling them to analyse the vulnerabilities associated with each fault model within their design. Consequently, the designers can determine the necessity for additional protective measures or design alterations.
+Table~\ref{table:end_sim_by_status} summarises the outcomes of the four previously described fault injection campaigns, with each row representing a distinct fault model. Table~\ref{table:end_sim_by_status}'s columns delineate the potential end statuses for each simulation. This table is an essential tool for the designers, enabling them to analyse the vulnerabilities associated with each fault model within their design. Consequently, the designers can determine the necessity for additional protective measures or design alterations.
 
-For instance, Table~\ref{table:end_sim_by_status} illustrates that the '\texttt{set to 1}' fault model results in only three successful outcomes, whereas the '\texttt{single bit-flip in two targets at two different clock cycles}' fault model leads to 2,159 successes. These findings guide the designers in evaluating the significance of protecting against specific fault models.
+For instance, Table~\ref{table:end_sim_by_status} illustrates that the '\texttt{set to 1}' fault model results in only three successful outcomes, which represent 0.91\% of the total number of simulations, whereas the '\texttt{single bit-flip in two targets at a given clock cycle}' fault model leads to 1,406 successes, which represent 2.93\% of the total number of simulations. These findings guide the designers in evaluating the significance of protecting against specific fault models.
 
-To further assess vulnerabilities, the designers can utilise Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip}, which provides detailed information on the register and cycle locations of faults for models with fewer successful outcomes. For fault models with a high number of successes, where the table may become unwieldy, Figures~\ref{fig:heatmap_spatial}, \ref{fig:heatmap_temporel} or~\ref{fig:heatmap_multi_reg_multi} serve as a more accessible reference. These figures help in visualising and interpreting the spatial distribution of vulnerabilities effectively.
+To further assess vulnerabilities, the designers can utilise Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip}, which provides detailed information on the register and cycle locations of faults for models with fewer successful outcomes. For fault models with multiple registers faulted or with a high number of successes, where the table may become unwieldy, Figure~\ref{fig:heatmap_spatial} serves as a more accessible reference. This figure helps in visualising and interpreting the spatial distribution of vulnerabilities effectively.
 
 \begin{table}
     \centering
@@ -399,10 +387,10 @@ To further assess vulnerabilities, the designers can utilise Table~\ref{table:en
         Set to 0                                                           & 0     & 320     & 1     & 9 (2.73\%)     & 330     & 0h04            \\%\hdashline
         Set to 1                                                           & 0     & 320     & 7     & 3 (0.91\%)     & 330     & 0h04            \\%\hdashline
         Single bit-flip in one target at a given clock cycle               & 0     & 738     & 12    & 12 (1.57\%)    & 762     & 0h11            \\%\hdashline
-        Single bit-flip in two targets at a given clock cycle              & 0     & 45,097  & 1,503 & 1,406 (2.93\%) & 48,006  & 13h43           \\\hdashline
-        \begin{tabular}[c]{@{}r@{}}Single bit-flip in two targets\\ at two different clock cycles\end{tabular}       & 0     & 238,633 & 1,143 & 2,159 (0.89\%) & 241,935 & 42h12           \\\hdashline
-        \begin{tabular}[c]{@{}r@{}}Exhaustive multi-bits faults in\\ one target at a given clock cycle\end{tabular}  & 0     & 927     & 6     & 3 (0.32\%)     & 936     & 0h08            \\\hdashline
-        \begin{tabular}[c]{@{}r@{}}Exhaustive multi-bits faults\\ in two targets at a given clock cycle\end{tabular} & 0     & 67,072  & 926   & 450 (0.66\%)   & 68,448  & 11h11           \\
+        Single bit-flip in two targets at a given clock cycle              & 0     & 45,097  & 1,503 & 1,406 (2.93\%) & 48,006  & 13h43           \\%\hdashline
+        % \begin{tabular}[c]{@{}r@{}}Single bit-flip in two targets\\ at two different clock cycles\end{tabular}       & 0     & 238,633 & 1,143 & 2,159 (0.89\%) & 241,935 & 42h12           \\\hdashline
+        % \begin{tabular}[c]{@{}r@{}}Exhaustive multi-bits faults in\\ one target at a given clock cycle\end{tabular}  & 0     & 927     & 6     & 3 (0.32\%)     & 936     & 0h08            \\\hdashline
+        % \begin{tabular}[c]{@{}r@{}}Exhaustive multi-bits faults\\ in two targets at a given clock cycle\end{tabular} & 0     & 67,072  & 926   & 450 (0.66\%)   & 68,448  & 11h11           \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -430,25 +418,19 @@ To further assess vulnerabilities, the designers can utilise Table~\ref{table:en
     \end{tabular}
 \end{table*}
 
-Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} is produced by FISSA and details the successes from three distinct fault injection campaigns: \texttt{set to 0}, \texttt{set to 1} and \texttt{single bit-flip in one target at a given cycle}. Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} specifies successes for each fault model, correlated with the cycle and the affected target. For example, a \texttt{set to 0} fault at cycle 3428 on \texttt{tcr\_q} would lead to a successfully attack. It highlights which targets are sensitive to fault attacks at a cycle-accurate and bit-accurate level, providing the designers precise information on critical elements requiring protection based on their specific needs.  Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} only covers the most basic fault models. Indeed, producing a table for more complex scenarios, such as simultaneous faults in two targets within a same or multiple cycles, would be intricate and challenging to interpret. Consequently, we opted for an alternative method and developed a heatmap representation (e.g. Figures~\ref{fig:heatmap_spatial}, \ref{fig:heatmap_temporel} and~\ref{fig:heatmap_multi_reg_multi}).
+Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} is produced by FISSA and details the successes from three distinct fault injection campaigns: \texttt{set to 0}, \texttt{set to 1} and \texttt{single bit-flip in one target at a given cycle}. Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} specifies successes for each fault model, correlated with the cycle and the affected target. For example, a \texttt{set to 0} fault at cycle 3428 on \texttt{tcr\_q} would lead to a successfully attack. It highlights which targets are sensitive to fault attacks at a cycle-accurate and bit-accurate level, providing the designers precise information on critical elements requiring protection based on their specific needs.  Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} only covers the most basic fault models. Indeed, producing a table for more complex scenarios, such as simultaneous faults in two targets within a same or multiple cycles, would be intricate and challenging to interpret. Consequently, we opted for an alternative method and developed a heatmap representation (e.g. Figure~\ref{fig:heatmap_spatial}).
 
 To further explore the impact of FIA on a design, a designer can study heatmaps generated by FISSA. 
 These heatmaps are tailored to a fault model with two faulty registers, where each matrix intersection shows the number of successes with that target pair.
 
-Figure~\ref{fig:heatmap_spatial} shows the heatmap generated for the single bit-flip in two targets at a given clock cycle fault model.
-The colour scale represents the number of fault injections targeting a couple of hardware elements (i.e. registers for this use case) leading to a \textit{success} as defined in Subsection~\ref{subsec:tool_config}. We can note that this colour scale, in our case, range from 1 to 272 with 0 excluded.
-This figure highlights the registers that are critical to a specific fault model, allowing the designer to assess his design and choose which protection and where a protection is required, from low need to very high need.
+Figure~\ref{fig:heatmap_spatial} shows an extract of the heatmap generated for the \textit{single bit-flip in two targets at a given clock cycle} fault model. On this figure, only 5 registers are represented to avoid a very big figure that would be too complex to explain. The full figure will be presented in Chapter~\ref{chapter:exp_setup_results}.
+The colour scale represents the number of fault injections targeting a couple of hardware elements (i.e. registers for this use case) leading to a \textit{success} as defined in Subsection~\ref{subsec:tool_config}. We can note that this colour scale, in our case, range from 0 to 272.
+This figure highlights the registers that are critical to a specific fault model, enabling the designer to evaluate the design and determine where protection is needed and at what level. It provides a clear indication of which areas require minimal protection and which ones demand a very high level of security. All of these information allow the designer to prioritise countermeasures according to allocated budget, protection requirements, etc.
 To give an example, it can be noted that the horizontally displayed registers \texttt{tcr\_q} and \texttt{tpr\_q} are critical registers, because a success will occur regardless of the associated register. Similarly, the registers shown vertically, \texttt{memory\_set\_o\_tag}, \texttt{pc\_if\_o\_tag}, and \texttt{rf\_reg[1]}, are also critical because they lead to many successes with almost all tested registers.
 
-Figure~\ref{fig:heatmap_temporel} shows the heatmap generated for the single bit-flip in two targets at two different clock cycles fault model. In this figure, colour scale range from 1 success to 32.
-Figure~\ref{fig:heatmap_multi_reg_multi} shows the heatmap generated for the exhaustive multi-bits faults in two targets at a given clock cycle fault model. In this figure, colour scale range from 1 success to 320.
-
-To provide an analytical perspective from the buffer overflow use case presented in Section~\ref{section:uses_cases}, the five previously mentioned registers are critical as they either store the DIFT security policy configuration (\texttt{tpr\_q} and \texttt{tcr\_q}) or store (\texttt{rf\_reg[1]} represents the tag associated with the value of the Program Counter (PC), which is stored in the register file at index 1 for RISC-V ISA) and propagate the tag (\texttt{pc\_if\_o\_tag}) associated with the PC. This is particularly important in our example, which demonstrates an ROP attack via a buffer overflow.
-The colour scale indicates the impact of the fault injections on the combination of registers tested. For example, a pair associated with a high number such as 272, 124, and 135 for \texttt{tcr\_q} and \texttt{tpr\_q} are very high priority as they lead to 37.77\% success on this fault model.
-In addition, we can see that several registers produce a low number of successes, such as \mbox{\texttt{alu\_operand\_a\_ex\_o\_tag}} and \mbox{\texttt{rf\_reg[2]}}; these registers are then not the highest priority for protection for the designer.
-
-It allows the designer to identify the critical hardware elements to be protected for the use case under consideration.
-All of this information allows the designer to prioritize countermeasures according to allocated budget, protection requirements, etc.
+To provide an analytical perspective from the buffer overflow use case presented in Section~\ref{section:uses_cases}, the five previously mentioned registers are critical as they either store the DIFT security policy configuration (\texttt{tpr\_q} and \texttt{tcr\_q}) or store (\texttt{rf\_reg[1]} represents the tag associated with the value of the Program Counter (PC), which is stored in the register file at index 1 for RISC-V ISA) and propagate the tag (\texttt{pc\_if\_o\_tag}) associated with the PC. This is particularly important in our example, which demonstrates an ROP attack with a buffer overflow.
+The colour scale indicates the impact of the fault injections on the combination of registers tested. For example, a pair associated with a high number such as 272, 124, and 135 for \texttt{tcr\_q} and \texttt{tpr\_q} are very high priority as they lead to 37.77\% success on this fault model (i.e. with all registers taken into account, see Table~\ref{table:end_sim_by_status}).
+In addition, we can see that a register produce a low number of successes, such as \mbox{\texttt{rf\_reg[2]}}; this register is then not the highest priority for protection for the designer.
 
 While Table~\ref{table:end_sim_by_status} provides the total number of \textit{successes} for each fault model and Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} gives the successes for each fault model (\textit{set to 0}, \textit{set to 1}, and \textit{a single bit flip in a target at a given cycle}) correlated with the cycle and affected target, Figure~\ref{fig:heatmap_spatial} shows that fault injections in 246 register pairs result in a \textit{success}. This information allows the designer to focus on specific simulation traces to understand the effect(s) of the fault(s) and improve the robustness of his design by implementing adapted countermeasures.
 
