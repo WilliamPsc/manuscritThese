@@ -33,11 +33,11 @@ Simple parity involves adding one bit to the data. This one bit store the parity
 \begin{figure}[ht]
     \centering
     \includegraphics[page=1]{c5_countermeasures_dift/img/simple_parity.pdf}
-    \caption{Simple Parity - functioning}
+    \caption{Simple Parity -- functioning}
     \label{fig:simpleparity_functionning}
 \end{figure}
 
-Equation~\ref{equat:simpleparity} shows how the parity bit is computed. Each bit of the initial message is xor'd to show parity. Table~\ref{tab:xor_truthtable} present the truth table of XOR operations.
+Equation~\ref{equat:simpleparity} shows how the parity bit is computed. Each bit of the initial message is XOR'd to show parity. Table~\ref{tab:xor_truthtable} present the truth table of XOR operations.
 
 \begin{equation} \label{equat:simpleparity}
     \begin{split}
@@ -88,22 +88,22 @@ Figures~\ref{fig:simpleparity_example_1} and \ref{fig:simpleparity_example_2} sh
         \caption{Two single-bit faults inside the message}
         \label{fig:simpleparity_faulted_example_4}
     \end{subfigure}
-    \caption{Exemple of a simple parity computation}
+    \caption{Example of a simple parity computation}
     \label{fig:simpleparity_example}
 \end{figure}
 
 Figures~\ref{fig:simpleparity_faulted_example_3} and \ref{fig:simpleparity_faulted_example_4} present, respectively, two examples of when a fault occur and when two faults happen.
-In the first example, Figure~\ref{fig:simpleparity_faulted_example_3}, the bit $d_2$ is faulted. As the faulted message is \texttt{0b1001001}, it means that the parity bit will change from \texttt{0} to \texttt{1}. Hence, the fault will be detected as the parity bit differs from original computed message (Figure~\ref{fig:simpleparity_example_2}).
+In the first example, Figure~\ref{fig:simpleparity_faulted_example_3}, the bit $d_2$ is faulted. As the faulted message is \texttt{0b1001001}, it means that the parity bit will change from \texttt{0} to \texttt{1}. Hence, the fault will be detected as the parity bit differs from the original computed message (Figure~\ref{fig:simpleparity_example_2}).
 In the second case, two faults happen in the message at bits $d_2$ and $d_5$. So, the faulted message is \texttt{0b1101001}, then, when the parity is computed, the parity bit will not change as there is still an even number of \texttt{1} compared to the initial message. This shows the limitation of this code.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Implementation: Optimisation of redundancy bits}
 
-In order to implement simple parity, we decided to optimise the number of parity bits. We had many different choices but we decided to form five groups. These groups are composed of one or more register according to their criticality. We have, first, the two registers containing the security policy
+In order to implement simple parity, we decided to optimise the number of parity bits. We had many choices, but we decided to form five groups. These groups are composed of one or more register according to their criticality. We have, first, the two registers containing the security policy
 
 \begin{table}[t]
     \centering
-    \caption{DIFT-related protected registers - simple parity}
+    \caption{DIFT-related protected registers -- simple parity}
     \label{tab:sp_group}
     \begin{tabular}{@{}ccccc@{}}
         \toprule
@@ -126,67 +126,67 @@ In order to implement simple parity, we decided to optimise the number of parity
 \end{figure}
 
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{Countermeasure 2: Hamming Code}
-% \label{chapter:hammingcode}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Countermeasure 2: Hamming Code}
+\label{chapter:hammingcode}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \subsection{Presentation of Hamming Code}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Presentation of Hamming Code}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[page=1]{c5_countermeasures_dift/img/hamming_bit.pdf}
-%     \caption{Hamming code - functioning}
-%     \label{fig:hamming_functionning}
-% \end{figure}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=1]{c5_countermeasures_dift/img/hamming_bit.pdf}
+    \caption{Hamming code -- functioning}
+    \label{fig:hamming_functionning}
+\end{figure}
 
-% \begin{equation} \label{equat:hamming_encoder}
-%     \begin{split}
-%         r_{0} &= d_{0} \oplus d_{1} \oplus d_{3} \oplus d_{4} \oplus d_{6} \\
-%         r_{1} &= d_{0} \oplus d_{2} \oplus d_{3} \oplus d_{5} \oplus d_{6} \\
-%         r_{2} &= d_{1} \oplus d_{2} \oplus d_{3} \\
-%         r_{3} &= d_{4} \oplus d_{5} \oplus d_{6}
-%     \end{split}
-% \end{equation}
+\begin{equation} \label{equat:hamming_encoder}
+    \begin{split}
+        r_{0} &= d_{0} \oplus d_{1} \oplus d_{3} \oplus d_{4} \oplus d_{6} \\
+        r_{1} &= d_{0} \oplus d_{2} \oplus d_{3} \oplus d_{5} \oplus d_{6} \\
+        r_{2} &= d_{1} \oplus d_{2} \oplus d_{3} \\
+        r_{3} &= d_{4} \oplus d_{5} \oplus d_{6}
+    \end{split}
+\end{equation}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \subsection{Implementation 1: Optimisation of redundancy bits}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Implementation 1: Optimisation of redundancy bits}
 
-% \begin{table}[t]
-%     \centering
-%     \caption{DIFT-related protected registers - Hamming code}
-%     \label{tab:hammingcode_group}
-%     \begin{tabular}{@{}cccc@{}}
-%         \toprule
-%                 & Protected register                                                                                & Number of protected bits & \begin{tabular}[c]{@{}c@{}}Number of redundancy\\ bits for Hamming Code\end{tabular} \\ \midrule
-%         Group 1 & TCR                                                                                               & 22                       & 5                                                                                    \\
-%         Group 2 & TPR                                                                                               & 22                       & 5                                                                                    \\
-%         Group 3 & Register File (Tag)                                                                               & 32                       & 6                                                                                    \\
-%         Group 4 & Tag destination address                                                                           & 5                        & 4                                                                                    \\
-%         Group 5 & \begin{tabular}[c]{@{}c@{}}16×1-bit registers\\ 3×2-bit registers\\ 1×4-bit register\end{tabular} & 26                       & 5                                                                                    \\ \midrule
-%         Total   &                                                                                                   & 107                      & 25                                                                                   \\
-%         \bottomrule
-%     \end{tabular}
-% \end{table}
+\begin{table}[t]
+    \centering
+    \caption{DIFT-related protected registers -- Hamming code}
+    \label{tab:hammingcode_group}
+    \begin{tabular}{@{}cccc@{}}
+        \toprule
+                & Protected register                                                                                & Number of protected bits & \begin{tabular}[c]{@{}c@{}}Number of redundancy\\ bits for Hamming Code\end{tabular} \\ \midrule
+        Group 1 & TCR                                                                                               & 22                       & 5                                                                                    \\
+        Group 2 & TPR                                                                                               & 22                       & 5                                                                                    \\
+        Group 3 & Register File (Tag)                                                                               & 32                       & 6                                                                                    \\
+        Group 4 & Tag destination address                                                                           & 5                        & 4                                                                                    \\
+        Group 5 & \begin{tabular}[c]{@{}c@{}}16×1-bit registers\\ 3×2-bit registers\\ 1×4-bit register\end{tabular} & 26                       & 5                                                                                    \\ \midrule
+        Total   &                                                                                                   & 107                      & 25                                                                                   \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[page=2, width=\textwidth]{c5_countermeasures_dift/img/archi_contremesures.pdf}
-%     \caption{Implementation of Hamming Code}
-%     \label{fig:implementation_hc_1}
-% \end{figure}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=2, width=\textwidth]{c5_countermeasures_dift/img/archi_contremesures.pdf}
+    \caption{Implementation of Hamming Code}
+    \label{fig:implementation_hc_1}
+\end{figure}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[page=3, width=\textwidth]{c5_countermeasures_dift/img/archi_contremesures.pdf}
-%     \caption{Implementation of Hamming Code - Register Tile Tag}
-%     \label{fig:implementation_hc_2}
-% \end{figure}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[page=3, width=\textwidth]{c5_countermeasures_dift/img/archi_contremesures.pdf}
+    \caption{Implementation of Hamming Code -- Register Tile Tag}
+    \label{fig:implementation_hc_2}
+\end{figure}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{Discussion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{Summary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Summary}
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

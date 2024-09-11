@@ -1,4 +1,4 @@
-\chapter{D-RI5CY - Vulnerability Assessment}
+\chapter{D-RI5CY — Vulnerability Assessment}
 \chaptermark{D-RI5CY - Vulnerabilities Assessment}
 \label{chapter:dift_assessment}
 \minitoc
@@ -81,7 +81,7 @@ Table~\ref{tab:insnClasses} shows the different instructions for each category r
 
 
 Table~\ref{tab:tpr} shows the TPR configurations for the security policies considered in our work.
-Each instruction type has a user-configurable 2-bit tag propagation policy field, except for \textit{Load/Store Enable}, which has a 3-bit tag. %Each of these field is configured through a write instruction in the CSR.
+Each instruction type has a user-configurable 2-bit tag propagation policy field, except for \textit{Load/Store Enable}, which has a 3-bit tag.
 The tag propagation policy determines how the instruction result tag is generated according to the instruction operand tags.
 For 2-bit fields, value `00' disables the tag propagation and the output tag keeps its previous value, value `01' stands for a logic AND on the 2 operand tags, value `10' stands for a logic OR on the 2 operand tags and value `11' sets the output tag to zero. 
 The \textit{Load/Store Enable} field provides a finer-granularity rule to enable/disable the input operands before applying the propagation rule specified in the \textit{Load/Store Mode} field. This extra tag propagation policy is defined through 3 bits. These bits allow enabling the source, source-address, and destination-address tags, respectively.
@@ -129,7 +129,7 @@ Finally, the \textit{Load/Store Check} field is used to enable/disable source or
 \end{table}
 
 To summarise, at first~\textcircled{\small{1}}, TPR and TCR are configured from the default security policy.
-Then at program startup~\textcircled{\small{2}}, the tags are set to \textit{trusted} (i.e, set to 0) or \textit{untrusted} (i.e, set to 1) depending on their source or according to the code of the program as the developper can specify some untrusted part of his code.
+Then at program startup~\textcircled{\small{2}}, the tags are set to \textit{trusted} (i.e, set to 0) or \textit{untrusted} (i.e, set to 1) depending on their source or according to the code of the program as the developer can specify some untrusted part of his code.
 The tag propagation~\textcircled{\small{3}} and verification~\textcircled{\small{4}} happen in the D-RI5CY pipeline in parallel with the standard behaviour, without incurring any latency overhead.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,13 +141,13 @@ This use case has been developed for pedagogical purposes but does not involve a
 In order to specify an untrusted part in the code, the developer has to use an assembly line in C which is constructed from keywords \textit{asm volatile}. The template for this assembly line is: "\textit{asm asm-qualifiers ( AssemblerTemplate : OutputOperands [ : InputOperands [ : Clobbers ] ])}".
 So to explain briefly, line 7 in Listing~\ref{code:compcompu} is composed of a custom assembly instruction "\texttt{p.spsw}", that takes the "\texttt{x0}" register as target and specifies an address mode using the placeholder "\texttt{0(\%0)}". Finally, \mbox{"\textit{:: "r" (\&a)}"} part specifies the input operand, with "\texttt{r}" indicating that a general-purpose register should be used to hold the address of the variable "\texttt{a}".
 
-Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure a security policy by writing in the TPR and TCR registers thanks to an assembly line. Line 7 tags the variable "\verb|a|" as untrusted (tag is set to "\textit{1}"). In line 8, variables "\verb|a|" and "\verb|b|" are compared to determine which arithmetic operation should be performed.
+Listing~\ref{code:compcompu} shows the C code used for this use case. Lines 2 to 4 initialize variables, lines 5 and 6 configure a security policy by writing to the TPR and TCR registers thanks to an assembly line. Line 7 tags the variable "\verb|a|" as untrusted (tag is set to "\textit{1}"). In line 8, variables "\verb|a|" and "\verb|b|" are compared to determine which arithmetic operation should be performed.
 Lines 9 to 21 detail the assembly code generated from the line 8 C statement. It executes the operations according to the values of "\verb|a|" and "\verb|b|" stored in the registers "\verb|a4|" and "\verb|a5|". The "\verb|(a>b)|" condition and its associated branch is computed in line 9, the "\verb|(a-b)|" subtraction in line 14 and the "\verb|a+b|" addition in line 20.
 
 In terms of security policy, depending on which policy is used in Table~\ref{tab:tpr} and Table~\ref{tab:tcr}, we would have different results of exception.
 Security policy 1 propagates the tags with an \textit{OR} logic for five modes (arithmetic, jump, shift, logical, and load/store mode) and enables the propagation of the tag from the source of a load/store.
 Security policy 1 checks the tags only for the \textit{Execute Check} (i.e., PC instruction) and for the source address and destination address for a load/store instruction.
-In comparison, security policy 2 enables the propagation for all tags and checks tags only for both inputs of arithmetic instructions.
+In comparison, security policy 2 enables the propagation of all tags and checks tags only for both inputs of arithmetic instructions.
 To summarise from our application case, if we use security policy 1, the DIFT will detect the \textit{load} instruction before executing the "\verb|a > b|" comparison and raise an exception; whereas if we use security policy 2, the DIFT protection raises an exception when executing the instruction \verb|add a5,a4,a5| (i.e., the "\verb|a+b|" C statement), since variable \verb|a| is untrusted and \verb|b > a|.
 
 \begin{lstlisting}[style=topPosition, caption=Compare/Compute C Code, language=C, label=code:compcompu]
@@ -348,7 +348,7 @@ int main(int argc, char* argv[]){
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Summary}
-To summarise, these three use cases allow to stimulate each elements of the DIFT mechanism. Consequently, they can be used to study the impact of FIA into this mechanism. The next section studies the behaviour and assesses the DIFT against FIA.
+To summarise, these three use cases allow stimulating each element of the DIFT mechanism. Consequently, they can be used to study the impact of FIA into this mechanism. The next section studies the behaviour and assesses the DIFT against FIA.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vulnerability assessment}
@@ -382,7 +382,7 @@ We evaluate the design by conducting fault injection campaigns. By analysing the
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fault model for vulnerability assessment}
 In this vulnerability assessment, we consider an attacker able to inject faults into DIFT-related registers leading to \textit{bit set}, \textit{bit reset}, and \textit{single bit-flip in one register at a given clock cycle}. 
-As discussed in section~\ref{section:soa_fm}, these fault models are the main fault models used in FIA for the most precise methods such as laser fault injection. There is also \textit{skip instruction} fault model which is often used but as we do not target the configuration of the DIFT, we do not attack instructions but only registers.
+As discussed in section~\ref{section:soa_fm}, these fault models are the main fault models used in FIA for the most precise methods, such as laser fault injection. There is also \textit{skip instruction} fault model which is often used but as we do not target the configuration of the DIFT, we do not attack instructions but only registers.
 To bypass the DIFT mechanism, the main attacker's goal is to prevent an exception being raised. To reach this objective, any DIFT-related register maintaining tag value, driving the tag propagation or the tag update process or maintaining the security policy configuration can be targeted.
 
 
@@ -638,7 +638,7 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
 \section{Summary}
 In this chapter, we described the processor we focus on, with its implementation of a hardware in-core DIFT. We described how it works and how to use the DIFT mechanism with the default configuration. Then, we described the different use cases we choose to work with, in order to analyse the DIFT behaviour and assess it against fault injection attacks. Finally, we presented the vulnerability assessment on these use cases using the D-RI5CY security mechanism. We have shown that this DIFT implementation is vulnerable to FIA within different registers depending on the fault model and depending on the application, as different paths are used and so different registers are going to be critical.
 
-Tables~\ref{table:end_sim_by_status_wop_1_set0}, \ref{table:end_sim_by_status_wop_1_set1}, \ref{table:end_sim_by_status_wop_1_bitflip} present the results obtained from the campaign with their respectives fault model.
+Tables~\ref{table:end_sim_by_status_wop_1_set0}, \ref{table:end_sim_by_status_wop_1_set1}, \ref{table:end_sim_by_status_wop_1_bitflip} present the results obtained from the campaign with their respective fault model.
 This vulnerability analysis revealed that the majority of weaknesses in this mechanism are caused by single bit-flips, with 51 successful faults out of 95. Furthermore, the registers involved in this mechanism are predominantly 1-bit registers, as they are used for the tag data path. This indicates that, to effectively safeguard the mechanism, the primary focus should be on protecting it against single bit-flip errors.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
