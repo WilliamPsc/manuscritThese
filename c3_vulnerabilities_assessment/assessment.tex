@@ -13,7 +13,7 @@ Finally, the third section assesses the vulnerabilities of the D-RI5CY, using th
 \section{D-RI5CY}
 \label{section:driscy}
 In this section, we describe the RISC-V ISA and detail the DIFT design we have chosen to focus on.
-We choose to work on RISC-V core as they are open-source, meaning that we have the ability to access and modify the design according to our needs.
+We choose to work on a open-source RISC-V core, meaning that we have the ability to access and modify the design according to our needs.
 
 \begin{figure}[t]
     \centering
@@ -32,7 +32,7 @@ Technically, RISC-V features a modular design, allowing developers to incorporat
 \subsection{DIFT design}
 This thesis focuses on the evaluation of a DIFT against fault injection attacks and the design of dedicated protections. We opted to not develop a Dynamic Information Flow Tracking (DIFT) system from scratch, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
 As a result, we have selected the D-RI5CY~\cite{PDGLC-18-hpec, driscy} design, which utilises the RI5CY core supported by PULPino~\cite{pulpino} and developed by PULP platform~\cite{pulp}. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, ALU, and MAC operations.
-D-RI5CY has been developed by researchers of Columbia University, in the USA, in partnership with Politecnico di Torino, in Italy. D-RI5CY extends the RI5CY processor, with an in-core DIFT.
+D-RI5CY has been developed by researchers of Columbia University, USA, in partnership with Politecnico di Torino, Italy. D-RI5CY extends the RI5CY processor to support in-core DIFT.
 
 Figure~\ref{fig:driscy} presents an overview of the D-RI5CY processor's architecture. DIFT modules are represented in red and dark red.
 These modules allow tags to be initialised, propagated and checked during the execution of a sensitive application.
@@ -185,7 +185,7 @@ This section details the considered use cases in our work. The first two use cas
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{First use case: Buffer Overflow}
-The first use case involves exploiting a buffer overflow, potentially leading to a Return-Oriented Programming (ROP)\wip{citation d'une explication sur attaque ROP ? Wikipédia ?} attack\footnote{\url{https://github.com/sld-columbia/riscv-dift/blob/master/pulpino\_apps\_dift/wilander\_testbed/}} and the execution of a shellcode.
+The first use case involves exploiting a buffer overflow, potentially leading to a Return-Oriented Programming\footnote{\hfill\url{https://en.wikipedia.org/wiki/Return-oriented_programming}} (ROP) attack\footnote{\url{https://github.com/sld-columbia/riscv-dift/blob/master/pulpino\_apps\_dift/wilander\_testbed/}} and the execution of a shellcode.
 
 \begin{figure}[ht]
     \centering

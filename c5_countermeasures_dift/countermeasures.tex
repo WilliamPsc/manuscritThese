@@ -99,10 +99,16 @@ In the second case, two faults happen in the message at bits $d_2$ and $d_5$. So
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Implementation: Optimisation of redundancy bits}
 
-In order to implement simple parity, we decided to optimise the number of parity bits. We had many choices, but we decided to form five groups. These groups are composed of one or more register according to their criticality. We have, first, the two registers containing the security policy
+In order to implement simple parity, we decided to optimise the number of parity bits. We had many choices, but we decided to form five groups. These groups are composed of one or more register according to their criticality.
+
+Firstly, the two registers that contain the security policy, TCR and TPR, are highly critical. As a result, we have chosen to form a separate group for each of them. Although these registers are 32 bits long, only 22 bits are fully utilised in the current implementation, making bits 22 to 31 unnecessary. Therefore, we have decided not to protect these unused bits or include them in parity calculations.
+Secondly, the third logical group consists of keeping the 32 registers of the register file tag together. Since these registers are already grouped, it makes sense to maintain this grouping.
+This leaves us with one 5-bit register, sixteen 1-bit registers, three 2-bit registers, and one 4-bit register. The 5-bit register is used to store the tag destination address, which is critical. As such, we have decided to create a dedicated group for it. The remaining 20 registers, which total 26 bits, are combined into a final fifth group.
+Table~\ref{tab:sp_group} shows the five groups formed to implement the protection.
 
 \begin{table}[t]
     \centering
+    \small
     \caption{DIFT-related protected registers -- simple parity}
     \label{tab:sp_group}
     \begin{tabular}{@{}ccccc@{}}
@@ -132,6 +138,7 @@ In order to implement simple parity, we decided to optimise the number of parity
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Presentation of Hamming Code}
+~\cite{H-50-bstj}
 
 \begin{figure}[ht]
     \centering
@@ -154,17 +161,18 @@ In order to implement simple parity, we decided to optimise the number of parity
 
 \begin{table}[t]
     \centering
+    \small
     \caption{DIFT-related protected registers -- Hamming code}
     \label{tab:hammingcode_group}
-    \begin{tabular}{@{}cccc@{}}
+    \begin{tabular}{@{}ccccc@{}}
         \toprule
-                & Protected register                                                                                & Number of protected bits & \begin{tabular}[c]{@{}c@{}}Number of redundancy\\ bits for Hamming Code\end{tabular} \\ \midrule
-        Group 1 & TCR                                                                                               & 22                       & 5                                                                                    \\
-        Group 2 & TPR                                                                                               & 22                       & 5                                                                                    \\
-        Group 3 & Register File (Tag)                                                                               & 32                       & 6                                                                                    \\
-        Group 4 & Tag destination address                                                                           & 5                        & 4                                                                                    \\
-        Group 5 & \begin{tabular}[c]{@{}c@{}}16×1-bit registers\\ 3×2-bit registers\\ 1×4-bit register\end{tabular} & 26                       & 5                                                                                    \\ \midrule
-        Total   &                                                                                                   & 107                      & 25                                                                                   \\
+                & Protected register                                                                                & \begin{tabular}[c]{@{}c@{}}Number of\\ bits\end{tabular} & \begin{tabular}[c]{@{}c@{}}Number of\\ protected bits\end{tabular} & \begin{tabular}[c]{@{}c@{}}Number of\\ redundancy bits\end{tabular} \\ \midrule
+        Group 1 & TCR                                                                                               & 32                                                       & 22  & 5                                                                                                               \\
+        Group 2 & TPR                                                                                               & 32                                                       & 22  & 5                                                                                                               \\
+        Group 3 & Register File (Tag)                                                                               & 32                                                       & 32  & 6                                                                                                               \\
+        Group 4 & Tag destination address                                                                           & 5                                                        & 5   & 4                                                                                                               \\
+        Group 5 & \begin{tabular}[c]{@{}c@{}}16×1-bit registers\\ 3×2-bit registers\\ 1×4-bit register\end{tabular} & 26                                                       & 26  & 5                                                                                                               \\ \midrule
+        Total   &                                                                                                   & 127                                                      & 107 & 25                                                                                                              \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -184,7 +192,52 @@ In order to implement simple parity, we decided to optimise the number of parity
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}
+\section{Evaluation and discussion}
+
+
+\begin{table}[t]
+    \footnotesize
+    \centering
+    \caption{Logical fault injection simulation campaigns results for single bit-flip in one register at a given clock cycle}
+    \label{tab:chap5_results_single_bitflip}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{@{}ccccccccc@{}}
+        \toprule
+                                           &               & Crash & Silent & Delay & Detection & \begin{tabular}[c]{@{}c@{}}Detection \&\\ Correction\end{tabular} & Success     & Total \\ \midrule
+        \multirow{3}{*}{Buffer overflow}   & No protection & 0     & 738    & 12    & —         & —                       & 12 (1.57\%) & 762   \\
+                                           & Simple parity & 0     & 0      & 0     & 792       & —                       & 0           & 792   \\
+                                           & Hamming Code  & 0     & 0      & 0     & —         & 912                     & 0           & 912   \\\midrule
+        \multirow{3}{*}{Format String}     & No protection & 0     & 946    & 41    & —         & —                       & 29 (2.85\%) & 1,016 \\
+                                           & Simple parity & 0     & 0      & 0     & 1,056     & —                       & 0           & 1,056 \\
+                                           & Hamming Code  & 0     & 0      & 0     & —         & 1,216                   & 0           & 1,216 \\\midrule
+        \multirow{3}{*}{Compare / Compute} & No protection & 0     & 491    & 7     & —         & —                       & 10          & 508   \\
+                                           & Simple parity & 0     &        &       &           & —                       &             &       \\
+                                           & Hamming Code  & 0     &        &       & —         &                         &             &       \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[t]
+    \footnotesize
+    \centering
+    \caption{Logical fault injection simulation campaigns results for single bit-flip in two registers at two clock cycles}
+    \label{tab:chap5_results_tempo}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{@{}ccccccccc@{}}
+        \toprule
+                                           &               & Crash & Silent  & Delay  & Detection & \begin{tabular}[c]{@{}c@{}}Detection \&\\ Correction\end{tabular} & Success         & Total   \\ \midrule
+        \multirow{3}{*}{Buffer overflow}   & No protection & 0     & 238,633 & 1,143  & —         & —                       & 2,159 (0.89\%)  & 241,935 \\
+                                           & Simple parity & 0     & 0       & 0      & 261,360   & —                       & 0               & 261,360 \\
+                                           & Hamming Code  & 0     & 0       & 0      & —         & 346,560                 & 0               & 346,560 \\\midrule
+        \multirow{3}{*}{Format String}     & No protection & 0     & 429,260 & 12,192 & —         & —                       & 10,160 (2.25\%) & 451,612 \\
+                                           & Simple parity & 0     & 0       & 0      & 487,872   & —                       & 0               & 487,872 \\
+                                           & Hamming Code  & 0     & 0       & 0      & —         & 646,912                 & 0               & 646,912 \\\midrule
+        \multirow{3}{*}{Compare / Compute} & No protection & 0     & 491     & 7      & —         & —                       & 10              & 508     \\
+                                           & Simple parity & 0     &         &        &           & —                       &                 &         \\
+                                           & Hamming Code  & 0     &         &        & —         &                         &                 &         \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}

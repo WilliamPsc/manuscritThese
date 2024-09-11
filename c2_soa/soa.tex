@@ -6,8 +6,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 This chapter provides an overview of related work to contextualize the primary objectives of this thesis. Firstly, in Section~\ref{section:ift}, Information Flow Tracking (IFT) is introduced, detailing the different types and their respective purposes. We discuss the various levels of monitoring, from program behaviour to the detection of hardware trojans.
-Then in Section~\ref{section:physicalAttacks}, Physical Attacks are examined, focusing on two main types: Side-Channel Attacks (SCA) and Fault Injection Attacks (FIA).
-Finally in Section~\ref{section:countermeasuresAgainstFIA}, as this work concentrate on FIA, we exclusively present existing countermeasures against Fault Injection Attacks.
+Then in Section~\ref{section:physicalAttacks}, we provide an overview of the different existing physical attacks, focusing on Fault Injection Attacks (FIA).
+Finally in Section~\ref{section:countermeasuresAgainstFIA}, we present existing countermeasures against Fault Injection Attacks.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Information Flow Tracking}
@@ -38,11 +38,9 @@ An example of such security policy can be represented in Table~\ref{table:securi
     \end{tabular}
 \end{table}
 
-Figure~\ref{fig:dift_init} illustrates the three main steps of how DIFT works. Firstly, three data, $C_1$, $C_2$, and $C_3$, with their associated tags in three different colours, are initialised on the left side of the figure.
-
-In the second step, when the data is fetched by the core for computation, the associated tags are propagated inside the core and confronted with the propagation policy depending on the operations performed on the data.
-
-Finally, in the last step, on the right side of the figure, there are two data outputs derived from the three initial data. Data $C_4$ results from the combination of data $C_2$ and $C_3$, while data $C_5$ is derived from data $C_1$. Since data $C_1$ has not been modified, its tag remains the same. However, the tag associated with $C_4$ is a mix of tags from $C_2$ and $C_3$. Depending on the security policy, if $C_2$ was trusted and $C_3$ was not, the output tag will be \textit{untrusted}. Consequently, when the tags go through the final step of DIFT, they will be checked, and an exception may be raised, or the application may be stopped due to the mixing of \textit{trusted} and \textit{untrusted} values.
+Figure~\ref{fig:dift_init} illustrates the three main steps of how DIFT works. Firstly, three data, $D_1$, $D_2$, and $D_3$, with their associated tags in two different colours, are initialised on the left side of the figure.
+In the second step, when the data are fetched by the core for computation, the associated tags are propagated inside the core and confronted with the propagation policy depending on the operations performed on the data.
+Finally, in the last step, on the right side of the figure, there are two data outputs derived from the three initial data. Data $D_4$ results from the combination of data $D_2$ and $D_3$, while data $D_5$ is derived only from data $D_1$. Since data $D_1$ has not been modified, its tag remains the same. However, the tag associated to $D_4$ is the combination of tags from $D_2$ and $D_3$. Depending on the security policy, if $D_3$ was trusted and $D_2$ was not, the output tag will be \textit{untrusted} (i.e, as in the Figure). Consequently, when the tags go through the final step of DIFT, they will be checked, and an exception may be raised, or the application may be stopped due to the combination of \textit{trusted} and \textit{untrusted} values.
 
 \begin{figure}[ht]
     \centering
@@ -172,10 +170,9 @@ Hu et al.~\cite{HOITSMK-11-tcad} established the theoretical foundation for GLIF
 \section{Physical Attacks}
 \label{section:physicalAttacks}
 
-This section presents an overview of the state of the art on physical attacks. We present the different types of physical attacks and their methods to recover secret information. Firstly, we begin with Side-Channel Attacks, how to use information leakage to recover useful information and how to analyse them.
-Secondly, we introduce Fault Injection Attacks. We define the different possibilities of injection and how to achieve them.
-
-Physical attacks are separated into two main categories: passive attacks and active attacks. Passive attacks are also called Side-Channel Attacks (SCA), and active attacks are often called Fault Injection Attacks (FIA). Figure~\ref{fig:arbo_fia} shows a representation of a taxonomy to classify the different method of physical attacks. Each type of attacks will be explained in this following subsections.
+This section presents an overview of the state of the art on physical attacks. We introduce the different types of physical attacks and their methods to recover secret information. Firstly, we begin with Reverse Engineering, how to retrieve information from a product to recover useful information.
+Secondly, we begin with Side-Channel Attacks, how to use information leakage to recover useful information and how to analyse them.
+Finally, we introduce Fault Injection Attacks. We define the different possibilities of injection and how to achieve them.
 
 \begin{figure}[ht]
     \centering
@@ -203,7 +200,7 @@ Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor
 \end{figure}
 
 Multiples possibilities exist to exploit SCA.
-As seen on Figure~\ref{fig:sca}, power analysis exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 208 billions transistors for an Nvidia GPU GB200 Grace Blackwell\footnote{\url{https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing}}).
+As seen on Figure~\ref{fig:sca}, power analysis exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 208 billions transistors for an Nvidia GPU GB200 Grace Blackwell\footnote{\hfill\url{https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing}}).
 These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets~\cite{KJJ-98-crypto,KJJR-11-jce,GP-99-ches,LKOSECG-21-sp}.
 
 Another possibility is to analyse the execution time of a program also known as timing attacks and first introduced by Kocher~\cite{K-96-crypto}, takes advantage of the fact that some sensitive computational operations vary in time depending on their secret inputs~\cite{DD-05-compnet}.
@@ -211,26 +208,8 @@ A third possibility is to exploit electromagnetic (EM)~\cite{ANM-19-di,HMHSS-12-
 Another method is to analyse to exploit the temperature~\cite{HS-14-cardis,AZRHT-21-tvlsi} values induced by the activity of the system. This method is linked to EM emissions and power analysis, as they use traces from the system's execution.
 Finally, last but not least, an attacker could use acoustic analysis~\cite{BDGPS-10-usenix,GST-17-crypto,HTM-23-eurospw} to extract confidential secret from the sound emitted by the system. This technology has been around for a long time and is used in many fields, such as sonar when the system is a submarine, a warship, or a ship to distinguish one from another.
 
-% \paragraph{Power analysis} exploits time differences in target power consumption during sensitive executions. Modern systems contain billions of transistors (up to 146 billions transistors for an AMD CPU Instinct MI300A\footnote{\url{https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html}} or up to 208 billions transistors for a Nvidia GPU GB200 Grace Blackwell\footnote{\url{https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing}}). These transistors act as voltage switches and as they are continually switched on/off during execution, they cause voltage variations that can be observed and measured using equipments and devices (oscilloscope, voltmeter, etc.). These results data are analysed and from a certain number of data, an attacker can deduce secrets.
-% Kocher et al.~\cite{KJJ-98-crypto,KJJR-11-jce} introduced this method of SCA to recover cryptographic key from the analysis of power consumption. They introduced the Simple Power Analysis method (SPA) and Differential Power Analysis (DPA)~\cite{GP-99-ches}. While SPA attacks mainly use visual inspection to identify relevant power variations, DPA attacks use statistical analysis and error correction techniques to extract information correlated to secret keys.
-% Lipp et al.~\cite{LKOSECG-21-sp} present an attack, PLATYPUS, a software-based power side-channel attack on Intel server, desktop, and laptop CPU. They exploit unprivileged access to the Intel Running Average Power Limit (RAPL) interface. By observing variations in power consumption, they achieve to monitor the control flow of applications and also infer data and extract cryptographic keys.
-
-% \paragraph{Execution time analysis} also known as timing attacks and first introduced by Kocher~\cite{K-96-crypto}, takes advantage of the fact that some sensitive computational operations vary in time depending on their secret inputs. An attacker can learn information about these inputs by measuring the running time of the operation. Inherently, these attacks require the attacker to obtain responses from the target to measure its runtime. The works of Kocher~\cite{K-96-crypto}, Brumley and Boneh~\cite{DD-05-compnet} demonstrate attacks on many popular cryptosystems, including DSS, RSA, and OpenSSL.
-
-% \paragraph{Electromagnetic analysis} exploits electromagnetic emissions signatures produced when conducting logic operations. Thus, EM emissions reflect the operations of the system. In 2001, Quisquater and Samyde~\cite{QS-01-scps} extended SCA with EM analysis.
-% EM SCA methods can be divided into Simple EM Attack (SEMA) and Differential EM Attack (DEMA) similarly to power attacks~\cite{ANM-19-di}. By observing different signal patterns of collected traces, SEMA can directly interpret cryptographic operations. DEMA extracts secret keys by comparing collected EM traces to hypothesised values and looking for peaks indicative of an accurate prediction~\cite{HGTVJ-22-dt}.
-% The attacker collects EM radiation using an EM probe. The probe is placed near the electronic equipment. At this stage, the quality of the collected EM traces, and thus the effectiveness of EM SCA, is strongly affected by several measurement parameters such as EM probe, noise, trigger, sampling rate and frequency band. Recent work has shown that different EM probe characteristics (e.g. diameter, orientation) and spatial location significantly affect EM traces~\cite{HMHSS-12-tcrypo,KSTO-17-iccad, WDL-16-ntms}.
-
-% \paragraph{Temperature analysis} exploit the temperature values induced by the activity of the system. This attack is linked to electromagnetic and power analysis, as they use traces from the system's execution. Aljuffri et al.~\cite{AZRHT-21-tvlsi} presented a study on thermal analysis where three different power-based SCAs were modified for thermal attacks and applied to a naive RSA implementation. Their experiments were able to retrieve the secret key with an accuracy of 100\%. Another experiment attacked a protected implementation of RSA and completed the extraction of the key with only five traces. Hutter et al.~\cite{HS-14-cardis} present results of data leakages of CMOS devices from temperature SCA. They study the leakage of processed data by measuring the dissipated heat of the devices.
-
-% \paragraph{Acoustic analysis} takes advantage of the analysis of the sound emitted by the systems. This technology has been around for a long time and is used in many fields, such as sonar. The "golden ear" in a submarine listens to the sounds of the sea and is able to detect and distinguish a submarine, a warship, or a merchant vessel by the sound of its turbine alone. It is also able to determine its direction and nationality.
-
-% Computers emit high-pitched sounds when they are running. This is due to vibrations in some of their electronic components. These sounds are more than just a nuisance. They can convey information about the software running on the computer. In particular, they can reveal sensitive information about security-related calculations. People have shown that it is possible to recover RSA keys from their sound.
-% Backes et al.~\cite{BDGPS-10-usenix} present an attack that retrieves what a dot-matrix printer is printing from a recording of the sound it makes. Their experiments show that they can recover up to 72\% of the words printed, and up to 95\% if they know the context of the text. For this experiment, they used a dictionary-based approach to printed English words.
-% Genkin et al.~\cite{GST-17-crypto} demonstrated that RSA key extraction using acoustic cryptanalysis was feasible against a Lenovo laptop from a smartphone nearby. The authors targeted GnuPG's RSA implementation using a laboratory microphone setup and a Samsung Note II, and showed that a 4096-bit key could be recovered within an hour using audible and ultrasonic sound emanations. Harrison et al.~\cite{HTM-23-eurospw} present an implementation of a deep-learning model to classify laptop keystrokes using a microphone. They use the trained model to recognise the keystrokes, and they achieve an accuracy of 95\%. They trained their model from a Zoom conference and this time they achieve an accuracy of 93\%. Their results have shown that it is possible to recover password or other secret information of a victim from its keystrokes even without a physical presence.
-
 \subsection{Fault Injection Attacks}
-As early as the 1970s, with advances in the space industry, anomalies in the operation of electronic circuits were observed and possibly linked to cosmic radiation outside the Earth's atmosphere~\cite{BSH-75-tns,Z-96-ibm,ZL-79-science}. These disturbances were initially found to affect the performance of electronic systems in space environments, where high-energy particles could disrupt the normal functioning of circuits. However, as transistors became smaller and required less energy to operate, similar phenomena were observed in terrestrial environments and aircraft systems. These transient disturbances, commonly referred to as "\textit{soft errors}", are now recognised as a critical issue in both space and ground electronics, affecting everything from memory chips to complex processors.
+As early as the 1970s, with advances in the space industry, anomalies in the operation of electronic circuits were observed and possibly linked to cosmic radiation outside the Earth's atmosphere~\cite{BSH-75-tns,Z-96-ibm,ZL-79-science}. These disturbances were initially found to affect the performance of electronic systems in space environments, where high-energy particles could disrupt the normal functioning of circuits. However, as transistors became smaller and required less energy to operate, similar phenomena were observed in terrestrial environments and aircraft systems. These transient disturbances, commonly referred to as "\textit{soft errors}", are now recognised as a critical issue in both space and ground electronics, affecting everything from memory chips to complex processors. Figure~\ref{fig:arbo_fia} shows a representation of a taxonomy to classify the different method of physical attacks. Each type of attacks will be explained in the following.
 
 However, in addition to these induces cosmic faults, wanted faults exist and are known as Fault Injection Attacks (FIA). FIA involves deliberately introducing a fault into the system to observe its behaviour and identify potential vulnerabilities. If the error caused by the fault does not propagate and execution of the application completes normally, the fault is ineffective. On the other hand, if the fault affects the execution of the application, causing it to fail or behave differently than expected, then the fault is effective. These faults can impact the performance, functionality, and reliability of the circuit. These attacks can induce errors in internal electronic components, which can be utilised to recover cryptographic keys and other secret data.
 These attacks have been vastly studied since the first introduction of these attacks by Boneh et al. in 1997~\cite{BDL-97-eurocrypt,BDL-01-crypto}. Multiple studies or surveys~\cite{ZAV-06-jarab, BCNTW-06-procieee, CKNDCTD-21-compsec, PBR-15-dtis, YSW-18-hss, BH-22-access} present the different sources of FIA.
@@ -274,13 +253,13 @@ Figure~\ref{fig:decapsulating_die} shows three different steps to decapsulate a 
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_delidding.jpg}
-        \caption{AMD EPYC 7702 after CPU delidding.}
+        \caption{\hfill AMD EPYC 7702 after CPU delidding.}
         \label{fig:delidding_die}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{c2_soa/img/epyc_7702_packagedRemoved.jpg}
-        \caption{Die shot of the centre die, after removal from processor package.}
+        \caption{\hfill Die shot of the centre die, after removal from processor package.}
         \label{fig:packagedRemoved_die}
     \end{subfigure}
     \caption{Three steps to decapsulate a die (from~\cite{decapping-19-wikipedia})}
@@ -379,7 +358,7 @@ Figure~\ref{fig:clock_glitch} represent an example of a clock glitch attack, whe
 \begin{figure}[ht]
     \centering
     \includegraphics[page=4]{c2_soa/img/physicalAttacks.pdf}
-    \caption{Representation of a clock glitch attack}
+    \caption{Representation of a clock glitch attack (inspired by~\cite{newae_clock})}
     \label{fig:clock_glitch}
 \end{figure}
 
@@ -416,7 +395,8 @@ Hutter et al.~\cite{HS-14-cardis} heat up a microcontroller beyond operating tem
 \paragraph{Electromagnetic fault injections (EMFI)} disrupt the normal operation of a system. In this attack, an attacker generates short bursts of strong electromagnetic fields aimed at a specific part of the device, such as a microcontroller or a processor, in order to induce faults in its execution.
 
 The goal of EMFI is to cause unintended behaviour in the target system by disturbing its internal electrical circuits. These disruptions can lead to various faults, such as skipping instructions, corrupting data, triggering incorrect logic states, or bypassing security checks. By carefully controlling the timing, location, and intensity of the EM pulses, the attacker can influence critical operations within the device, potentially gaining access to sensitive information or compromising the system's security.
-EMFI is particularly effective because it does not require direct physical contact with the system. The state-of-the-art EMFI setups provide millimetre-level precision in spatial location and nanosecond-level precision in the temporal location of the EM pulse. It is worth noting that EMFI can also be considered as invasive, some people classify EMFI into a third class, semi-invasive attacks, because in order to have a better efficiency and accuracy of the EM pulse, the package can be removed to have direct access to the IC.
+EMFI is particularly effective because it does not require direct physical contact with the system. The state-of-the-art EMFI setups provide millimetre-level precision in spatial location and nanosecond-level precision in the temporal location of the EM pulse.
+It's worth noting that EMFI can also be considered invasive. Some classify EMFI into a third category, known as semi-invasive attacks, because the package can be removed to allow direct access to the IC, improving EMFI efficiency and accuracy.
 
 \begin{figure}[ht]
     \centering
@@ -432,7 +412,7 @@ Trouchkine et al.~\cite{TBELB-21-jce} present an approach to recover an AES key,
 \subsubsection{Fault Injection techniques summary}
 Table~\ref{table:fia_techniques} shows a summary of all presented techniques to realise a Fault Injection Attack. Depending on the budget available for the attacker, and the required need for spatial and timing accuracy, the technique can be different.
 
-Clock glitches, voltage glitches, heating attacks and camera flash can cost from few tens of Euros / US Dollars (USD) to less than \$3,000. For EMFI attacks, Chip Shouter~\cite{chipshouter} cost around \$3,000 and more precise setup can cost \$30,000~\cite{BH-22-access}. These techniques are accurate and require a low expertise on the equipment and techniques. On the other hand, for even more precise techniques, such as laser, FIB, or even X-Ray, the cost can go up to millions of USD/Euros as the equipment can be a lot more expensive, such as the equipment needed for X-Ray injection, but an attacker can recover a lot of secret data thanks to these attacks.
+Clock glitches, voltage glitches, heating attacks and camera flash can cost from few tens of Euros / US Dollars (USD) to less than \$3,000. For EMFI attacks, Chip Shouter~\cite{chipshouter} cost around \$3,000 and more precise setup can cost \$30,000~\cite{BH-22-access}. These techniques are accurate and require a low to moderate expertise on the equipment and techniques. The level of expertise required depends on both the equipment and the accuracy of the attack. The more precise the equipment, the higher the level of expertise needed. On the other hand, for even more precise techniques, such as laser, FIB, or even X-Ray, the cost can go up to millions of USD/Euros as the equipment can be a lot more expensive, such as the equipment needed for X-Ray injection, but an attacker can recover a lot of secret data thanks to these attacks.
 
 \begin{table}[ht]
     \centering
@@ -440,15 +420,15 @@ Clock glitches, voltage glitches, heating attacks and camera flash can cost from
     \label{table:fia_techniques}
     \begin{tabular}{@{}rccccc@{}}
         \toprule
-        \textbf{Technique}        & \begin{tabular}{c}\textbf{Precision}\\{\small\textbf{(time)}}\end{tabular} & \begin{tabular}{c}\textbf{Space}\\\textbf{accuracy} \end{tabular}  & \textbf{Cost}              & \textbf{Expertise} & \begin{tabular}{c}\textbf{Damage}\\\textbf{risk} \end{tabular} \\ \midrule
-        Clock Glitches   & High           & Low             & Low           & Low       & Very low      \\
-        Voltage Glitches & Moderate       & Low             & Low           & Low       & Very low      \\
-        Heating attacks  & Very low       & Very low        & Low           & Very low  & Moderate      \\
-        Camera flash     & Moderate       & Low             & Moderate      & Moderate  & High          \\
-        EMFI             & High           & High            & Moderate      & Moderate  & Low           \\
-        Laser            & Very high      & Very high       & High          & High      & Very high     \\
-        Focused Ion Beam & Very high      & Very high       & Very high     & Very high & Very high     \\
-        X-Ray            & Very high      & Very high       & Highest       & Very high & Very low      \\
+        \textbf{Technique} & \begin{tabular}{c}\textbf{Precision}\\{\small\textbf{(time)}}\end{tabular} & \begin{tabular}{c}\textbf{Space}\\\textbf{accuracy} \end{tabular} & \textbf{Cost} & \textbf{Expertise} & \begin{tabular}{c}\textbf{Damage}\\\textbf{risk} \end{tabular} \\ \midrule
+        Clock Glitches     & High                                                                                             & Low                                                               & Low           & Low                & Very low                                                       \\
+        Voltage Glitches   & Moderate                                                                                         & Low                                                               & Low           & Low                & Very low                                                       \\
+        Heating attacks    & Very low                                                                                         & Very low                                                          & Low           & Very low           & Moderate                                                       \\
+        Camera flash       & Moderate                                                                                         & Low                                                               & Moderate      & Moderate           & High                                                           \\
+        EMFI                & High                                                                                             & High                                                              & Moderate      & Low/Moderate       & Low                                                            \\
+        Laser              & Very high                                                                                        & Very high                                                         & High          & High               & Very high                                                      \\
+        Focused Ion Beam   & Very high                                                                                        & Very high                                                         & Very high     & Very high          & Very high                                                      \\
+        X-Ray              & Very high                                                                                        & Very high                                                         & Highest       & Very high          & Very low                                                       \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -489,14 +469,15 @@ The objectives when implementing countermeasures are:
 Countermeasures can be implemented in the physical layer, such as sensors that detect a perturbation. He et al.~\cite{HBB-16-space} propose a full-digital detection logic against laser fault injection. El-Baze et al.~\cite{ERM-16-date} present and validates a new sensor allowing to detect EMFI. Muttaki et al.~\cite{MZTF-22-host} introduce a universal Fault-to-Time Converter sensor that can effectively detect FIA (clock glitch, voltage glitch, laser, EMFI) while requiring minimal overhead.
 
 \subsection{Software countermeasures}
-Software countermeasures target vulnerable parts of the code (loops, memory access, etc.). They are often relatively easy to implement compared with hardware countermeasures. However, they are more likely to be bypassed, as their implementation does not take account of the system's microarchitecture.
+Software countermeasures target vulnerable parts of the code (loops, memory access, etc.). They are often relatively easy to implement compared with hardware countermeasures. However, they are more likely to be bypassed, as their implementation does not take into account the system's microarchitecture.
 In addition, the cost to the performance of the system is significant in terms of memory requirements and execution time~\cite{BCNTW-06-procieee}. The principle of duplication, for example, doubles both the memory space required and the execution time for the protected sections.
 A classic technique is to use temporal or spatial redundancy. Barenghi et al.~\cite{BBKPR-10-wess} suggest tripling instructions by storing the results in different registers. If these registers are different, it means a fault occurred.
 Theißing et al.~\cite{TMSSS-13-date} implemented and systematically analysed a comprehensive set of 19 different software countermeasure strategies for protection effectiveness, time, and memory efficiency.
-% Moro et al.~\cite{MHDRE-14-host} propose the evaluation of two software countermeasures against EMFI.
 Chamelot et al.~\cite{CCH-22-date} present SCI-FI, a countermeasure for Control Signal, Code, and Control-Flow Integrity against Fault Injection attacks.
 Laurent et al.~\cite{LBDPP-19-microproc} analyse some existing countermeasures and show how they handle precise faults extracted from the processor.
-Some countermeasures propose solutions to protect the data linked to the control flow. Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches.
+Some countermeasures propose solutions to protect the data linked to the control flow. For exemple, Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches while preserving the error-detection capabilities at every stage of a conditional branch. They demonstrate this by implementing an encoded comparison using AN-codes. They also integrated this countermeasure in the LLVM compiler to automatically protect conditional branches.
+
+However, even if those countermeasures are good against FIA, they are still sensitive against some attacks and can be bypass by analysing the processor microarchitecture. Laurent et al.~\cite{LBDP-19-date} present an attack where they target hidden registers into a \mbox{RISC-V} processor. They show that even if a code is protected against FIA, they can find some vulnerabilities and bypass the software countermeasures. It is then better to directly implement hardware countermeasures at the lower level to have the best protection available.
 
 \subsection{Hardware countermeasures}
 Hardware countermeasures~\cite{BCNTW-06-procieee, PTAJC-22-appSci} consist of adding hardware mechanisms to the system architecture, which makes them more effective. Adding a countermeasure introduces a loss of performance into the target system. Its implementation usually involves increasing the size of the hardware's area, reducing the maximum frequency, or increasing the power consumption. However, once the implementation is done, an evaluation of the protection is usually done to compare it and give some indications in terms of area, performance, or efficiency.
