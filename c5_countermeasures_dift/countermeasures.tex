@@ -100,11 +100,10 @@ In the second case, two faults happen in the message at bits $d_2$ and $d_5$. So
 \subsection{Implementation: Optimisation of redundancy bits}
 
 In order to implement simple parity, we decided to optimise the number of parity bits. We had many choices, but we decided to form five groups. These groups are composed of one or more register according to their criticality.
-
 Firstly, the two registers that contain the security policy, TCR and TPR, are highly critical. As a result, we have chosen to form a separate group for each of them. Although these registers are 32 bits long, only 22 bits are fully utilised in the current implementation, making bits 22 to 31 unnecessary. Therefore, we have decided not to protect these unused bits or include them in parity calculations.
 Secondly, the third logical group consists of keeping the 32 registers of the register file tag together. Since these registers are already grouped, it makes sense to maintain this grouping.
-This leaves us with one 5-bit register, sixteen 1-bit registers, three 2-bit registers, and one 4-bit register. The 5-bit register is used to store the tag destination address, which is critical. As such, we have decided to create a dedicated group for it. The remaining 20 registers, which total 26 bits, are combined into a final fifth group.
-Table~\ref{tab:sp_group} shows the five groups formed to implement the protection.
+This leaves us with one 5-bit register, sixteen 1-bit registers, three 2-bit registers, and one 4-bit register. The 5-bit register is used to store the tag destination address, which is critical. As such, we have decided to create a dedicated group for it. The remaining 20 registers, which total 26 bits, are combined into a fifth group.
+Table~\ref{tab:sp_group} shows the five groups formed to implement the protection for 107 bits in total. Each group is protected by one parity bit.
 
 \begin{table}[t]
     \centering
@@ -123,6 +122,8 @@ Table~\ref{tab:sp_group} shows the five groups formed to implement the protectio
         \bottomrule
     \end{tabular}
 \end{table}
+
+Figure~\ref{fig:implementation_sp} presents our proposed implementation for the simple parity. This implementation is simple. In order to protect a register, it takes its input and send its input into both the protected register and an encoder.
 
 \begin{figure}[ht]
     \centering
