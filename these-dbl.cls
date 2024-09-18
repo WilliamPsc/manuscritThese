@@ -106,6 +106,7 @@
 \RequirePackage{lscape} % Landscape tables
 \RequirePackage{siunitx} % SIU
 \RequirePackage{arydshln}
+\RequirePackage{fp}
 
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}

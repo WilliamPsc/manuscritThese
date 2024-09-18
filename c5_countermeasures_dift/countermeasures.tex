@@ -10,6 +10,7 @@ Previous chapters have shown that the D-RI5CY's DIFT security mechanism is vulne
 In this chapter, we present two countermeasures in order to protect the DIFT against fault injection attacks, and bit-flip.
 The first countermeasure implemented to detect and prevent the use of corrupted data is simple parity. We selected the simple parity code as the error detection countermeasure because of its suitability and limited overhead. However, parity codes are limited in that they can only detect, but not correct, single-bit errors.
 The second countermeasure is implemented to detect any single-bit errors that may occur, but also to correct them without time overhead. With this countermeasure, we want to correct to the nearest cycle so that the fault cannot propagate and give a potential attacker the impression that the fault he injected had no effect on the system.
+This chapter presents the work done during a 4-month research stay, funded by the \textit{Collège Doctoral de Bretagne}, \textit{GDR ISIS (CNRS)}, and the \textit{Université Bretagne Sud}, within the \textit{ALaRI} laboratory (\textit{Advanced Learning and Research Institute}) in the \textit{Università della Svizzera Italiana} in Lugano, Switzerland.
 This work has been published in ISVLSI 2024~\cite{PRLG-24-isvlsi}.
 
 The first section of this chapter presents the different fault models considered. Then, the second section details the implementation of simple parity and briefly presents how it works. Afterwards, the third section presents the working of Hamming code, with a simple example, and details our implementation. Finally, we discuss these countermeasures and compare them.
@@ -244,11 +245,11 @@ As in the previous case, the decoder allows the detection of an error due to a b
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Evaluation and discussion}
+\section{Evaluation results}
 
-This section presents logical fault injection simulation results considering two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. For protected implementations, faults are injected into both DIFT-related and protection-related registers.
+This section presents logical fault injection simulation results considering our two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. For protected implementations, faults are injected into both DIFT-related and protection-related registers.
 
-Table~\ref{tab:chap5_implementation} presents the results of the FPGA implementation using Vivado 2023.2, targeting the Xilinx Zynq-7000 of the Zedboard development board, comparing different protection mechanisms in terms of resource utilisation and maximum operating frequency. The table lists the number of Look-Up Tables (LUTs), the number of Flip-Flops (FFs), and the maximum achievable frequency for each protection scheme. The "D-RI5CY" protection mechanism serves as the reference. The baseline version represents the processor without the DIFT protection, showing a reduction in both LUT and FF usage by 4.54\% and 5.31\%, respectively, while achieving a 3\% improvement in maximum frequency compared to the baseline.
+Table~\ref{tab:chap5_implementation} presents the results of the FPGA implementation using Vivado 2023.2, targeting the Xilinx Zynq-7000 of the Zedboard development board, comparing different protection mechanisms in terms of resource utilisation and maximum operating frequency. The table lists the number of Look-Up Tables (LUTs), the number of Flip-Flops (FFs), and the maximum achievable frequency for each protection scheme. The D-RI5CY mechanism serves as reference. The baseline version represents the processor without the DIFT protection, showing a reduction in both LUT and FF usage by 4.54\% and 5.31\%, respectively, while achieving a 3\% improvement in maximum frequency compared to the D-RI5CY.
 Simple parity protection slightly increases LUT usage by 1.45\%, with negligible impact on FFs and no change in the maximum frequency. The Hamming Code protection implementation introduces the most significant overhead, with a 5.38\% increase in LUTs and a 1.11\% increase in FFs, alongside a minor reduction in maximum frequency by 0.36\%.
 This comparison highlights the trade-offs between resource utilisation and performance across different protection mechanisms in FPGA implementations.
 
@@ -269,7 +270,10 @@ This comparison highlights the trade-offs between resource utilisation and perfo
     \end{tabular}
 \end{table}
 
-Regarding the "\textit{single bit-flip in one register at a given clock cycle}" fault model, Table~\ref{tab:chap5_results_single_bitflip} shows the results obtained for the three considered use cases with and without protections. It is worth noting that we never get any crashes since we target the DIFT-related registers only. These registers do not impact the control or instruction flow executed by the processor.
+Now, we will compare these protections in terms of efficiency.
+Regarding the "\textit{single bit-flip in one register at a given clock cycle}" fault model, Table~\ref{tab:chap5_results_single_bitflip} shows the results obtained for the three considered use cases with and without protections. It is worth noting that we never get any crashes since we target the DIFT-related registers only. These registers do not impact the control or instruction flow of the processor.
+The results obtained without protection are from Chapter~\ref{chapter:dift_assessment}. We obtain \compute{12+29+10}{0} successes out of \compute{762+1016+508}{0} fault injection simulations.
+Conversely, when employing simple parity protection, none of the \compute{792+1056+528}{0} simulations result in success, as each single-fault in this fault model is detected, achieving a 100\% detection rate. With simple parity, an error signal is generated, which can be intercepted by a software running in the system to handle the fault, potentially halting the application if necessary. In contrast, the Hamming code protection corrects the fault within the same cycle it occurs, without providing any direct indication to the attacker. The results from the Hamming code simulations also show 0 success, but this time 100\% of the faults are corrected. This ensures the application continues running as if no fault occurred. From the attacker’s perspective, the fault does not affect the system’s behaviour in any way.
 
 \begin{table}[t]
     \footnotesize
@@ -286,14 +290,12 @@ Regarding the "\textit{single bit-flip in one register at a given clock cycle}" 
         \multirow{3}{*}{Format String}     & No protection & 0     & 946    & 41    & —         & —                                                                 & 29 (2.85\%) & 1,016 \\
                                            & Simple parity & 0     & 0      & 0     & 1,056     & —                                                                 & 0           & 1,056 \\
                                            & Hamming Code  & 0     & 0      & 0     & —         & 1,216                                                             & 0           & 1,216 \\\midrule
-        \multirow{3}{*}{Compare / Compute} & No protection & 0     & 491    & 7     & —         & —                                                                 & 10          & 508   \\
-                                           & Simple parity & 0     &        &       &           & —                                                                 &             &       \\
-                                           & Hamming Code  & 0     & 608    & 0     & 0         & 0                                                                 & 0 (0.00\%)  & 608   \\
+        \multirow{3}{*}{Compare / Compute} & No protection & 0     & 491    & 7     & —         & —                                                                 & 10 (1.97\%) & 508   \\
+                                           & Simple parity & 0     & 0      & 0     & 528       & —                                                                 & 0           & 528   \\
+                                           & Hamming Code  & 0     & 0      & 0     & —         & 608                                                               & 0           & 608   \\
         \bottomrule
     \end{tabular}
 \end{table}
-
-Table~\ref{tab:chap5_results_tempo} presents the results obtained considering the "\textit{single bit-flip in two registers at two clock cycles}" fault model. It shows that without any protection 2,159 fault injections among 241,935 (0.89\%) lead to a successful attack for the buffer overflow use case while we observe 10,160 successes among 451,612 (2.25\%) for the format string use case.
 
 \begin{table}[t]
     \footnotesize
@@ -311,13 +313,22 @@ Table~\ref{tab:chap5_results_tempo} presents the results obtained considering th
                                            & Simple parity & 0     & 0       & 0      & 487,872   & —                                                                 & 0               & 487,872 \\
                                            & Hamming Code  & 0     & 0       & 0      & —         & 646,912                                                           & 0               & 646,912 \\\midrule
         \multirow{3}{*}{Compare / Compute} & No protection & 0     & 90,432  & 2,795  & —         & —                                                                 & 3,547 (3.67\%)  & 96,774  \\
-                                           & Simple parity & 0     &         &        &           & —                                                                 &                 &         \\
-                                           & Hamming Code  & 0     & 0       & 84     & —         & 138,624                                                           & 0 (0.0\%)       & 138,624 \\
+                                           & Simple parity & 0     & 0       & 0      & 104,544   & —                                                                 & 0               & 104,544 \\
+                                           & Hamming Code  & 0     & 0       & 0      & —         & 138,624                                                           & 0               & 138,624 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
+Table~\ref{tab:chap5_results_tempo} presents the results obtained considering the "\textit{single bit-flip in two registers at two clock cycles}" fault model.  We conducted \num{2776193} simulations to present the results of this new fault model. For each simulations, we choose two bits in the same register or two registers and we choose two different cycles, then, we flip one bit at a first cycle and flip the other one at the other cycle.
+It shows that without any protection \num{15866} fault injections successes among \compute{241935+451612+96774}{0} simulations (\compute{(15866/(241935+451612+96774))*100}{2}\%) lead to a successful attack the three use case.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
+In this chapter, we presented two countermeasures in order to protect the DIFT mechanism against fault injection attacks. For that, we considered two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. These fault models are used in real world fault injection attacks.
+The first countermeasure is based on parity code: simple parity and can be used to detect any errors. Thanks to this protection, we achieve a 100\% fault detection in our considered fault model but with the down side of giving an indication to the attacker as we emit a signal which can be catched by a running software to halt the application. In the other hand, we implemented a code-based protection: Hamming code. This protection is limited to only detection and correction of an error in our case. We propose two implementations. The first implementation is used to protect a set of registers together. The second implementation targets the protection of the \textit{Register File Tag} with constraints such as the number of write ports available. Thanks to these implementations, we are able to handle 100\% of the injected fault and correct them without any direct indication to the attacker.
+These two countermeasures give effective results against the fault models we have considered, while on the other hand, they have a limited impact on system performance and surface area.
+
+In the next chapter, we will evaluate these protections against more complex fault models such as multi bit-flip fault and explore different group composition in order to have a more robust protection against a wider range of attacks and fault models.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

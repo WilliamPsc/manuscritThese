@@ -29,6 +29,15 @@
 \setcounter{minitocdepth}{2}
 \usepackage{lipsum}
 
+%%%%%%%%%%%%%%%%%%%%% FP calculations %%%%%%%%%%%%%%%%%%%%%
+\sisetup{
+    round-mode = places,
+    round-precision = 2,
+    group-separator = {,},
+    zero-decimal-to-integer = true
+}
+\newcommand{\compute}[2]{\FPeval{\result}{round(#1, #2)}\num{\result}}
+
 %%%%%%%%%%%%%%%%%%%%% Epigraph configuration %%%%%%%%%%%%%%%%%%%%%
 \usepackage{calrsfs}
 \usepackage{dutchcal}
@@ -118,7 +127,7 @@
 \input{./c5_countermeasures_dift/countermeasures}
 
 \clearemptydoublepage
-\input{./c6_results/results}
+\input{./c6_group_composition/group_composition}
 
 \clearemptydoublepage
 \backmatter
