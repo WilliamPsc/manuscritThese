@@ -98,7 +98,7 @@ In the first example, Figure~\ref{fig:simpleparity_faulted_example_3}, the bit $
 In the second case, two faults happen in the message at bits $d_2$ and $d_5$. So, the faulted message is \texttt{0b1101001}, then, when the parity is computed, the parity bit will not change as there is still an even number of \texttt{1} compared to the initial message. This shows the limitation of this code.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Implementation: Optimisation of redundancy bits}
+\subsection{Strategy 1: Minimisation of redundancy bits}
 
 In order to implement simple parity, we decided to optimise the number of parity bits. We had many choices, but we decided to form five groups. These groups are composed of one or more register according to their criticality.
 Firstly, the two registers that contain the security policy, TCR and TPR, are highly critical. As a result, we have chosen to form a separate group for each of them. Although these registers are 32 bits long, only 22 bits are fully utilised in the current implementation, making bits 22 to 31 unnecessary. Therefore, we have decided not to protect these unused bits or include them in parity calculations.
@@ -203,7 +203,7 @@ Once the calculations are done, the redundancy bits are allowed to check the int
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Implementation 1: Optimisation of redundancy bits}
+\subsection{Strategy 1: Minimisation of redundancy bits}
 
 In order to implement Hamming code, we used the same idea as the previous countermeasure: redundancy bits optimisation. We used the same five groups formed as depicted in Table~\ref{tab:hammingcode_group}. As we only protect 22 bits of the 32 bits from TCR and TPR registers, we only need 5 bits of redundancy each, instead of 6 bits each.
 

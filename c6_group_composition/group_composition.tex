@@ -5,23 +5,37 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-The previous chapter presented two countermeasures against fault injection attacks and taking into account simple fault models, such as single-bit flip error inside one register at a given clock cycle. These countermeasures have been implemented by grouping the different registers in order to reduce the number of parity and redundancy bits. However nowadays, studies~\cite{CGVCBLC-22-cardis,VDSPB-24-jce} have shown that is it possible to fault multiple bits precisely.
+The previous chapter presented two countermeasures against fault injection attacks and taking into account simple fault models, such as \textit{single-bit flip inside one register at a given clock cycle}. These countermeasures have been implemented by grouping the different DIFT-related registers in order to minimise the number of parity and redundancy bits. However, nowadays, studies~\cite{CGVCBLC-22-cardis,VDSPB-24-jce} have shown that is it possible to fault multiple bits precisely.
 
-In this chapter, we present four different implementations of countermeasures to better protect the D-RI5CY mechanism against more complex fault models. Each implementation will be presented in their respective section. Next, we implement another version of Hamming code to detect double-bit errors and correct single-bit errors, this method is called SECDED for \textit{Single Error Correction, Double Error Detection}.
+In this chapter, we present four different implementation's strategies of countermeasures to better protect the D-RI5CY mechanism against more complex fault models. Each implementation will be presented in their respective section. Additionnally, we implement another version of Hamming code to detect double-bit errors and correct single-bit errors, this method is called SECDED for \textit{Single Error Correction, Double Error Detection}. We do not present simple parity in this chapter because, from the results of the previous chapter, it is better to use Hamming code as it can correct the fault instead of just emitting a fault detection signal according the difference in terms of area and performance overheads.
 
-The first section of this chapter presents the different fault models considered. Then, the second section explains the 4 different implementations of Hamming code and gives the results associated to the fault models. The third section introduces SECDED countermeasure and gives the results associated to the five re-implementations done for this new protection. Finally,  we compare the results obtained from these two countermeasures and evaluate them in terms of efficiency, performance, and area overhead.
+Section~\ref{section:chap6_faultmodels} introduces the different fault models considered.
+% Then, section~\ref{section:chap6_simple_parity} presents the results associated to the Simple Parity against the fault models considered in this chapter.
+Then, section~\ref{section:chap6_hammingcode} explains the four different strategies for Hamming code and gives the results associated to the fault models.
+Section~\ref{section:chap6_secded} introduces the SECDED countermeasure and gives the results associated to the five implementations.
+Finally in section~\ref{section:chap6_discussion}, we compare the results obtained from these two countermeasures and evaluate them in terms of efficiency, performance, and area overhead.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fault models used in this chapter}
+\label{section:chap6_faultmodels}
+In Chapter~\ref{chapter:countermeasures}, we presented the results of fault injection campaigns targeting \textit{a single bit-flip in one register at a given clock cycle}, and \textit{a single bit-flip in two registers at two distinct clock cycles}. We demonstrated that lightweight countermeasures, such as simple parity or Hamming code, are effective in protecting our DIFT mechanism against single bit-flips occurring in one register at one clock cycle or in two registers at two clock cycles.
 
+In this chapter, we extend our analysis to consider an attacker capable of injecting faults into DIFT-related registers, leading to \textit{a single bit-flip in two registers at a given clock cycle}. Furthermore, we account for an attacker able to induce \textit{multi-bit faults in one target at a given clock cycle} as well as \textit{multi-bit faults in two targets at a given clock cycle}. These fault models, introduced in Chapter~\ref{chapter:fissa}, are exhaustively tested across registers ranging from 1-bit to 6-bit in size. Registers larger than 10 bits, such as the configuration registers TPR and TCR, are excluded due to their size. For instance, simulating an exhaustive attack on a single 32-bit register for one cycle would require $2^{32}$ simulations (i.e: \powerTwo{pow(32,2)}{0} simulations), and for two 32-bit registers, the number of simulations would reach $2^{32} \times 2^{32}$.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Countermeasure 1: Simple Parity}
+The two fault models are exhaustively simulated across all possible values of these registers. To meet this objective, any DIFT-related register that maintains a 1-bit tag value, drives tag propagation or tag update processes, or holds security policy configurations, can be targeted. Additionally, registers storing redundancy bits for protection mechanisms are also considered.
 
-\subsection{Implementation 1: Optimisation of redundancy bits}
+  
+\wip{ajouter temps de simulations dans tableaux de campagnes d'injections (3 dans chapitre 3 (3.9 - 3.11) / 2 chapitres 5 (5.5 - 5.6))}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Countermeasure 1: Simple Parity}
+% \label{section:chap6_simple_parity}
+
+% \subsection{Implementation 1: Optimisation of redundancy bits}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Countermeasure 2: Hamming Code}
+\label{section:chap6_hammingcode}
 
 \subsection{Implementation 2: Protection by pipeline stage}
 
@@ -31,8 +45,11 @@ The first section of this chapter presents the different fault models considered
 
 \subsection{Implementation 5: Cooking spaghetti is not forbidden}
 
+\subsection{Results}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Countermeasure 3: Hamming Code - SECDED}
+\label{section:chap6_secded}
 
 \subsection{Implementation 1: Optimisation of redundancy bits}
 
@@ -44,9 +61,12 @@ The first section of this chapter presents the different fault models considered
 
 \subsection{Implementation 5: Smart protection by pipeline stage}
 
+\subsection{Results}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Discussion}
+\section{Evaluation and discussion}
+\label{section:chap6_discussion}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
