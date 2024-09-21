@@ -1,8 +1,12 @@
-\chapter*{Abstract}
-\label{chapter:abstract}
-\minitoc
+\chapter*{Résumé}
+\label{chapter:resume}
+\addcontentsline{toc}{chapter}{Résumé}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Abstract}
+\label{chapter:abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
 Embedded systems are increasingly prevalent in critical infrastructures such as industries, smart cities, and biomedical devices, improving efficiency and addressing challenges like climate change and health. However, their widespread use also expands the attack surface, creating significant security risks. These systems, typically powered by low-energy processors handling sensitive data, are vulnerable to both software and physical attacks due to their network connectivity and proximity to potential attackers. Hence, addressing both threats during processor designing is essential.
 
 Dynamic Information Flow Tracking (DIFT) techniques, which detect software attacks like buffer overflow and malware by attaching and propagating tags to data at runtime, are a key defence.
@@ -11,3 +15,9 @@ Fault Injection Attacks (FIA) deliberately induce errors in a system's hardware 
 We focus on the \mbox{D-RI5CY} processor, which implements a hardware-based in-core DIFT. Our primary objective is to assess the impact of FIA on the effectiveness of DIFT in the \mbox{D-RI5CY} processor. Through fault injection simulations, we evaluate the vulnerability of DIFT and identify critical hardware components requiring protection. 
 As a result of this evaluation, we implemented two lightweight countermeasures, considering constraints like area and performance: simple parity for error detection and Hamming Code for single-bit error detection and correction. These were optimised by grouping registers to reduce parity/redundancy overhead. The sensitivity evaluation was conducted using FISSA, a tool developed during this PhD work to facilitate fault evaluation at the conceptual stage. This tool allows the enabling of the principle of \textit{Security by Design}.
 Finally, we evaluated the security of multiple register group compositions to enhance countermeasure effectiveness against complex fault models. We tested Hamming Code with five group configurations and developed a new version of the code capable of detecting two errors and correcting one (SECDED). This was compared across the same groups in terms of efficiency and area to find the optimal trade-off for embedded systems with strict energy and performance constraints.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Résumé étendu}
+\label{chapter:extended_resume}
+\addcontentsline{toc}{chapter}{Résumé \'Etendu}
