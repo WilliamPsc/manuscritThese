@@ -591,13 +591,13 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
     \footnotesize
     \caption{Results for \textit{bit reset} for the baseline version}
     \label{table:end_sim_by_status_wop_1_set0}
-    \begin{tabular}{@{}lccccc@{}}
+    \begin{tabular}{@{}lcccccc@{}}
         \toprule
-                        & Crash & Silent & Delay & Success     & Total \\
+                        & Crash & Silent & Delay & Success     & Total & Execution time \\
         \midrule
-        Buffer Overflow & 0     & 320    & 1     & 9 (2.73\%)  & 330   \\
-        WU-FTPd         & 0     & 424    & 0     & 16 (3.64\%) & 440   \\
-        Compare/Compute & 0     & 213    & 0     & 7 (3.18\%)  & 220   \\
+        Buffer Overflow & 0     & 320    & 1     & 9 (2.73\%)  & 330   & 0:04           \\
+        WU-FTPd         & 0     & 424    & 0     & 16 (3.64\%) & 440   & 0:47           \\
+        Compare/Compute & 0     & 213    & 0     & 7 (3.18\%)  & 220   & 0:01           \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -607,13 +607,13 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
     \footnotesize
     \caption{Results for \textit{bit set} for the baseline version}
     \label{table:end_sim_by_status_wop_1_set1}
-    \begin{tabular}{@{}lccccc@{}}
+    \begin{tabular}{@{}lcccccc@{}}
         \toprule
-                        & Crash & Silent & Delay & Success    & Total \\
+                        & Crash & Silent & Delay & Success    & Total & Execution time \\
         \midrule
-        Buffer Overflow & 0     & 320    & 7     & 3 (0.91\%) & 330   \\
-        WU-FTPd         & 0     & 397    & 36    & 7 (1.59\%) & 440   \\
-        Compare/Compute & 0     & 213    & 5     & 2 (0.91\%) & 220   \\
+        Buffer Overflow & 0     & 320    & 7     & 3 (0.91\%) & 330   & 0:04           \\
+        WU-FTPd         & 0     & 397    & 36    & 7 (1.59\%) & 440   & 0:48           \\
+        Compare/Compute & 0     & 213    & 5     & 2 (0.91\%) & 220   & 0:01           \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -623,13 +623,13 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
     \footnotesize
     \caption{Results for a \textit{single bit-flip} for the baseline version}
     \label{table:end_sim_by_status_wop_1_bitflip}
-    \begin{tabular}{@{}lccccc@{}}
+    \begin{tabular}{@{}lcccccc@{}}
         \toprule
-                        & Crash & Silent & Delay & Success   & Total \\
+                        & Crash & Silent & Delay & Success     & Total & Execution time \\
         \midrule
-        Buffer Overflow & 0     & 738    & 12    & 12 (1.57\%) & 762   \\
-        WU-FTPd         & 0     & 946    & 41    & 29 (2.85\%) & 1016  \\
-        Compare/Compute & 0     & 491    & 7     & 10 (1.97\%) & 508   \\
+        Buffer Overflow & 0     & 738    & 12    & 12 (1.57\%) & 762   & 0:11           \\
+        WU-FTPd         & 0     & 946    & 41    & 29 (2.85\%) & 1016  & 01:52          \\
+        Compare/Compute & 0     & 491    & 7     & 10 (1.97\%) & 508   & 0:02           \\
         \bottomrule
     \end{tabular}
 \end{table}

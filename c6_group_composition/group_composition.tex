@@ -16,7 +16,7 @@ Section~\ref{section:chap6_secded} introduces the SECDED countermeasure and give
 Finally in section~\ref{section:chap6_discussion}, we compare the results obtained from these two countermeasures and evaluate them in terms of efficiency, performance, and area overhead.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fault models used in this chapter}
+\section{Fault models considered in this chapter}
 \label{section:chap6_faultmodels}
 In Chapter~\ref{chapter:countermeasures}, we presented the results of fault injection campaigns targeting \textit{a single bit-flip in one register at a given clock cycle}, and \textit{a single bit-flip in two registers at two distinct clock cycles}. We demonstrated that lightweight countermeasures, such as simple parity or Hamming code, are effective in protecting our DIFT mechanism against single bit-flips occurring in one register at one clock cycle or in two registers at two clock cycles.
 
@@ -24,44 +24,43 @@ In this chapter, we extend our analysis to consider an attacker capable of injec
 
 The two fault models are exhaustively simulated across all possible values of these registers. To meet this objective, any DIFT-related register that maintains a 1-bit tag value, drives tag propagation or tag update processes, or holds security policy configurations, can be targeted. Additionally, registers storing redundancy bits for protection mechanisms are also considered.
 
-  
-\wip{ajouter temps de simulations dans tableaux de campagnes d'injections (3 dans chapitre 3 (3.9 - 3.11) / 2 chapitres 5 (5.5 - 5.6))}
-
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{Countermeasure 1: Simple Parity}
-% \label{section:chap6_simple_parity}
+\section{Simple Parity}
+\label{section:chap6_simple_parity}
 
-% \subsection{Implementation 1: Optimisation of redundancy bits}
+\subsection{Strategy 1: Minimisation of redundancy bits}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Countermeasure 2: Hamming Code}
+\section{Hamming Code}
 \label{section:chap6_hammingcode}
 
-\subsection{Implementation 2: Protection by pipeline stage}
+\subsection{Strategy 1: Minimisation of redundancy bits}
 
-\subsection{Implementation 3: Protection of all registers individually}
+\subsection{Strategy 2: Protection by pipeline stage}
 
-\subsection{Implementation 4: Protection of all registers individually with CSRs slicing}
+\subsection{Strategy 3: Protection of all registers individually}
 
-\subsection{Implementation 5: Cooking spaghetti is not forbidden}
+\subsection{Strategy 4: Protection of all registers individually with CSRs slicing}
+
+\subsection{Strategy 5: Cooking spaghetti is not forbidden}
 
 \subsection{Results}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Countermeasure 3: Hamming Code - SECDED}
+\section{Hamming Code - SECDED}
 \label{section:chap6_secded}
 
 \subsection{Presentation of Hamming Code - SECDED}
 
-\subsection{Implementation 1: Optimisation of redundancy bits}
+\subsection{Strategy 1: Optimisation of redundancy bits}
 
-\subsection{Implementation 2: Protection by pipeline stage}
+\subsection{Strategy 2: Protection by pipeline stage}
 
-\subsection{Implementation 3: Protection of all registers individually}
+\subsection{Strategy 3: Protection of all registers individually}
 
-\subsection{Implementation 4: Protection of all registers individually with CSRs slicing}
+\subsection{Strategy 4: Protection of all registers individually with CSRs slicing}
 
-\subsection{Implementation 5: Smart protection by pipeline stage}
+\subsection{Strategy 5: Smart protection by pipeline stage}
 
 \subsection{Results}
 

@@ -1,34 +1,104 @@
-\chapter{Countermeasures Implementations}
-\chaptermark{Countermeasures Implementations}
+\chapter{Error Detection and Correction Codes to Protect an In-Core DIFT against FIA}
+\chaptermark{Error Detection and Correction codes to protect an In-Core DIFT against FIA}
 \label{chapter:countermeasures}
 \minitoc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-Previous chapters have shown that the D-RI5CY's DIFT security mechanism is vulnerable to FIAs, mainly due to single-bit flips. This D-RI5CY essentially uses single-bit registers, as its data path is a single bit.
+Previous chapters have shown that the D-RI5CY's DIFT security mechanism is vulnerable to FIAs, mainly due to single-bit flips. This D-RI5CY essentially uses single-bit registers, as it relies on 1-bit tags.
 
-In this chapter, we present two countermeasures in order to protect the DIFT against fault injection attacks, and bit-flip.
+In this chapter, we present two countermeasures in order to protect the DIFT against fault injection attacks.
 The first countermeasure implemented to detect and prevent the use of corrupted data is simple parity. We selected the simple parity code as the error detection countermeasure because of its suitability and limited overhead. However, parity codes are limited in that they can only detect, but not correct, single-bit errors.
 The second countermeasure is implemented to detect any single-bit errors that may occur, but also to correct them without time overhead. With this countermeasure, we want to correct to the nearest cycle so that the fault cannot propagate and give a potential attacker the impression that the fault he injected had no effect on the system.
 This chapter presents the work done during a 4-month research stay, funded by the \textit{Collège Doctoral de Bretagne}, \textit{GDR ISIS (CNRS)}, and the \textit{Université Bretagne Sud}, within the \textit{ALaRI} laboratory (\textit{Advanced Learning and Research Institute}) in the \textit{Università della Svizzera Italiana} in Lugano, Switzerland.
 This work has been published in ISVLSI 2024~\cite{PRLG-24-isvlsi}.
 
-The first section of this chapter presents the different fault models considered. Then, the second section details the implementation of simple parity and briefly presents how it works. Afterwards, the third section presents the working of Hamming code, with a simple example, and details our implementation. Finally, we discuss these countermeasures and compare them.
+The first section of this chapter presents the different fault models considered. Then, the second section presents simple parity and details its implementation. Afterwards, the third section presents Hamming code principles, with a simple example, and details our implementation. Finally, we discuss these countermeasures and compare them.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fault models used in this chapter}
+\section{Fault models considered in this chapter}
 In Chapter~\ref{chapter:dift_assessment}, we assessed the D-RI5CY design by considering \textit{single bit-flip in one register at a given clock cycle}, \textit{bit reset}, and \textit{bit set} fault models. The conclusion of this chapter was that the D-RI5CY is vulnerable mostly to single bit-flip, due to the fact that this DIFT design is mostly built around 1-bit registers for tag propagation.
 
-In this chapter, we consider an attacker able to inject faults into DIFT-related registers, leading to single bit-flips at any position of the targeted register. To reach this objective, any DIFT-related register maintaining 1-bit tag value, driving the tag propagation or the tag update process or maintaining the security policy configuration can be targeted. Studies presented in~\cite{ZDCRT-12-dcis,CLFT-14-cosade} have shown that such precise single bit-flip attacks targeting registers can be performed using, for example, laser shots. We also consider an attacker able to inject a \textit{single bit-flip in two registers at two distinct clock cycles}, with a minimum delay of one clock cycle.
+In this chapter, we consider an attacker able to inject faults into DIFT-related registers, leading to single bit-flips at any position of the targeted register. To reach this objective, any DIFT-related register maintaining 1-bit tag value, driving the tag propagation or the tag update process or maintaining the security policy configuration can be targeted. Studies presented in~\cite{ZDCRT-12-dcis,CLFT-14-cosade} have shown that such precise single bit-flip attacks targeting registers can be performed using, for example, laser shots. We also consider an attacker able to inject a \textit{single bit-flip in two registers at two distinct clock cycles}, with a minimum delay of one clock cycle. Nowadays, more and more platform exist to perform multi-bits faults on different targets~\cite{alphanov-doubleLFI,alphanov-fourLFI}.
+
+\begin{table}
+    \centering
+    \scriptsize
+    \caption{D-RI5CY Registers Details List}
+    \label{tab:driscy_register_info}
+    \begin{tabular}{rlc}
+        \toprule
+        Register Name                   & Module                       & Size \\
+        \midrule
+        pc\_id\_o\_tag                  & Instruction Fetch Stage      & 1    \\
+        pc\_if\_o\_tag                  & Instruction Fetch Stage      & 1    \\
+        alu\_operand\_a\_ex\_o\_tag     & Instruction Decode Stage     & 1    \\
+        alu\_operand\_b\_ex\_o\_tag     & Instruction Decode Stage     & 1    \\
+        alu\_operand\_c\_ex\_o\_tag     & Instruction Decode Stage     & 1    \\
+        alu\_operator\_o\_mode          & Instruction Decode Stage     & 2    \\
+        check\_d\_o\_tag                & Instruction Decode Stage     & 1    \\
+        check\_s1\_o\_tag               & Instruction Decode Stage     & 1    \\
+        check\_s2\_o\_tag               & Instruction Decode Stage     & 1    \\
+        is\_store\_post\_o\_tag         & Instruction Decode Stage     & 1    \\
+        memory\_set\_o\_tag             & Instruction Decode Stage     & 1    \\
+        regfile\_alu\_waddr\_ex\_o\_tag & Instruction Decode Stage     & 5    \\
+        register\_set\_o\_tag           & Instruction Decode Stage     & 1    \\
+        store\_dest\_addr\_ex\_o\_tag   & Instruction Decode Stage     & 1    \\
+        store\_source\_ex\_o\_tag       & Instruction Decode Stage     & 1    \\
+        use\_store\_ops\_ex\_o          & Instruction Decode Stage     & 1    \\
+        rf\_reg[0]                      & Register File Tag            & 1    \\
+        rf\_reg[1]                      & Register File Tag            & 1    \\
+        rf\_reg[2]                      & Register File Tag            & 1    \\
+        rf\_reg[3]                      & Register File Tag            & 1    \\
+        rf\_reg[4]                      & Register File Tag            & 1    \\
+        rf\_reg[5]                      & Register File Tag            & 1    \\
+        rf\_reg[6]                      & Register File Tag            & 1    \\
+        rf\_reg[7]                      & Register File Tag            & 1    \\
+        rf\_reg[8]                      & Register File Tag            & 1    \\
+        rf\_reg[9]                      & Register File Tag            & 1    \\
+        rf\_reg[10]                     & Register File Tag            & 1    \\
+        rf\_reg[11]                     & Register File Tag            & 1    \\
+        rf\_reg[12]                     & Register File Tag            & 1    \\
+        rf\_reg[13]                     & Register File Tag            & 1    \\
+        rf\_reg[14]                     & Register File Tag            & 1    \\
+        rf\_reg[15]                     & Register File Tag            & 1    \\
+        rf\_reg[16]                     & Register File Tag            & 1    \\
+        rf\_reg[17]                     & Register File Tag            & 1    \\
+        rf\_reg[18]                     & Register File Tag            & 1    \\
+        rf\_reg[19]                     & Register File Tag            & 1    \\
+        rf\_reg[20]                     & Register File Tag            & 1    \\
+        rf\_reg[21]                     & Register File Tag            & 1    \\
+        rf\_reg[22]                     & Register File Tag            & 1    \\
+        rf\_reg[23]                     & Register File Tag            & 1    \\
+        rf\_reg[24]                     & Register File Tag            & 1    \\
+        rf\_reg[25]                     & Register File Tag            & 1    \\
+        rf\_reg[26]                     & Register File Tag            & 1    \\
+        rf\_reg[27]                     & Register File Tag            & 1    \\
+        rf\_reg[28]                     & Register File Tag            & 1    \\
+        rf\_reg[29]                     & Register File Tag            & 1    \\
+        rf\_reg[30]                     & Register File Tag            & 1    \\
+        rf\_reg[31]                     & Register File Tag            & 1    \\
+        % rf\_reg                         & Register File Tag            & 32   \\
+        rs1\_o\_tag                     & Execute Stage                & 1    \\
+        tcr\_q                          & Control and Status Registers & 32   \\
+        tpr\_q                          & Control and Status Registers & 32   \\
+        data\_type\_q\_tag              & Load/Store Unit              & 2    \\
+        data\_we\_q\_tag                & Load/Store Unit              & 1    \\
+        rdata\_offset\_q\_tag           & Load/Store Unit              & 2    \\
+        rdata\_q\_tag                   & Load/Store Unit              & 4    \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Countermeasure 1: Simple Parity}
+\section{Simple Parity}
 \label{chapter:simpleparity}
 
 Parity codes represent one of the simplest and most fundamental methods for error detection in digital communication systems. Utilised across a wide range of applications, parity codes help ensure data integrity by adding a single parity bit to a block of data. This bit acts as a basic error-detection mechanism, enabling the identification of single-bit errors during transmission. Parity codes are commonly classified into two types: even parity and odd parity. In an even parity system, the parity bit is set such that the total number of 1s in the data block, including the parity bit, is even. Conversely, in an odd parity system, the parity bit is adjusted so that the number of \texttt{1} is odd.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Presentation of the simple parity}
+\subsection{Simple parity in a nutshell}
 The key advantage of parity codes lies in their simplicity and low overhead. A single parity bit, added to each data block, is sufficient to detect any single-bit error in the block. This one bit store the parity of the initial message. Figure~\ref{fig:simpleparity_functionning} shows how the data, in blue, and the parity bit, in red, are associated to form an encoded data.
 
 \begin{figure}[ht]
@@ -38,7 +108,7 @@ The key advantage of parity codes lies in their simplicity and low overhead. A s
     \label{fig:simpleparity_functionning}
 \end{figure}
 
-Equation~\ref{equat:simpleparity} shows how the parity bit is computed. Each bit of the initial message is XOR'd to show parity. Table~\ref{tab:xor_truthtable} present the truth table of XOR operations.
+Equation~\ref{equat:simpleparity} shows how the parity bit is computed. Each bit of the initial message is XOR'd to calculate parity.
 
 \begin{equation} \label{equat:simpleparity}
     \begin{split}
@@ -46,23 +116,23 @@ Equation~\ref{equat:simpleparity} shows how the parity bit is computed. Each bit
     \end{split}
 \end{equation}
 
-\begin{table}[t]
-    \centering
-    \footnotesize
-    \caption{XOR truth table}
-    \label{tab:xor_truthtable}
-    \begin{tabular}{@{}c|c|c@{}}
-        \toprule
-        A & B & $A \oplus B$ \\\midrule
-        0 & 0 & 0            \\
-        0 & 1 & 1            \\
-        1 & 0 & 1            \\
-        1 & 1 & 0            \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+% \begin{table}[t]
+%     \centering
+%     \footnotesize
+%     \caption{XOR truth table}
+%     \label{tab:xor_truthtable}
+%     \begin{tabular}{@{}c|c|c@{}}
+%         \toprule
+%         A & B & $A \oplus B$ \\\midrule
+%         0 & 0 & 0            \\
+%         0 & 1 & 1            \\
+%         1 & 0 & 1            \\
+%         1 & 1 & 0            \\
+%         \bottomrule
+%     \end{tabular}
+% \end{table}
 
-Figures~\ref{fig:simpleparity_example_1} and \ref{fig:simpleparity_example_2} show an example of a message with its parity bit associated. The message is \texttt{0b1001101} in binary. Hence, as there is an even number of '\texttt{1}', the parity bit is set to '\texttt{0}' (cf Table~\ref{tab:xor_truthtable}).
+Figures~\ref{fig:simpleparity_example_1} and \ref{fig:simpleparity_example_2} show an example of a message with its parity bit. The message is \texttt{0b1001101}. Hence, as there is an even number of '\texttt{1}', the parity bit is set to '\texttt{0}'.
 
 \begin{figure}[ht]
     \centering
@@ -89,18 +159,18 @@ Figures~\ref{fig:simpleparity_example_1} and \ref{fig:simpleparity_example_2} sh
         \caption{Two single-bit faults inside the message}
         \label{fig:simpleparity_faulted_example_4}
     \end{subfigure}
-    \caption{Example of a simple parity calculation}
+    \caption{Example of a simple parity calculation and its fault detection capacity}
     \label{fig:simpleparity_example}
 \end{figure}
 
 Figures~\ref{fig:simpleparity_faulted_example_3} and \ref{fig:simpleparity_faulted_example_4} present, respectively, two examples of when a fault occur and when two faults happen.
-In the first example, Figure~\ref{fig:simpleparity_faulted_example_3}, the bit $d_2$ is faulted. As the faulted message is \texttt{0b1001001}, it means that the parity bit will change from \texttt{0} to \texttt{1}. Hence, the fault will be detected as the parity bit differs from the original computed message (Figure~\ref{fig:simpleparity_example_2}).
-In the second case, two faults happen in the message at bits $d_2$ and $d_5$. So, the faulted message is \texttt{0b1101001}, then, when the parity is computed, the parity bit will not change as there is still an even number of \texttt{1} compared to the initial message. This shows the limitation of this code.
+In the first example, Figure~\ref{fig:simpleparity_faulted_example_3}, the bit $d_2$ (from Figure~\ref{fig:simpleparity_functionning}), in red, is faulted. As the faulted message is \texttt{0b1001001}, it means that the new calculated parity bit value should be \texttt{1}. Hence, the fault will be detected as the parity bit differs from the original computed message (Figure~\ref{fig:simpleparity_example_2}).
+In the second case, two faults happen in the message at bits $d_2$ and $d_5$ (from Figure~\ref{fig:simpleparity_functionning}). So, the faulted message is \texttt{0b1101001}, then, when the new parity bit is calculated, the parity bit value will not change as there is still an even number of \texttt{1} compared to the initial message. This shows the limitation of this error detection code.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Strategy 1: Minimisation of redundancy bits}
 
-In order to implement simple parity, we decided to optimise the number of parity bits. We had many choices, but we decided to form five groups. These groups are composed of one or more register according to their criticality.
+In order to implement simple parity, we decided, in a first approach, to optimise the number of parity bits. We had many choices, but we decided to form five groups. These groups are composed of one or more register according to their criticality. All 55 registers are shown in Table~\ref{tab:driscy_register_info}. This Table
 Firstly, the two registers that contain the security policy, TCR and TPR, are highly critical. As a result, we have chosen to form a separate group for each of them. Although these registers are 32 bits long, only 22 bits are fully utilised in the current implementation, making bits 22 to 31 unnecessary. Therefore, we have decided not to protect these unused bits or include them in parity calculations.
 Secondly, the third logical group consists of keeping the 32 registers of the register file tag together. Since these registers are already grouped, it makes sense to maintain this grouping.
 This leaves us with one 5-bit register, sixteen 1-bit registers, three 2-bit registers, and one 4-bit register. The 5-bit register is used to store the tag destination address, which is critical. As such, we have decided to create a dedicated group for it. The remaining 20 registers, which total 26 bits, are combined into a fifth group.
@@ -108,7 +178,7 @@ Table~\ref{tab:sp_group} shows the five groups formed to implement the protectio
 
 \begin{table}[t]
     \centering
-    \small
+    \footnotesize
     \caption{DIFT-related protected registers -- simple parity}
     \label{tab:sp_group}
     \begin{tabular}{@{}ccccc@{}}
@@ -124,7 +194,7 @@ Table~\ref{tab:sp_group} shows the five groups formed to implement the protectio
     \end{tabular}
 \end{table}
 
-Figure~\ref{fig:implementation_sp} presents our proposed implementation for the simple parity. This implementation is straightforward. To protect a register (shown in blue), the input is directed simultaneously to both the protected register and an encoder. The encoder calculates the parity using combinatorial logic, storing the resulting parity bit in a separate register, depicted in red in the figure. The parity bit is stored in this register during the same cycle as the input value is stored in the protected register. Subsequently, the decoder computes the parity of the protected register and compares it with the parity bit stored in the parity bit register. If a difference is detected, it indicates the injection of a fault, which causes a signal to be sent to indicate the error.
+Figure~\ref{fig:implementation_sp} presents our proposed implementation for the simple parity. This implementation is straightforward. To protect a register (shown in blue), the input is directed simultaneously to both the protected register and an encoder. The encoder calculates the parity using combinatorial logic, storing the resulting parity bit in a separate register, depicted in red in the figure. The parity bit is stored in this register during the same cycle as the input value is stored in the protected register. Subsequently, the decoder computes the parity of the protected register and compares it with the parity bit stored in the parity bit register. If a difference is detected, it indicates the injection of a fault, which causes an alert signal to be raised.
 
 \begin{figure}[ht]
     \centering
@@ -134,27 +204,26 @@ Figure~\ref{fig:implementation_sp} presents our proposed implementation for the 
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Countermeasure 2: Hamming Code}
+\section{Hamming Codes}
 \label{chapter:hammingcode}
 
-In digital communication and error correction theory, Hamming code represents a pioneering development in ensuring data integrity during transmission over unreliable channels. Developed by Richard Hamming in 1950~\cite{H-50-bstj}, this class of error-correcting codes is designed to detect and correct single-bit errors and detect (but not correct) two-bit errors. The Hamming code is a linear block code that enhances data transmission reliability by introducing redundancy in a structured manner.
+In digital communication and error correction theory, Hamming codes represent a pioneering development in ensuring data integrity during transmission over unreliable channels. Developed by Richard Hamming in 1950~\cite{H-50-bstj}, this class of error-correcting codes is designed to detect and correct single-bit errors and detect, without the correction part, two-bit errors. The Hamming code is a linear block code that enhances data transmission reliability by introducing redundancy in a structured manner.
 
 The importance of Hamming codes lies not only in their ability to maintain the integrity of data but also in their efficiency relative to other early error correction schemes. As such, Hamming codes have found wide application in areas where high data accuracy is required, such as computer memory systems, telecommunications, and satellite communication. Despite the emergence of more sophisticated error-correcting codes in modern systems, the simplicity and effectiveness of Hamming codes make them a foundational topic in the study of error correction algorithms.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Presentation of Hamming Code}
-
-The fundamental principle behind the Hamming code is the strategic insertion of $r$ redundancy bits at specific positions within a data block of $d$ bits, such that \(2^r \geqslant d + r + 1\).
-These parity bits are used to perform checks on subsets of data bits, allowing the receiver to identify and, in certain cases, correct erroneous bits. The placement and calculation of the parity bits follow a binary positional system (1, 2, 4, 8, 16, \ldots), which forms the core of the error detection and correction mechanism. For example, for an 8-bit word it needs four redundancy bits while for a 32-bit word, it needs only 6 redundancy bits. By positioning the redundancy bits at the indexes of powers of two, it is then possible to correct an error if one is detected. Thus, for example, Hamming Code (11,7), seven bits data ($d_{0}-d_{6}$) and four redundancy bits ($r_{0}-r_{3}$). Data bits and redundancy bits are placed according to Figure~\ref{fig:hamming_functionning}. The most common Hamming Code is the (7,4), which use four data bits and three redundancy bits.
+\subsection{Hamming Code in a nutshell}
 
 \begin{figure}[ht]
     \centering
     \includegraphics[page=1]{c5_countermeasures_dift/img/hamming_bit.pdf}
-    \caption{Hamming code -- functioning}
+    \caption{Hamming code (7,4) -- functioning}
     \label{fig:hamming_functionning}
 \end{figure}
 
-In our example of seven data bits and four redundancy bits, redundancy bits are computed according to Equation~\ref{equat:hamming_encoder}. This equation is also represented in Figure~\ref{fig:hamming_code_example}. If the initial message to be sent is \texttt{0b1001101} in binary, the redundancy bit $r_0$ will be computed as $r_0 = d_{0} \oplus d_{1} \oplus d_{3} \oplus d_{4} \oplus d_{6}$. Thus, $r_0$ will be equals to \texttt{1} as depicted in Figure~\ref{fig:hamming_code_example_2}. In order to formalise this part, a redundancy bit will take into account bits that have a \texttt{1} at the same position as itself ($r_3$ is at position 8 ($1000$ in binary) so it takes all bits that have a \texttt{1} at the same power of 2 ($1001, 1010, 1011, 1100, 1101, 1110, 1111$)). It is worth noting that this code is not fully used, because with four redundancy bits, Hamming code is able to protect up to eleven data bits to form Hamming Code (15,4).
+The fundamental principle behind the Hamming code is the strategic insertion of $r$ redundancy bits at specific positions within a data block of $d$ bits, such that \(2^r \geqslant d + r + 1\).
+These parity bits are used to perform checks on subsets of data bits, allowing the receiver to identify and, in certain cases, correct erroneous bits. The placement and calculation of the parity bits follow a binary positional system (1, 2, 4, 8, 16, \ldots), which forms the core of the error detection and correction mechanism. For example, for an 8-bit word it needs four redundancy bits while for a 32-bit word, it needs only 6 redundancy bits. By positioning the redundancy bits at the indexes of powers of two, it is then possible to correct an error if one is detected. Thus, for example, Hamming Code (11,7) owns seven bits data ($d_{0}-d_{6}$) and four redundancy bits ($r_{0}-r_{3}$). Data bits and redundancy bits are placed according to Figure~\ref{fig:hamming_functionning}. The most common Hamming Codes is the (7,4), which use four data bits and three redundancy bits.
+For this code, redundancy bits are computed according to Equation~\ref{equat:hamming_encoder}. This equation calculation is also represented in Figure~\ref{fig:hamming_code_example}. If the initial message to be sent is \texttt{0b1001101} in binary, the redundancy bit $r_0$ will be computed as $r_0 = d_{0} \oplus d_{1} \oplus d_{3} \oplus d_{4} \oplus d_{6}$. Thus, $r_0$ will be equals to \texttt{1} as depicted in Figure~\ref{fig:hamming_code_example_2}. It is worth noting that this code is not fully used, because with four redundancy bits, Hamming code is able to protect up to eleven data bits to form Hamming Code (15,11).
 
 \begin{equation} \label{equat:hamming_encoder}
     \begin{split}
@@ -164,8 +233,6 @@ In our example of seven data bits and four redundancy bits, redundancy bits are 
         r_{3} = d_{4} \oplus d_{5} \oplus d_{6}
     \end{split}
 \end{equation}
-
-Once the calculations are done, the redundancy bits are allowed to check the integrity of the message and can be used to determine if a fault occurred in the message, redundancy bits included.
 
 \begin{figure}[ht]
     \centering
@@ -198,18 +265,71 @@ Once the calculations are done, the redundancy bits are allowed to check the int
         \caption{Calculation of redundancy bit $r_3$}
         \label{fig:hamming_code_example_5}
     \end{subfigure}
-    \caption{Example of redundancy bits calculations}
+    \caption{Hamming code (7,4) redundancy bits calculations}
     \label{fig:hamming_code_example}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Strategy 1: Minimisation of redundancy bits}
+\begin{equation} \label{equat:hamming_decoder}
+    \begin{split}
+        nr_{0} = r_{0} \oplus d_{0} \oplus d_{1} \oplus d_{3} \oplus d_{4} \oplus d_{6} = 1 \oplus 1 \oplus 0 \oplus 0 \oplus 0 \oplus 1    = 1 \\
+        nr_{1} = r_{1} \oplus d_{0} \oplus d_{2} \oplus d_{3} \oplus d_{5} \oplus d_{6} = 0 \oplus 1 \oplus 1 \oplus 0 \oplus 0 \oplus 1    = 1 \\
+        nr_{2} = r_{2} \oplus d_{1} \oplus d_{2} \oplus d_{3}                           = 0 \oplus 0 \oplus 1 \oplus 0                      = 1 \\
+        nr_{3} = r_{3} \oplus d_{4} \oplus d_{5} \oplus d_{6}                           = 1 \oplus 0 \oplus 0 \oplus 1                      = 0
+    \end{split}
+\end{equation}
 
-In order to implement Hamming code, we used the same idea as the previous countermeasure: redundancy bits optimisation. We used the same five groups formed as depicted in Table~\ref{tab:hammingcode_group}. As we only protect 22 bits of the 32 bits from TCR and TPR registers, we only need 5 bits of redundancy each, instead of 6 bits each.
+Figure~\ref{fig:hamming_code_faulted} presents an example of the detection and correction of an error. Figure~\ref{fig:hamming_code_faulted_1} depicts the message sent \texttt{0b10011100101} (1253 in decimal). A fault occurs during the transmission in the bit $d_3$ (Figure~\ref{fig:hamming_code_faulted_2}). The received message is \texttt{0b10010100101} (1189 in decimal).
+During the verification of the redundancy bits. The equation~\ref{equat:hamming_decoder} shows how the new redundancy bits are calculated from the received redundancy and data bits. The association of these new redundancy bits ($nr_{0}-nr_{3}$) is call the syndrome. This syndrome represents the position of the faulted bit and needs to be read backward from $nr_3$ to $nr_0$. As shown in Equation~\ref{equat:hamming_decoder}, the syndrome equals \texttt{0b0111}. This is the correct position of the fault that happened in Figure~\ref{fig:hamming_code_faulted_2}. The same sequence is realised if a fault happen in a redundancy bit. This can be explained as each data bit is checked by at least two redundancy bits while a redundancy bit is checked only by itself during the decoding phase.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth, page=11]{c5_countermeasures_dift/img/hamming_bit.pdf}
+        \caption{Initial message}
+        \label{fig:hamming_code_faulted_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth, page=12]{c5_countermeasures_dift/img/hamming_bit.pdf}
+        \caption{Injection of a fault in bit $d_3$}
+        \label{fig:hamming_code_faulted_2}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth, page=13]{c5_countermeasures_dift/img/hamming_bit.pdf}
+        \caption{Calculation of redundancy bit $r_1$}
+        \label{fig:hamming_code_faulted_3}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth, page=14]{c5_countermeasures_dift/img/hamming_bit.pdf}
+        \caption{Calculation of redundancy bit $r_2$}
+        \label{fig:hamming_code_faulted_4}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth, page=15]{c5_countermeasures_dift/img/hamming_bit.pdf}
+        \caption{Calculation of redundancy bit $r_3$}
+        \label{fig:hamming_code_faulted_5}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth, page=16]{c5_countermeasures_dift/img/hamming_bit.pdf}
+        \caption{Calculation of redundancy bit $r_4$}
+        \label{fig:hamming_code_faulted_6}
+    \end{subfigure}
+    \caption{Example of a faulted message with Hamming code (7,4)}
+    \label{fig:hamming_code_faulted}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Strategy: Minimisation of redundancy bits}
+
+In order to implement Hamming code, we used the same idea as the previous countermeasure: redundancy bits optimisation. We used the same five groups as depicted in Table~\ref{tab:hammingcode_group}. As we only protect 22 bits of the 32 bits from TCR and TPR registers, we only need 5 bits of redundancy, instead of 6 bits.
 
 \begin{table}[t]
     \centering
-    \small
+    \footnotesize
     \caption{DIFT-related protected registers -- Hamming code}
     \label{tab:hammingcode_group}
     \begin{tabular}{@{}ccccc@{}}
@@ -225,7 +345,7 @@ In order to implement Hamming code, we used the same idea as the previous counte
     \end{tabular}
 \end{table}
 
-Figure~\ref{fig:implementation_hc_1} presents our proposed implementation for Hamming code. We do not integrate control signals for clarity. This implementation is straightforward. In order to protect a register or multiples independent registers, we choose to send the input(s) directly to both the protected register(s) (shown in blue) and an encoder. The encoder calculates the different redundancy bits using combinatorial logic, storing the resulting redundancy bits in a separate register, depicted in red in the figure. The redundancy bits are stored in this register at the same cycle as the input(s) value are stored in the protected register(s). Subsequently, the decoder computes the parity of the protected register and compares it with the redundancy bits stored in the redundancy bits register. If a difference is detected, it indicates the injection of a fault, which causes a signal to be sent to indicate the detection. But also, thanks to Hamming code, we are able to determine where the fault happened and so the decoder will correct the faulted value (dashed arrows). Then this corrected value will be sent to the pipeline, and at the same time, we correct the faulted register.
+Figure~\ref{fig:implementation_hc_1} presents the proposed implementation for Hamming code. We do not integrate control signals for clarity. This implementation is straightforward. In order to protect a register or multiples independent registers, we choose to send the input(s) directly to both the protected register(s) (shown in blue) and an encoder. The encoder calculates the different redundancy bits using combinatorial logic, storing the resulting redundancy bits in a separate register, depicted in red in the figure. The redundancy bits are stored in this register at the same cycle as the input(s) value are stored in the protected register(s). Subsequently, the decoder computes the parity of the protected register and compares it with the redundancy bits stored in the redundancy bits register. If a difference is detected, it indicates the injection of a fault, which causes a signal to be sent to indicate the detection. But also, thanks to Hamming code, we are able to determine where the fault happened and so the decoder will correct the faulted value (dashed arrows). Then this corrected value will be sent to the pipeline, and at the same time, we correct the faulted register.
 
 \begin{figure}[ht]
     \centering
@@ -234,22 +354,37 @@ Figure~\ref{fig:implementation_hc_1} presents our proposed implementation for Ha
     \label{fig:implementation_hc_1}
 \end{figure}
 
-Figure~\ref{fig:implementation_hc_2} presents our proposed implementation for Hamming code. This implementation protects with six redundancy bits the 32 1-bit registers of the Register File Tag of our processor, because the structure is different from the others registers. We choose to send the input directly to both the protected register (shown in blue) and an encoder. 
-As in the previous case, the decoder allows the detection of an error due to a bit-flip fault in one of the registers. With Hamming Code protection, the decoder produces corrected outputs (dashed arrows) which are propagated to the tag register outputs. If a fault is detected, the corrected output is forwarded to the tag register interface. As soon as one of the two input ports is available, this corrected value is stored in the faulty register to correct the detected fault. A fresh input value has priority on the corrected value to ensure the data flow correctness. It is worth noting that to minimise the impact on the original D-RI5CY tag register file design, we have chosen to rely on the existing 2 input ports interfaces instead of adding a third input port dedicated to correction.
+In order to protect the set of 32 1-bit registers from the Register File Tag, we rely on a slightly different approach. Figure~\ref{fig:implementation_hc_2} presents the second approach with six redundancy bits.
+We have developed a slightly different approach to minimise the impact on the original design of the D-RI5CY tag register file. Basically, we use the existing 2 input ports interfaces instead of adding a third input port dedicated to correction. We choose to send the input directly to both the protected register (shown in blue) and an encoder. 
+As in the previous case, the decoder allows the detection of an error due to a bit-flip fault in one of the registers. With Hamming Code protection, the decoder produces corrected outputs (dashed arrows) which are propagated to the tag register outputs. If a fault is detected, the corrected output is forwarded to the tag register interface. As soon as one of the two input ports is available, this corrected value is stored in the faulty register to correct the detected fault. A fresh input value has priority on the corrected value to ensure the data flow correctness. 
 
 \begin{figure}[ht]
     \centering
     \includegraphics[page=3, width=\textwidth]{c5_countermeasures_dift/img/archi_contremesures.pdf}
-    \caption{Implementation of Hamming Code -- Register Tile Tag}
+    \caption{Implementation of Hamming Code -- Register File Tag}
     \label{fig:implementation_hc_2}
 \end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hamming Codes - SECDED}
+\label{section:chap5_secded}
+
+\wip{revoir entièrete du chapitre avec ajout SECDED}
+
+\subsection{Presentation of Hamming Code - SECDED}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Strategy: Minimisation of redundancy bits}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation results}
 
 This section presents logical fault injection simulation results considering our two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. For protected implementations, faults are injected into both DIFT-related and protection-related registers.
 
-Table~\ref{tab:chap5_implementation} presents the results of the FPGA implementation using Vivado 2023.2, targeting the Xilinx Zynq-7000 of the Zedboard development board, comparing different protection mechanisms in terms of resource utilisation and maximum operating frequency. The table lists the number of Look-Up Tables (LUT), the number of Flip-Flops (FFs), and the maximum achievable frequency for each protection scheme. The D-RI5CY mechanism serves as reference. The baseline version represents the processor without the DIFT protection, showing a reduction in both LUT and FF usage by 4.54\% and 5.31\%, respectively, while achieving a 3\% improvement in maximum frequency compared to the D-RI5CY.
+Table~\ref{tab:chap5_implementation} presents the results of the FPGA implementation using Vivado 2023.2, targeting the Xilinx Zynq-7000 of the Zedboard development board. It compares different protection mechanisms in terms of resource utilisation and maximum operating frequency. The table lists the number of Look-Up Tables (LUT), the number of Flip-Flops (FFs), and the maximum achievable frequency for each protection scheme. The D-RI5CY mechanism serves as reference. The baseline version represents the processor without the DIFT protection, showing a reduction in both LUT and FF usage by 4.54\% and 5.31\%, respectively, while achieving a 3\% improvement in maximum frequency compared to the D-RI5CY.
 Simple parity protection slightly increases LUT usage by 1.45\%, with negligible impact on FFs and no change in the maximum frequency. The Hamming Code protection implementation introduces the most significant overhead, with a 5.38\% increase in LUT and a 1.11\% increase in FFs, alongside a minor reduction in maximum frequency by 0.36\%.
 This comparison highlights the trade-offs between resource utilisation and performance across different protection mechanisms in FPGA implementations.
 
@@ -270,7 +405,7 @@ This comparison highlights the trade-offs between resource utilisation and perfo
     \end{tabular}
 \end{table}
 
-Now, we will compare these protections in terms of efficiency.
+Now, we will compare these protections in terms of security.
 Regarding the "\textit{single bit-flip in one register at a given clock cycle}" fault model, Table~\ref{tab:chap5_results_single_bitflip} shows the results obtained for the three considered use cases with and without protections. It is worth noting that we never get any crashes since we target the DIFT-related registers only. These registers do not impact the control or instruction flow of the processor.
 The results obtained without protection are from Chapter~\ref{chapter:dift_assessment}. We obtain \compute{12+29+10}{0} successes out of \compute{762+1016+508}{0} fault injection simulations.
 Conversely, when employing simple parity protection, none of the \compute{792+1056+528}{0} simulations result in success, as each single-fault in this fault model is detected, achieving a 100\% detection rate. With simple parity, an error signal is generated, which can be intercepted by a software running in the system to handle the fault, potentially halting the application if necessary. In contrast, the Hamming code protection corrects the fault within the same cycle it occurs, without providing any direct indication to the attacker. The results from the Hamming code simulations also show 0 success, but this time 100\% of the faults are corrected. This ensures the application continues running as if no fault occurred. From the attacker’s perspective, the fault does not affect the system’s behaviour in any way.
@@ -281,54 +416,58 @@ Conversely, when employing simple parity protection, none of the \compute{792+10
     \caption{Logical fault injection simulation campaigns results for single bit-flip in one register at a given clock cycle}
     \label{tab:chap5_results_single_bitflip}
     \setlength{\tabcolsep}{3pt}
-    \begin{tabular}{@{}ccccccccc@{}}
+    \begin{tabular}{@{}cccccccccc@{}}
         \toprule
-                                           &               & Crash & Silent & Delay & Detection & \begin{tabular}[c]{@{}c@{}}Detection \&\\ Correction\end{tabular} & Success     & Total \\ \midrule
-        \multirow{3}{*}{Buffer overflow}   & No protection & 0     & 738    & 12    & —         & —                                                                 & 12 (1.57\%) & 762   \\
-                                           & Simple parity & 0     & 0      & 0     & 792       & —                                                                 & 0           & 792   \\
-                                           & Hamming Code  & 0     & 0      & 0     & —        & 912                                                               & 0           & 912   \\\midrule
-        \multirow{3}{*}{Format String}     & No protection & 0     & 946    & 41    & —         & —                                                                 & 29 (2.85\%) & 1,016 \\
-                                           & Simple parity & 0     & 0      & 0     & 1,056     & —                                                                 & 0           & 1,056 \\
-                                           & Hamming Code  & 0     & 0      & 0     & —         & 1,216                                                             & 0           & 1,216 \\\midrule
-        \multirow{3}{*}{Compare / Compute} & No protection & 0     & 491    & 7     & —         & —                                                                 & 10 (1.97\%) & 508   \\
-                                           & Simple parity & 0     & 0      & 0     & 528       & —                                                                 & 0           & 528   \\
-                                           & Hamming Code  & 0     & 0      & 0     & —         & 608                                                               & 0           & 608   \\
+                                                                                   &               & Crash & Silent & Delay & Detection & \begin{tabular}[c]{@{}c@{}}Detection \&\\ Correction\end{tabular} & Success     & Total & \begin{tabular}[c]{@{}c@{}}Execution\\ time\end{tabular} \\ \midrule
+        \multirow{3}{*}{Buffer overflow}                                           & No protection & 0     & 738    & 12    & —         & —                                                                 & 12 (1.57\%) & 762   & 0:11                                                     \\
+                                                                                   & Simple parity & 0     & 0      & 0     & 792       & —                                                                 & 0           & 792   & 0:08                                                     \\
+                                                                                   & Hamming Code  & 0     & 0      & 0     & —         & 912                                                               & 0           & 912   & 0:12                                                     \\\midrule
+        \multirow{3}{*}{Format String}                                             & No protection & 0     & 946    & 41    & —         & —                                                                 & 29 (2.85\%) & 1,016 & 01:52                                                    \\
+                                                                                   & Simple parity & 0     & 0      & 0     & 1,056     & —                                                                 & 0           & 1,056 & 01:30                                                    \\
+                                                                                   & Hamming Code  & 0     & 0      & 0     & —         & 1,216                                                             & 0           & 1,216 & 01:50                                                    \\\midrule
+        \multirow{3}{*}{\begin{tabular}[c]{@{}c@{}}Compare\\ Compute\end{tabular}} & No protection & 0     & 491    & 7     & —         & —                                                                 & 10 (1.97\%) & 508   & 0:02                                                     \\
+                                                                                   & Simple parity & 0     & 0      & 0     & 528       & —                                                                 & 0           & 528   & 0:02                                                     \\
+                                                                                   & Hamming Code  & 0     & 0      & 0     & —         & 608                                                               & 0           & 608   & 0:03                                                     \\\midrule
+        Total                                                                      &               &       &        &       &           &                                                                   & 51          & 7,398 &                                                          \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \begin{table}[t]
-    \footnotesize
+    \scriptsize
     \centering
     \caption{Logical fault injection simulation campaigns results for single bit-flip in two registers at two clock cycles}
     \label{tab:chap5_results_tempo}
     \setlength{\tabcolsep}{3pt}
-    \begin{tabular}{@{}ccccccccc@{}}
+    \begin{tabular}{@{}cccccccccc@{}}
         \toprule
-                                           &               & Crash & Silent  & Delay  & Detection & \begin{tabular}[c]{@{}c@{}}Detection \&\\ Correction\end{tabular} & Success         & Total   \\ \midrule
-        \multirow{3}{*}{Buffer overflow}   & No protection & 0     & 238,633 & 1,143  & —         & —                                                                 & 2,159 (0.89\%)  & 241,935 \\
-                                           & Simple parity & 0     & 0       & 0      & 261,360   & —                                                                 & 0               & 261,360 \\
-                                           & Hamming Code  & 0     & 0       & 0      & —         & 346,560                                                           & 0               & 346,560 \\\midrule
-        \multirow{3}{*}{Format String}     & No protection & 0     & 429,260 & 12,192 & —         & —                                                                 & 10,160 (2.25\%) & 451,612 \\
-                                           & Simple parity & 0     & 0       & 0      & 487,872   & —                                                                 & 0               & 487,872 \\
-                                           & Hamming Code  & 0     & 0       & 0      & —         & 646,912                                                           & 0               & 646,912 \\\midrule
-        \multirow{3}{*}{Compare / Compute} & No protection & 0     & 90,432  & 2,795  & —         & —                                                                 & 3,547 (3.67\%)  & 96,774  \\
-                                           & Simple parity & 0     & 0       & 0      & 104,544   & —                                                                 & 0               & 104,544 \\
-                                           & Hamming Code  & 0     & 0       & 0      & —         & 138,624                                                           & 0               & 138,624 \\
+                                                                                   &               & Crash & Silent  & Delay  & Detection & \begin{tabular}[c]{@{}c@{}}Detection \&\\ Correction\end{tabular} & Success         & Total     & \begin{tabular}[c]{@{}c@{}}Execution\\ time\end{tabular} \\ \midrule
+        \multirow{3}{*}{Buffer overflow}                                           & No protection & 0     & 238,633 & 1,143  & —         & —                                                                 & 2,159 (0.89\%)  & 241,935   & 42:12                                                    \\
+                                                                                   & Simple parity & 0     & 0       & 0      & 261,360   & —                                                                 & 0               & 261,360   & 64:24                                                    \\
+                                                                                   & Hamming Code  & 0     & 0       & 0      & —         & 346,560                                                           & 0               & 346,560   & 66:48                                                    \\\midrule
+        \multirow{3}{*}{Format String}                                             & No protection & 0     & 429,260 & 12,192 & —         & —                                                                 & 10,160 (2.25\%) & 451,612   & 544:52                                                   \\
+                                                                                   & Simple parity & 0     & 0       & 0      & 487,872   & —                                                                 & 0               & 487,872   & 389:20                                                   \\
+                                                                                   & Hamming Code  & 0     & 0       & 0      & —         & 646,912                                                           & 0               & 646,912   & 1069:36                                                  \\\midrule
+        \multirow{3}{*}{\begin{tabular}[c]{@{}c@{}}Compare\\ Compute\end{tabular}} & No protection & 0     & 90,432  & 2,795  & —         & —                                                                 & 3,547 (3.67\%)  & 96,774    & 12:42                                                    \\
+                                                                                   & Simple parity & 0     & 0       & 0      & 104,544   & —                                                                 & 0               & 104,544   & 13:36                                                    \\
+                                                                                   & Hamming Code  & 0     & 0       & 0      & —         & 138,624                                                           & 0               & 138,624   & 20:32                                                    \\\midrule
+        Total                                                                      &               &       &         &        &           &                                                                   & 15,866          & 2,776,193 &                                                          \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 Table~\ref{tab:chap5_results_tempo} presents the results obtained considering the "\textit{single bit-flip in two registers at two clock cycles}" fault model.  We conducted \num{2776193} simulations to present the results of this new fault model. For each simulation, we choose two bits in the same register or two registers, and we choose two different cycles, then, we flip one bit at a first cycle and flip the other one at the other cycle.
-It shows that without any protection, \num{15866} fault injections successes among \compute{241935+451612+96774}{0} simulations (\compute{(15866/(241935+451612+96774))*100}{2}\%) lead to a successful attack in the three use case.
+It shows that without any protection, \num{15866} fault injections among \compute{241935+451612+96774}{0} simulations (\compute{(15866/(241935+451612+96774))*100}{2}\%) lead to a successful attack in the three use case, while no successes are reported from Simple Parity or Hamming Code. Each fault is corrected thanks to Hamming Code.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
-In this chapter, we presented two countermeasures in order to protect the DIFT mechanism against fault injection attacks. For that, we considered two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. These fault models are used in real world fault injection attacks.
-The first countermeasure is based on parity code: simple parity and can be used to detect any errors. Thanks to this protection, we achieve a 100\% fault detection in our considered fault model, but with the downside of giving an indication to the attacker as we emit a signal which can be caught by a running software to halt the application. In the other hand, we implemented a code-based protection: Hamming code. This protection is limited to only detection and correction of an error in our case. We propose two implementations. The first implementation is used to protect a set of registers together. The second implementation targets the protection of the \textit{Register File Tag} with constraints such as the number of write ports available. Thanks to these implementations, we are able to handle 100\% of the injected fault and correct them without any direct indication to the attacker.
-These two countermeasures give effective results against the fault models we have considered, while on the other hand, they have a limited impact on system performance and surface area.
+In this chapter, we presented three countermeasures in order to protect the DIFT mechanism against fault injection attacks. For that, we considered two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. These fault models are used in real world fault injection attacks.
+The first countermeasure is based on parity code: simple parity and can be used to detect any errors. Thanks to this protection, we achieve a 100\% fault detection in our considered fault model, but with the downside of giving an indication to the attacker as we emit a signal which can be caught by a running software to halt the application.
+In the other hand, we implemented a code-based protection: Hamming code. This protection is limited to only detection and correction of an error in our case. We propose two implementations. The first implementation is used to protect a set of registers together. The second implementation targets the protection of the \textit{Register File Tag} with constraints such as the number of write ports available. Thanks to these implementations, we are able to handle 100\% of the injected fault and correct them without any direct indication to the attacker.
+The third countermeasure is an Hamming Code with an additional parity bit, it is called SECDED.\wip{finir}
+These three countermeasures give effective results against the fault models we have considered, while on the other hand, they have a limited impact on system performance and surface area.
 
-In the next chapter, we will evaluate these protections against more complex fault models such as multi bit-flip fault and explore different group composition in order to have a more robust protection against a wider range of attacks and fault models.
+In the next chapter, we will evaluate these protections against more complex fault models such as multi bit-flip fault and explore different implementation strategies in order to have a more robust protection against a wider range of attacks and fault models.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
