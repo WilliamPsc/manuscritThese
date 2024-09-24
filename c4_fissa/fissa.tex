@@ -45,7 +45,7 @@ Formal methods provide an advantage with mathematical proofs, ensuring a rigorou
 
 Many simulators for fault injection attacks exist at different levels, to achieve different objectives, such as security at gate-level, cryptographic systems, study the impact of clock glitches, or even X-Ray. They can use Artificial Intelligence (AI) to enhance the detection~\cite{AB-23-acns}. Another way to simulate fault injections is to use QEMU (Quick EMUlator)~\cite{BLK-23-access,HGASO-21-fdtc,KMD-24-ashes}.
 QEMU is an open-source machine that emulates the behaviour of a processor at a very fine-grain, using various optimizations to keep execution speed as close as possible to native system execution.
-Bekele et al~\cite{BLK-23-access} present a survey of QEMU-based Fault Injection techniques. After discussing the various techniques proposed in the state of the art, they classify into categories and compare them.
+Bekele et al.~\cite{BLK-23-access} present a survey of QEMU-based Fault Injection techniques. After discussing the various techniques proposed in the state of the art, they classify into categories and compare them.
 Fault Injections simulations can be performed at processor instructions level. Authors of~\cite{AB-23-acns} explore the impact of fault injection attacks on software security. They evaluate four open-source fault simulators, comparing their techniques and suggest enhancing them with AI methods inspired by advances in cryptographic fault simulation. 
 Arribas et al.~\cite{AWMN-20-host} introduces VerFI, a gate-level granularity fault simulator for hardware implementations. For instance, it has been used to spot an implementation mistake in ParTI~\cite{SMG-16-crypto}. However, this tool has been developed to check if implemented countermeasures can really protect against fault injection on cryptographic implementations, but it cannot evaluate components such as registers or memories.
 FiSim~\cite{fisim} is an open-source deterministic fault attack simulator prototype utilising the Unicorn Framework and Capstone disassembler.
@@ -99,7 +99,7 @@ Customising end-of-simulation statuses allows for adaptation to the specific req
 \end{itemize}
 
 \begin{algorithm}
-    \caption{Simulated FIA campaign pseudo-code}
+    \caption{Simulated FIA campaign pseudocode}
     \label{algo:pseudoCodeSimuStages}
     \normalsize
     \begin{algorithmic}[1]

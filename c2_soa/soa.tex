@@ -353,9 +353,9 @@ Figure~\ref{fig:clock_glitch_parameters} represents the three parameters that ar
     \item Width: the duration of the glitch.
 \end{itemize}
 
-The duration of both offset and width can not be too large or too short. Because too short values will lead to too short range to obtain a timing violation, and too large values will not modify the instruction behaviour but can overcoming the critical path.
+The duration of both offset and width can not be too large or too short. Because too short values will lead to too short range to obtain a timing violation, and too large values will not modify the instruction behaviour but can overcome the critical path.
 
-Figure~\ref{fig:clock_glitch} represents an example of a clock glitch attack, where you can see the \textit{Normal Clock} is not faulted, and its behaviour is very regular. While, the \textit{Glitched Clock} suffers from a glitch where an abnormal cycle is introduced and it induces an additional instruction execution. Under real conditions, the injected clock cycle would not last long enough for the instructions to execute normally. Hence, in these conditions, an instruction skip would happen.
+Figure~\ref{fig:clock_glitch} represents an example of a clock glitch attack, where you can see the \textit{Normal Clock} is not faulted, and its behaviour is very regular. While, the \textit{Glitched Clock} suffers from a glitch where an abnormal cycle is introduced, and it induces an additional instruction execution. Under real conditions, the injected clock cycle would not last long enough for the instructions to execute normally. Hence, in these conditions, an instruction skip would happen.
 
 \begin{figure}[ht]
     \centering
@@ -477,7 +477,7 @@ A classic technique is to use temporal or spatial redundancy. Barenghi et al.~\c
 Theißing et al.~\cite{TMSSS-13-date} implemented and systematically analysed a comprehensive set of 19 different software countermeasure strategies for protection effectiveness, time, and memory efficiency.
 Chamelot et al.~\cite{CCH-22-date} present SCI-FI, a countermeasure for Control Signal, Code, and Control-Flow Integrity against Fault Injection attacks.
 Laurent et al.~\cite{LBDPP-19-microproc} analyse some existing countermeasures and show how they handle precise faults extracted from the processor.
-Some countermeasures propose solutions to protect the data linked to the control flow. For exemple, Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches while preserving the error-detection capabilities at every stage of a conditional branch. They demonstrate this by implementing an encoded comparison using AN-codes. They also integrated this countermeasure in the LLVM compiler to automatically protect conditional branches.
+Some countermeasures propose solutions to protect the data linked to the control flow. For example, Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches while preserving the error-detection capabilities at every stage of a conditional branch. They demonstrate this by implementing an encoded comparison using AN-codes. They also integrated this countermeasure in the LLVM compiler to automatically protect conditional branches.
 
 However, even if those countermeasures are good against FIA, they are still sensitive against some attacks and can be bypassed by analysing the processor microarchitecture. Laurent et al.~\cite{LBDP-19-date} present an attack where they target hidden registers into a \mbox{RISC-V} processor. They show that even if a code is protected against FIA, they can find some vulnerabilities and bypass the software countermeasures. It is then better to directly implement hardware countermeasures at the lower level to have the best protection available.
 
