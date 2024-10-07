@@ -28,6 +28,8 @@
 %%%%%%%%%%%%%%%%%%%%% Minitoc configuration %%%%%%%%%%%%%%%%%%%%%
 \setcounter{minitocdepth}{2}
 \usepackage{lipsum}
+\renewcommand{\appendixpagename}{Appendices}
+\renewcommand{\appendixtocname}{Appendices}
 
 %%%%%%%%%%%%%%%%%%%%% FP calculations %%%%%%%%%%%%%%%%%%%%%
 \sisetup{
@@ -134,6 +136,13 @@
 \clearemptydoublepage
 \backmatter
 \input{./c7_conclusion/conclusion}
+
+
+\clearemptydoublepage
+\backmatter
+\appendix
+\appendixpage
+\input{appendices/appendices}
 
 % Chapitre pour la bibliographie
 % Bibliography chapter
