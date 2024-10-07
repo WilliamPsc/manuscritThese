@@ -9,6 +9,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Synthesis}
 
+With the rapid expansion of IoT and the growing ubiquity of embedded systems, ensuring robust security has become a critical priority for both hardware designers and software developers. Protecting these systems from potential threats, especially physical attacks, remains a key challenge. Among these threats, Fault Injection Attacks (FIA) stand out as a significant risk due to their capacity to disrupt device operation and compromise data integrity.
+
+FIAs are particularly dangerous because they allow attackers to inject faults into a system during runtime, potentially bypassing even the most robust software security mechanisms. By manipulating voltage, clock signals, or using techniques like laser-based injections, adversaries can induce unexpected behaviour, leading to data leakage, corruption, or system hijacking. These attacks are becoming more accessible due to the decreasing cost of fault injection tools, making it imperative to design systems with built-in resilience. Existing security mechanisms, like Dynamic Information Flow Tracking (DIFT), which is use as a security against software threats, are not immune to these attacks, necessitating deeper investigation and the development of tailored countermeasures. Without effective defences, FIAs remain a potent threat, capable of undermining the reliability and trustworthiness of critical IoT systems.
+
+This thesis has aimed to address these challenges by assessing vulnerabilities and proposing lightweight countermeasures to strengthen digital systems against FIAs. By evaluating and improving the security of Dynamic Information Flow Tracking (DIFT) mechanisms, we have proposed a solution on how to protect systems against sophisticated physical and software-based threats. In this concluding chapter, we summarise the contributions made, reflect on the findings, and discuss the potential for further advancements in securing embedded systems against physical attacks.
+
+In Chapter~\ref{chapter:dift_assessment}, we assessed the DIFT mechanisms against different simple fault model such as \textit{bit set}, \textit{bit reset}, and \textit{single bit-flip} theoretically. We have shown that the DIFT mechanism considered, the D-RI5CY, is mostly vulnerable to single bit-flip fault as its tag datapath is 1-bit. The fault injection campaign in simulation have confirmed our previous results and let us with different critical registers depending on the use case considered.
+
+In Chapter~\ref{chapter:fissa}, we presented our developped tool to facilitate the \textit{Security by Design}, allowing the designer to assess its design during the conception phase.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Perspectives}
 
