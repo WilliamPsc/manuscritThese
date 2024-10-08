@@ -10,27 +10,23 @@
 % Switch font style to back cover style
 \selectfontbackcover{ % Font style change is limited to this page using braces, just in case
 
-\titleFR{titre (en fran\c cais)..............}
+\titleFR{Extension de la Protection des Processeurs Contre les Menaces Physiques et Logicielles par la Sécurisation du Mécanisme DIFT Contre les Attaques par Injections de Fautes}
 
-\keywordsFR{de 3 \`{a} 6 mots clefs}
+\keywordsFR{\small DIFT, Fault Injection Attacks, Contre-mesures, Hamming Code, Code de Correction d'Erreur}
 
-\abstractFR{Eius populus ab incunabulis primis ad usque pueritiae tempus extremum, quod annis circumcluditur fere trecentis, circummurana pertulit bella, deinde aetatem ingressus adultam post multiplices bellorum aerumnas Alpes transcendit et fretum, in iuvenem erectus et virum ex omni plaga quam orbis ambit inmensus, reportavit laureas et triumphos, iamque vergens in senium et nomine solo aliquotiens vincens ad tranquilliora vitae discessit.
-Hoc inmaturo interitu ipse quoque sui pertaesus excessit e vita aetatis nono anno atque vicensimo cum quadriennio imperasset. natus apud Tuscos in Massa Veternensi, patre Constantio Constantini fratre imperatoris, matreque Galla.
-Thalassius vero ea tempestate praefectus praetorio praesens ipse quoque adrogantis ingenii, considerans incitationem eius ad multorum augeri discrimina, non maturitate vel consiliis mitigabat, ut aliquotiens celsae potestates iras principum molliverunt, sed adversando iurgandoque cum parum congrueret, eum ad rabiem potius evibrabat, Augustum actus eius exaggerando creberrime
-docens, idque, incertum qua mente, ne lateret adfectans. quibus mox Caesar acrius efferatus, velut contumaciae quoddam vexillum altius erigens, sine respectu salutis alienae vel suae ad vertenda opposita instar rapidi fluminis irrevocabili impetu ferebatur.
-Hae duae provinciae bello quondam piratico catervis mixtae praedonum.}
+\abstractFR{\small L'augmentation de l'IoT, dans des domaines tels que la santé ou l'industrie, favorise l'augmentation de la surface d'attaque, ce qui soulève d'importantes préoccupations en termes de sécurité. Ces systèmes, traitant des données sensibles, sont vulnérables aux attaques logicielles et physiques en raison de leur connectivité réseau et de leur proximité avec les attaquants.
+Le suivi dynamique des flux d'informations (DIFT) détecte les attaques logicielles, comme les maliciels, en étiquetant et en suivant les données au moment de l'exécution. Les attaques par injection de fautes (FIA) induisent des erreurs (par exemple, via la tension ou des lasers) perturbant le comportement et contournant les mécanismes de sécurité. Les FIA sont critiques dans les systèmes embarqués et cryptographiques, où les vulnérabilités peuvent compromettre les données. Bien que de nombreuses études aient exploré les vulnérabilités des FIA, aucune n'a ciblé les mécanismes DIFT.
+Nous travaillons sur le processeur D-RI5CY, implémentant un DIFT matériel in-core. Nous évaluons l'impact des FIA sur l'efficacité du DIFT. Grâce à des simulations d'injection de fautes, en utilisant FISSA, un outil conçu pour l'évaluation des fautes, nous identifions les registres vulnérables et implémentons trois protections : la parité simple pour la détection, le code de Hamming pour la correction d'erreurs sur un bit, et SECDED pour détecter les erreurs sur deux bits. Ces protections ont été optimisées en regroupant les registres afin de minimiser le coût. Nous avons ensuite évalué d'autres compositions de groupes pour améliorer la protection contre des modèles plus complexes, en développant quatre stratégies pour améliorer la détection et la correction des erreurs.}
 
 
 
-\titleEN{titre (en anglais)..............}
+\titleEN{Enhanced Processor Defence Against Physical and Software Threats by Securing DIFT Against Fault Injection Attacks}
 
-\keywordsEN{de 3 \`{a} 6 mots clefs}
+\keywordsEN{\small DIFT, Fault Injection Attacks, Countermeasures, Hamming Code, Error Correction Code}
 
-\abstractEN{Eius populus ab incunabulis primis ad usque pueritiae tempus extremum, quod annis circumcluditur fere trecentis, circummurana pertulit bella, deinde aetatem ingressus adultam post multiplices bellorum aerumnas Alpes transcendit et fretum, in iuvenem erectus et virum ex omni plaga quam orbis ambit inmensus, reportavit laureas et triumphos, iamque vergens in senium et nomine solo aliquotiens vincens ad tranquilliora vitae discessit.
-Hoc inmaturo interitu ipse quoque sui pertaesus excessit e vita aetatis nono anno atque vicensimo cum quadriennio imperasset. natus apud Tuscos in Massa Veternensi, patre Constantio Constantini fratre imperatoris, matreque Galla.
-Thalassius vero ea tempestate praefectus praetorio praesens ipse quoque adrogantis ingenii, considerans incitationem eius ad multorum augeri discrimina, non maturitate vel consiliis mitigabat, ut aliquotiens celsae potestates iras principum molliverunt, sed adversando iurgandoque cum parum congrueret, eum ad rabiem potius evibrabat, Augustum actus eius exaggerando creberrime
-docens, idque, incertum qua mente, ne lateret adfectans. quibus mox Caesar acrius efferatus, velut contumaciae quoddam vexillum altius erigens, sine respectu salutis alienae vel suae ad vertenda opposita instar rapidi fluminis irrevocabili impetu ferebatur.
-Hae duae provinciae bello quondam piratico catervis mixtae praedonum.}
+\abstractEN{\small Embedded security is more and more crucial with the huge increase of IoT devices, enhancing efficiency and addressing challenges like industrial change and health. However, their widespread use also increases the attack surface, raising significant security concerns. These systems, handling sensitive data, are vulnerable to both software and physical attacks due to their network connectivity and proximity to attackers.
+Dynamic Information Flow Tracking (DIFT) detects software attacks, such as buffer overflows, by tagging and tracking data at runtime. Fault Injection Attacks (FIA) deliberately introduce hardware errors to disrupt normal operation and bypass security mechanisms. These faults can be introduced physically (e.g., via voltage or lasers). FIAs are concerning in embedded and cryptographic systems, where low-level faults can compromise sensitive data. Although many studies have explored FIA vulnerabilities, none have targeted DIFT mechanisms.
+Our research focuses on the D-RI5CY processor, which implements a hardware in-core DIFT. We assess the impact of FIAs on DIFT's effectiveness in this processor. Through fault injection simulations, using FISSA, a tool developed to facilitate fault evaluation, we identify vulnerable hardware registers and implement three countermeasures: simple parity for error detection, Hamming Code for single-bit error correction, and SECDED to detect double-bit errors. These were optimised by grouping registers to minimise redundancy overhead. We further evaluated multiple register group compositions to enhance countermeasures against complex fault models, developing four strategies to improve error detection and correction efficiency.}
 
 }
 

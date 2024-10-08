@@ -453,7 +453,7 @@
 }
 
 \newcommand{\titleFR}[1]{%
-\vspace{1cm}
+\vspace{.25cm}
 {\centering \noindent \textcolor{color-ecole}{\rule{\textwidth}{0.2cm}}}
 \vspace{-1cm}
 \selectlanguage{french}
@@ -475,7 +475,7 @@
 }
 
 \newcommand{\titleEN}[1]{%
-\vspace{0.5cm}
+\vspace{-0.2cm}
 {\centering \noindent \textcolor{color-ecole}{\rule{\textwidth}{0.2cm}}}
 \vspace{-1cm}
 \selectlanguage{english}
