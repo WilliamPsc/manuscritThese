@@ -29,7 +29,7 @@
 \RequirePackage[utf8]{inputenc} 
 \RequirePackage[french, english]{babel} % Last language is the default, use \selectlanguage{english} to switch
 \RequirePackage{ifpdf}
-\RequirePackage[usenames,dvipsnames, svgnames, table]{xcolor} % pour les couleurs
+\RequirePackage[dvipsnames, svgnames, table]{xcolor} % pour les couleurs
 \RequirePackage{textcomp}
 % \RequirePackage{titlesec}
 \RequirePackage{parcolumns}
@@ -102,7 +102,7 @@
 \RequirePackage{booktabs}
 \RequirePackage{subcaption}
 \RequirePackage{ragged2e}
-\RequirePackage{minitoc}
+\RequirePackage[nohints]{minitoc}
 \RequirePackage{lscape} % Landscape tables
 \RequirePackage{siunitx} % SIU
 \RequirePackage{arydshln}
@@ -319,7 +319,7 @@
 \newcommand{\largeTwelve}{\fontsize{14.4}{17}\selectfont} % 12pt \large
 \newcommand{\normalTwelve}{\fontsize{12}{13.2}\selectfont} % 12pt \normalsize
 \newcommand{\smallTwelve}{\fontsize{11}{13.5}\selectfont} % 12pt \small
-\newcommand{\footnotesizeTwelve}{\fontsize{9.5}{11}\selectfont} % 12pt \footnotesize
+\newcommand{\footnotesizeTwelve}{\fontsize{9}{11}\selectfont} % 12pt \footnotesize
 
 % Affiche les logos sur les pages de couverture
 \newcommand{\displayLogos}{%
