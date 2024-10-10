@@ -319,6 +319,7 @@
 \newcommand{\largeTwelve}{\fontsize{14.4}{17}\selectfont} % 12pt \large
 \newcommand{\normalTwelve}{\fontsize{12}{13.2}\selectfont} % 12pt \normalsize
 \newcommand{\smallTwelve}{\fontsize{11}{13.5}\selectfont} % 12pt \small
+\newcommand{\smallBackCover}{\fontsize{10.2}{12}\selectfont} % 12pt \small
 \newcommand{\footnotesizeTwelve}{\fontsize{9}{11}\selectfont} % 12pt \footnotesize
 
 % Affiche les logos sur les pages de couverture
@@ -457,19 +458,19 @@
 {\centering \noindent \textcolor{color-ecole}{\rule{\textwidth}{0.2cm}}}
 \vspace{-1cm}
 \selectlanguage{french}
-\section*{\selectfontbackcover\smallTwelve \textcolor{color-ecole}{Titre : }{\selectfontbackcover\mdseries{#1}}} % In this particular case, font style needs to get re-selected locally
+\section*{\selectfontbackcover\smallBackCover \textcolor{color-ecole}{Titre : }{\selectfontbackcover\mdseries{#1}}} % In this particular case, font style needs to get re-selected locally
 }
 
 \newcommand{\keywordsFR}[1]{%
 \vspace{-0.2cm}
-\noindent{\smallTwelve \textbf{Mot cl\'{e}s : }#1}
+\noindent{\smallBackCover \textbf{Mot cl\'{e}s : }#1}
 }
 
 \newcommand{\abstractFR}[1]{%
 \vspace{-0.2cm}
 \begin{multicols}{2}
 \begin{spacing}{1}
-	\noindent\smallTwelve \textbf{R\'{e}sum\'{e} : }#1
+	\noindent\smallBackCover \textbf{R\'{e}sum\'{e} : }#1
 \end{spacing}
 \end{multicols}
 }
@@ -479,19 +480,19 @@
 {\centering \noindent \textcolor{color-ecole}{\rule{\textwidth}{0.2cm}}}
 \vspace{-1cm}
 \selectlanguage{english}
-\section*{\selectfontbackcover\smallTwelve \textcolor{color-ecole}{Title: }{\selectfontbackcover\mdseries{#1}}} % In this particular case, font style needs to get re-selected locally
+\section*{\selectfontbackcover\smallBackCover \textcolor{color-ecole}{Title: }{\selectfontbackcover\mdseries{#1}}} % In this particular case, font style needs to get re-selected locally
 }
 
 \newcommand{\keywordsEN}[1]{%
 \vspace{-0.2cm}
-\noindent{\smallTwelve \textbf{Keywords: }#1}
+\noindent{\smallBackCover \textbf{Keywords: }#1}
 }
 
 \newcommand{\abstractEN}[1]{%
 \vspace{-0.2cm}
 \begin{multicols}{2}
 \begin{spacing}{1}
-	\noindent\smallTwelve \textbf{Abstract: }#1
+	\noindent\smallBackCover \textbf{Abstract: }#1
 \end{spacing}
 \end{multicols}
 }
