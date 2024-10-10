@@ -13,7 +13,7 @@ Finally, the third section assesses the vulnerabilities of the D-RI5CY, using th
 \section{D-RI5CY}
 \label{section:driscy}
 In this section, we describe the RISC-V ISA and detail the DIFT design we have chosen to focus on.
-We choose to work on a open-source RISC-V core, meaning that we have the ability to access and modify the design according to our needs.
+We choose to work on an open-source RISC-V core, meaning that we have the ability to access and modify the design according to our needs.
 
 \begin{figure}[t]
     \centering
@@ -45,7 +45,7 @@ At program startup, D-RI5CY initialises the tags of the registers, program count
 They extended the RI5CY ISA with memory and register tagging instructions.
 They have added four assembly instructions to initialise tags for user-supplied inputs:
 \begin{itemize}
-    \item \textbf{p.set rd}: sets to untrusted the security tags of the destination register \textit{rd},% (you can check the register names in the ISA specification\footnote{\url{https://www2.eecs.berkeley.edu/Pubs/TechRpts/2014/EECS-2014-54.pdf}} at page 85),
+    \item \textbf{p.set rd}: sets to untrusted the security tags of the destination register \textit{rd},
     \item \textbf{p.spsb x0, offset(rt)}: sets to untrusted the security tags of the memory byte at the address of the value stored in \textit{rt + offset},
     \item \textbf{p.spsh x0, offset(rt)}: sets to untrusted the security tags of the memory half-word at the address of the value stored in \textit{rt + offset},
     \item \textbf{p.spsw x0, offset(rt)}: sets to untrusted the security tags of the memory word at the address of the value stored in \textit{rt + offset}.
