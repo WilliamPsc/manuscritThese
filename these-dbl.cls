@@ -319,7 +319,7 @@
 \newcommand{\largeTwelve}{\fontsize{14.4}{17}\selectfont} % 12pt \large
 \newcommand{\normalTwelve}{\fontsize{12}{13.2}\selectfont} % 12pt \normalsize
 \newcommand{\smallTwelve}{\fontsize{11}{13.5}\selectfont} % 12pt \small
-\newcommand{\smallBackCover}{\fontsize{10.2}{12}\selectfont} % 12pt \small
+\newcommand{\smallBackCover}{\fontsize{10.4}{12}\selectfont} % 12pt \small
 \newcommand{\footnotesizeTwelve}{\fontsize{9}{11}\selectfont} % 12pt \footnotesize
 
 % Affiche les logos sur les pages de couverture
