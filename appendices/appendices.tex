@@ -6,26 +6,6 @@
 \begin{table}[H]
     \centering
     \footnotesize
-    \caption{DIFT-related protected registers -- Strategy 2}
-    \label{tab:strategy_2_groups}
-    \begin{tabular}{@{}rccccc@{}}
-        \toprule
-                & Protected stage          & \tableTwoLines{Number of}{bits} & \tableTwoLines{Number of}{protected bits} & \tableTwoLines{Number of}{redundancy bits} & \tableTwoLines{Number of}{parity bits} \\ \midrule
-        Group 1 & Instruction Fetch Stage  & 2                               & 2                                         & 3                                          & 1                                      \\
-        Group 2 & Instruction Decode Stage & 19                              & 19                                        & 5                                          & 1                                      \\
-        Group 3 & Register File Tag        & 32                              & 32                                        & 6                                          & 1                                      \\
-        Group 4 & Execute Stage            & 1                               & 1                                         & 2                                          & 1                                      \\
-        Group 5 & TCR                      & 32                              & 22                                        & 5                                          & 1                                      \\
-        Group 6 & TPR                      & 32                              & 22                                        & 5                                          & 1                                      \\
-        Group 7 & Load/Store Unit          & 9                               & 9                                         & 4                                          & 1                                      \\ \midrule
-        Total   &                          & 127                             & 107                                       & 30                                         & 7                                      \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\begin{table}[H]
-    \centering
-    \footnotesize
     \caption{DIFT-related protected registers -- Strategy 3}
     \label{tab:strategy_3_groups}
     \begin{tabular}{@{}rcccc@{}}
