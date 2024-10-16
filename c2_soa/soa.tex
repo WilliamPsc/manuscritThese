@@ -6,8 +6,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 This chapter provides an overview of related work to contextualize the primary objectives of the thesis. Firstly, in Section~\ref{section:ift}, Information Flow Tracking (IFT) is introduced, detailing the different types and their respective purposes. We discuss the various levels of monitoring, from program behaviour to the detection of hardware trojans.
-Then, in Section~\ref{section:physicalAttacks}, we provide an overview of the different existing physical attacks, focusing on Fault Injection Attacks (FIA).
-Finally, in Section~\ref{section:countermeasuresAgainstFIA}, we present existing countermeasures against Fault Injection Attacks.
+Then, in Section~\ref{section:physicalAttacks}, we provide an overview of the different existing physical attacks, focusing on Fault Injection Attacks (FIAs).
+Finally, in Section~\ref{section:countermeasuresAgainstFIA}, we present existing countermeasures against FIAs.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Information Flow Tracking}
@@ -170,15 +170,15 @@ Hu et al.~\cite{HOITSMK-11-tcad} established the theoretical foundation for GLIF
 \label{section:physicalAttacks}
 
 This section presents an overview of the state of the art on physical attacks. We introduce the different types of physical attacks and their methods to recover secret information. Firstly, we begin with Reverse Engineering, how to retrieve information from a product to recover useful information.
-Secondly, we address Side-Channel Attacks, how to use information leakage to recover useful information and how to analyse them.
-Finally, we introduce Fault Injection Attacks. We define the different possibilities of injection and how to achieve them.
+Secondly, we address Side-Channel Attacks (SCA), how to use information leakage to recover useful information and how to analyse them.
+Finally, we introduce fault injection attacks. We define the different possibilities of injection and how to achieve them.
 
 \subsection{Reverse Engineering}
 Reverse engineering refers to the process of information retrieval from a product, ranging from aircraft to modern Integrated Circuits (IC). Reverse engineering of IC is a complex process that involves analysing and understanding the design, functionality, and operation of existing hardware. This technique is used for various purposes in the electronics industry, such as to gain a full understanding of its construction and or functionality~\cite{QCFASWCT-16-emergTech}.
 To reverse engineering a chip~\cite{FSKWERP-17-ivsw}, an attacker needs to remove the chip protection in order to observe it thanks to a scanning electron microscope (SEM) or another method Focused Ion Beam (this method is explained in Chapter~\ref{subsubsection:invasiveAttacks}). Also knowing the region of interest is beneficial as the planar surface can be reduced significantly.
 
 \subsection{Side-Channel Attacks}
-Side-Channel Attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic (EM) radiation or the execution time of an application.
+Side-channel attacks exploit information leakages on the circuit behaviour such as power consumption, electromagnetic (EM) radiation or the execution time of an application.
 This type of attack does not call into question the theoretical integrity of the target algorithm, but aims to recover information by devious means due to its implementation. During data processing, the switching between different states requires time and minimal energy dissipation, the variations of which can be analysed by the attacker.
 This information allows the attacker to access secret data such as a password, or cryptographic key. The origin of these attacks date back to the \mbox{TEMPEST} program from NSA~\cite{F-72-nsa}. They described the vulnerabilities of a cryptographic implementation from their electromagnetic emissions, depending on the input and data.
 
@@ -187,7 +187,7 @@ Figure~\ref{fig:sca} represents the different methods of SCA on a microprocessor
 \begin{figure}[ht]
     \centering
     \includegraphics[page=3, width=.75\textwidth]{c2_soa/img/physicalAttacks.pdf}
-    \caption{Representation of the different methods of Side-Channel attacks}
+    \caption{Representation of the different methods of side-channel attacks}
     \label{fig:sca}
 \end{figure}
 
@@ -211,9 +211,9 @@ Finally, last but not least, an attacker could use acoustic analysis~\cite{BDGPS
 
 As early as the 1970s, with advances in the space industry, anomalies in the operation of electronic circuits were observed and possibly linked to cosmic radiation outside the Earth's atmosphere~\cite{BSH-75-tns,Z-96-ibm,ZL-79-science}. These disturbances were initially found to affect the performance of electronic systems in space environments, where high-energy particles could disrupt the normal functioning of circuits. However, as transistors became smaller and required less energy to operate, similar phenomena were observed in terrestrial environments and aircraft systems. These transient disturbances, commonly referred to as "\textit{soft errors}", are now recognised as a critical issue in both space and ground electronics, affecting everything from memory chips to complex processors. Figure~\ref{fig:arbo_fia} shows a representation of a taxonomy to classify the different method of physical attacks. Each type of attacks will be explained in the following.
 
-However, in addition to these induces cosmic faults, wanted faults exist and are known as Fault Injection Attacks (FIA). FIA involves deliberately introducing a fault into the system to observe its behaviour and identify potential vulnerabilities. If the error caused by the fault does not propagate and execution of the application completes normally, the fault is ineffective. On the other hand, if the fault affects the execution of the application, causing it to fail or behave differently than expected, then the fault is effective. These faults can impact the performance, functionality, and reliability of the circuit. These attacks can induce errors in internal electronic components, which can be utilised to recover cryptographic keys and other secret data.
-These attacks have been vastly studied since their first introduction by Boneh et al. in 1997~\cite{BDL-97-eurocrypt,BDL-01-crypto}. Multiple studies or surveys~\cite{ZAV-06-jarab, BCNTW-06-procieee, CKNDCTD-21-compsec, PBR-15-dtis, YSW-18-hss, BH-22-access} present the different sources of FIA.
-Figure~\ref{fig:fia} presents a summary of the different methods of FIA, the figure does not represent all possible methods. Each of these attacks requires equipment which is more or less expensive and easy to acquire, ranging from a few hundred euros (clock glitches, voltage glitches) to several hundred thousand (Laser, X-Ray, Focused Ion Beam).
+However, in addition to these induces cosmic faults, wanted faults exist and are known as FIAs. FIAs involves deliberately introducing a fault into the system to observe its behaviour and identify potential vulnerabilities. If the error caused by the fault does not propagate and execution of the application completes normally, the fault is ineffective. On the other hand, if the fault affects the execution of the application, causing it to fail or behave differently than expected, then the fault is effective. These faults can impact the performance, functionality, and reliability of the circuit. These attacks can induce errors in internal electronic components, which can be utilised to recover cryptographic keys and other secret data.
+These attacks have been vastly studied since their first introduction by Boneh et al. in 1997~\cite{BDL-97-eurocrypt,BDL-01-crypto}. Multiple studies or surveys~\cite{ZAV-06-jarab, BCNTW-06-procieee, CKNDCTD-21-compsec, PBR-15-dtis, YSW-18-hss, BH-22-access} present the different sources of FIAs.
+Figure~\ref{fig:fia} presents a summary of the different methods of FIAs, the figure does not represent all possible methods. Each of these attacks requires equipment which is more or less expensive and easy to acquire, ranging from a few hundred euros (clock glitches, voltage glitches) to several hundred thousand (Laser, X-Ray, Focused Ion Beam).
 
 As shown in the Figure~\ref{fig:arbo_fia}, these attacks are categorised as transient or permanent, and invasive or non-invasive.
 The effect of a transient fault lasts for a limited period of time. These faults rarely do any lasting damage to the component affected, although they can induce an erroneous state in the system. Their aim is to temporarily disrupt the program control flow or corrupt the results of an instruction to gain unauthorised access to sensitive code and data.
@@ -226,7 +226,7 @@ Non-invasive attacks require no tampering of the DUT. They are able to mask thei
 \begin{figure}[ht]
     \centering
     \includegraphics[page=2, width=.75\textwidth]{c2_soa/img/physicalAttacks.pdf}
-    \caption{Representation of the different methods of Fault Injection attacks}
+    \caption{Representation of the different methods of fault injection attacks}
     \label{fig:fia}
 \end{figure}
 
@@ -410,7 +410,7 @@ Schmidt et al.~\cite{SH-07-austrochip} use a simple gas lighter to induce EM pul
 Trouchkine et al.~\cite{TBELB-21-jce} present an approach to recover an AES key, using EMFI, by targeting the cache hierarchy and the MMU.
 
 \subsubsection{Fault Injection techniques summary}
-Table~\ref{table:fia_techniques} shows a summary of all presented techniques to realise a Fault Injection Attack. Depending on the budget available for the attacker, and the required need for spatial and timing accuracy, the technique can be different.
+Table~\ref{table:fia_techniques} shows a summary of all presented techniques to realise a fault injection attack. Depending on the budget available for the attacker, and the required need for spatial and timing accuracy, the technique can be different.
 
 Clock glitches, voltage glitches, heating attacks and camera flash can cost from few tens of Euros / US Dollars (USD) to less than \$3,000. For EMFI attacks, Chip Shouter~\cite{chipshouter} costs around \$3,000 and more precise setup can cost \$30,000~\cite{BH-22-access}. These techniques are accurate and require a low to moderate expertise on the equipment and techniques. The level of expertise required depends on both the equipment and the accuracy of the attack. The more precise the equipment, the higher the level of expertise is needed. On the other hand, for even more precise techniques, such as laser, FIB, or even X-Ray, the cost can go up to millions of USD/Euros as the equipment can be a lot more expensive, such as the equipment needed for X-Ray injection, but an attacker can recover a lot of secret data thanks to these attacks.
 
@@ -438,7 +438,7 @@ Clock glitches, voltage glitches, heating attacks and camera flash can cost from
 In the context of physical attacks, a fault model is a conceptual representation of how faults can occur and the effects they can have on the operation of a system. In simple terms, it describes the various ways in which a system can be altered when subjected to external perturbations.
 We present the most popular fault models, which are used in the literature.
 
-Multiple studies~\cite{BH-22-access,GMA-22-electronics,KSV-13-tvlsi,ZAV-06-jarab,YSW-18-hss} present a small overview on different fault models for Fault Injection Attacks. Different possibilities exist depending on the equipment and the effect targeted. Otto~\cite{O-05-phd} presented a deep study and definitions of fault models.
+Multiple studies~\cite{BH-22-access,GMA-22-electronics,KSV-13-tvlsi,ZAV-06-jarab,YSW-18-hss} present a small overview on different fault models for fault injection attacks. Different possibilities exist depending on the equipment and the effect targeted. Otto~\cite{O-05-phd} presented a deep study and definitions of fault models.
 
 With a low-cost equipment, an attacker can achieve instruction skip, random byte attacks, execution faults. While with higher cost equipment, this attacker is able to create bit-flip into the architecture, bit set/reset, or stuck-at-fault, temporal bit-flip, or spatial bit-flip.
 
@@ -453,7 +453,7 @@ Stuck-at faults~\cite{MABGHMRSYV-18-fdtc} permanently set the targeted data to a
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Countermeasures against FIA}
+\section{Countermeasures against FIAs}
 \label{section:countermeasuresAgainstFIA}
 In the previous section, we showed the need to protect against fault injection attacks.
 In this section, we will only present the countermeasures to protect a system against fault injection attacks.
@@ -466,7 +466,7 @@ The objectives when implementing countermeasures are:
 \end{itemize}
 
 \subsection{Countermeasures in the physical layer}
-Countermeasures can be implemented in the physical layer, such as sensors that detect a perturbation. He et al.~\cite{HBB-16-space} propose a full-digital detection logic against laser fault injection. El-Baze et al.~\cite{ERM-16-date} present and validate a new sensor allowing to detect EMFI. Muttaki et al.~\cite{MZTF-22-host} introduce a universal Fault-to-Time Converter sensor that can effectively detect FIA (clock glitch, voltage glitch, laser, EMFI) while requiring minimal overhead.
+Countermeasures can be implemented in the physical layer, such as sensors that detect a perturbation. He et al.~\cite{HBB-16-space} propose a full-digital detection logic against laser fault injection. El-Baze et al.~\cite{ERM-16-date} present and validate a new sensor allowing to detect EMFI. Muttaki et al.~\cite{MZTF-22-host} introduce a universal Fault-to-Time Converter sensor that can effectively detect FIAs (clock glitch, voltage glitch, laser, EMFI) while requiring minimal overhead.
 
 \subsection{Software countermeasures}
 Software countermeasures target vulnerable parts of the code (loops, memory access, etc.). They are often relatively easy to implement compared with hardware countermeasures. However, they are more likely to be bypassed, as their implementation does not take into account the system's microarchitecture.
@@ -477,11 +477,11 @@ Chamelot et al.~\cite{CCH-22-date} present SCI-FI, a countermeasure for Control 
 Laurent et al.~\cite{LBDPP-19-microproc} analyse some existing countermeasures and show how they handle precise faults extracted from the processor.
 Some countermeasures propose solutions to protect the data linked to the control flow. For example, Schilling et al.~\cite{SWM-18-date} propose protecting the calculation of conditional branches while preserving the error-detection capabilities at every stage of a conditional branch. They demonstrate this by implementing an encoded comparison using AN-codes. They also integrated this countermeasure in the LLVM compiler to automatically protect conditional branches.
 
-However, even if those countermeasures are good against FIA, they are still sensitive against some attacks and can be bypassed by analysing the processor microarchitecture. Laurent et al.~\cite{LBDP-19-date} present an attack where they target hidden registers into a \mbox{RISC-V} processor. They show that even if a code is protected against FIA, they can find some vulnerabilities and bypass the software countermeasures. It is then better to directly implement hardware countermeasures at the lower level to have the best protection available.
+However, even if those countermeasures are good against FIAs, they are still sensitive against some attacks and can be bypassed by analysing the processor microarchitecture. Laurent et al.~\cite{LBDP-19-date} present an attack where they target hidden registers into a \mbox{RISC-V} processor. They show that even if a code is protected against FIAs, they can find some vulnerabilities and bypass the software countermeasures. It is then better to directly implement hardware countermeasures at the lower level to have the best protection available.
 
 \subsection{Hardware countermeasures}
 Hardware countermeasures~\cite{BCNTW-06-procieee, PTAJC-22-appSci} consist of adding hardware mechanisms to the system architecture, which makes them more effective. Adding a countermeasure introduces a loss of performance into the target system. Its implementation usually involves increasing the size of the hardware's area, reducing the maximum frequency, or increasing the power consumption. However, once the implementation is done, an evaluation of the protection is usually done to compare it and give some indications in terms of area, performance, or efficiency.
-In the state of the art, multiple solutions exist to protect a system against FIA such as information redundancy, spatial or hardware redundancy, temporal redundancy, and obfuscation.
+In the state of the art, multiple solutions exist to protect a system against FIAs such as information redundancy, spatial or hardware redundancy, temporal redundancy, and obfuscation.
 
 \subsubsection{Hardware redundancy}
 Hardware redundancy~\cite{JMR-07-iet, DFR-07-dsn, NDFR-08-ets} countermeasure consists of duplicating the protected circuit or part of it to compare the result obtained after computation to check if there is a difference. Figure~\ref{fig:spatial_redundancy} represents the spatial redundancy. An input is sent to two or more modules (i.e. computation blocks) and the output results will be compared, to check if an error occurred.

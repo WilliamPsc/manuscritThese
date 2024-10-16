@@ -30,7 +30,7 @@ Technically, RISC-V features a modular design, allowing developers to incorporat
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{DIFT design}
-This thesis focuses on the evaluation of a DIFT against fault injection attacks and the design of dedicated protections. We opted to not develop a Dynamic Information Flow Tracking (DIFT) system from scratch, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
+This thesis focuses on the evaluation of a DIFT against FIAs and the design of dedicated protections. We opted to not develop a Dynamic Information Flow Tracking (DIFT) system from scratch, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
 As a result, we have selected the D-RI5CY~\cite{PDGLC-18-hpec, driscy} design, which utilises the RI5CY core supported by PULPino~\cite{pulpino} and developed by PULP platform~\cite{pulp}. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, ALU, and MAC operations.
 D-RI5CY has been developed by researchers of Columbia University, USA, in partnership with Politecnico di Torino, Italy. D-RI5CY extends the RI5CY processor to support in-core DIFT.
 
@@ -218,7 +218,7 @@ The first use case involves exploiting a buffer overflow, potentially leading to
         \caption{PC address instruction is fetched}
         \label{fig:rop_attack_5}
     \end{subfigure}
-    \caption{Representation of how the ROP attack works}
+    \caption{Representation of a ROP attack}
     \label{fig:rop_attack}
 \end{figure}
 
@@ -348,12 +348,12 @@ int main(int argc, char* argv[]){
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Summary}
-To summarise, these three use cases allow stimulating each element of the DIFT mechanism. Consequently, they can be used to study the impact of FIA into this mechanism. The next section studies the behaviour and assesses the DIFT against FIA.
+To summarise, these three use cases allow stimulating each element of the DIFT mechanism. Consequently, they can be used to study the impact of FIAs into this mechanism. The next section studies the behaviour and assesses the DIFT against FIAs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vulnerability assessment}
 \label{section:vuln_assessment}
-In order to analyse the behaviour of the processor at the application runtime against Fault Injection Attacks, we have simulated some fault injections campaigns in which we inject fault inside the 55 registers associated to the DIFT, which correspond to 127 bits in total. For these campaigns, we use a tool, developed for this purpose. This tool is described in Chapter~\ref{chapter:fissa} and can generate the TCL code to automate fault injections attacks campaigns at\textit{ Cycle Accurate and Bit Accurate} (CABA) level.
+In order to analyse the behaviour of the processor at the application runtime against FIAs, we have simulated some fault injections campaigns in which we inject fault inside the 55 registers associated to the DIFT, which correspond to 127 bits in total. For these campaigns, we use a tool, developed for this purpose. This tool is described in Chapter~\ref{chapter:fissa} and can generate the TCL code to automate fault injections attacks campaigns at\textit{ Cycle Accurate and Bit Accurate} (CABA) level.
 Table~\ref{tab:registersDIFT} shows the repartition of these registers in every pipeline stage of the RI5CY core and the number of associated bits. This work has been published in the Workshop on Security and Privacy of Sensing Systems~\cite{PLG-22-SensorsSP}.
 
 \begin{table}[t]
@@ -382,7 +382,7 @@ We evaluate the design by conducting fault injections campaigns. By analysing th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fault model for vulnerability assessment}
 In this vulnerability assessment, we consider an attacker able to inject faults into DIFT-related registers leading to \textit{bit set}, \textit{bit reset}, and \textit{single bit-flip in one register at a given clock cycle}. 
-As discussed in Section~\ref{section:soa_fm}, these fault models are the main fault models used in FIA for the most accurate methods, such as laser fault injection. There is also \textit{skip instruction} fault model which is often used but as we do not target the configuration of the DIFT, we do not attack instructions but only registers.
+As discussed in Section~\ref{section:soa_fm}, these fault models are the main fault models used in FIAs for the most accurate methods, such as laser fault injection. There is also \textit{skip instruction} fault model which is often used but as we do not target the configuration of the DIFT, we do not attack instructions but only registers.
 To bypass the DIFT mechanism, the main attacker's goal is to prevent an exception being raised. To reach this objective, any DIFT-related register maintaining tag value, driving the tag propagation or the tag update process or maintaining the security policy configuration can be targeted.
 
 
@@ -636,7 +636,7 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
-In this chapter, we described the processor we focus on, with its implementation of a hardware in-core DIFT. We described how it works and how to use the DIFT mechanism with the default configuration. Then, we described the different use cases we choose to work with, in order to analyse the DIFT behaviour and assess it against fault injection attacks. Finally, we presented the vulnerability assessment on these use cases using the D-RI5CY security mechanism. We have shown that this DIFT implementation is vulnerable to FIA within different registers depending on the fault model and depending on the application, as different paths are used and so different registers are going to be critical.
+In this chapter, we described the processor we focus on, with its implementation of a hardware in-core DIFT. We described how it works and how to use the DIFT mechanism with the default configuration. Then, we described the different use cases we choose to work with, in order to analyse the DIFT behaviour and assess it against FIAs. Finally, we presented the vulnerability assessment on these use cases using the D-RI5CY security mechanism. We have shown that this DIFT implementation is vulnerable to FIAs within different registers depending on the fault model and depending on the application, as different paths are used and so different registers are going to be critical.
 
 Tables~\ref{table:end_sim_by_status_wop_1_set0}, \ref{table:end_sim_by_status_wop_1_set1}, \ref{table:end_sim_by_status_wop_1_bitflip} present the results obtained from the campaign with their respective fault model.
 This vulnerability analysis revealed that the majority of weaknesses in this mechanism are caused by single bit-flips, with 51 successful faults out of 95. Furthermore, the registers involved in this mechanism are predominantly 1-bit registers, as they are used for the tag data path. This indicates that, to effectively safeguard the mechanism, the primary focus should be on protecting it against single bit-flip errors.

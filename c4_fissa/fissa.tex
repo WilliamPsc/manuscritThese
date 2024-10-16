@@ -5,9 +5,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-This chapter introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate fault injection attacks campaigns in simulation.
+This chapter introduces and presents a tool, called FISSA -- Fault Injection Simulation for Security Assessment --, created to automate FIAs campaigns in simulation.
 This work has been published in DSD 2024~\cite{PLG-24-dsd}.
-The first section presents the state of the art of existing tools for FIA campaigns in simulation, using formal methods, or even to perform real world attacks.
+The first section presents the state of the art of existing tools for FIAs campaigns in simulation, using formal methods, or even to perform real world attacks.
 The second section presents FISSA software architecture, details how FISSA works, and presents how to extend it.
 The third section illustrates FISSA capacity through a use case from Section~\ref{section:uses_cases}.
 Finally, the last section discusses and draws some perspectives for the tool's development and usability.
@@ -17,7 +17,7 @@ Finally, the last section discusses and draws some perspectives for the tool's d
 
 Addressing fault injection vulnerabilities is crucial. In general, fault attacks are conducted using physical equipment. Nonetheless, another approach exists that leverages simulators for fault testing. The main advantages of using simulators are they cost less money than physical setups, it is easier to make them work as they do not need specific skills, and they can be used during the conceptual stage.
 
-This section presents recent works related to methods and tools for vulnerability assessment when considering fault injection attacks. For such vulnerability assessment, main strategies include actual fault injections, formal methods and simulations.
+This section presents recent works related to methods and tools for vulnerability assessment when considering FIAs. For such vulnerability assessment, main strategies include actual fault injections, formal methods and simulations.
 Another objective of fault injection in simulation is to address safety~\cite{FTMLLE-21-icsrs}. Safety concerns revolve around unintended, accidental faults, with a focus on system reliability and resilience. The aim is to verify the system’s capability to detect and recover from these faults, ensuring that no catastrophic consequences occur as a result of such failures. This process is crucial for validating the robustness of safety mechanisms in place.
 
 \begin{table}[t]
@@ -31,7 +31,7 @@ Another objective of fault injection in simulation is to address safety~\cite{FT
                           & References  & Cost                                & \begin{tabular}[c]{@{}c@{}}Control over\\fault scenarios\end{tabular}       & Scalability                         & \begin{tabular}[c]{@{}c@{}}Speed of\\ execution\end{tabular}                                      & Realism                             & Expertise \\ \midrule
         Formal Methods    & \cite{BSSMG-21-tches, ANR-18-ices, BBCFGS-19-esorics, SVPMRDKMS-24-eprint}     & \textcolor{ForestGreen}{Very low}  & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very low}           & \textcolor{red}{Low}                                    & \textcolor{red}{Low}                & \textcolor{red}{Very high} \\
         Simulations       & \cite{BLK-23-access, HGASO-21-fdtc, AB-23-acns, fisim, AWMN-20-host,TMZHM-23-iolts,WLRTF-22-tcad,GS-21-jcrypto,HSP-21-ifs,KMD-24-ashes}     & \textcolor{ForestGreen}{Very low}       & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Low}                & \textcolor{red}{Low}/\textcolor{ForestGreen}{Moderate}  & \textcolor{ForestGreen}{Moderate}   & \textcolor{ForestGreen}{Low} \\
-        Actual FIA        & \cite{NNHRS-14-dsd,CMLCVR-11-crypto, BCNTW-06-procieee, BFP-19-tches, GBD-23-paine, CGVCBLC-22-cardis}     & \textcolor{Red}{Very high}           & \textcolor{Red}{Very low}           & \textcolor{ForestGreen}{Very high}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very high} \\
+        Actual FIAs        & \cite{NNHRS-14-dsd,CMLCVR-11-crypto, BCNTW-06-procieee, BFP-19-tches, GBD-23-paine, CGVCBLC-22-cardis}     & \textcolor{Red}{Very high}           & \textcolor{Red}{Very low}           & \textcolor{ForestGreen}{Very high}  & \textcolor{ForestGreen}{Very high}                      & \textcolor{ForestGreen}{Very high}  & \textcolor{red}{Very high} \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -43,10 +43,10 @@ Additionally, this approach can only be executed once the physical circuit is av
 
 Formal methods provide an advantage with mathematical proofs, ensuring a rigorous verification of the system's behaviour during fault injection experiments. Formal methods approaches such as~\cite{BSSMG-21-tches} allow the analysis of a circuit design in order to detect sensitive logic or sequential hardware elements. Arribas et al.~\cite{ANR-18-ices}, Barthe et al.~\cite{BBCFGS-19-esorics} and Simon et al.~\cite{SVPMRDKMS-24-eprint} present formal verification methods to analyse the behaviour of HDL implementations. However, this type of tool usually suffers from restrictions limiting its actual usage on a complete processor. Conventional formal approaches encounter scalability challenges due to limitations in verification techniques. In particular, the circuit structure it can analyse is usually limited (e.g. if there is a loop implemented in the design).
 
-Many simulators for fault injection attacks exist at different levels, to achieve different objectives, such as security at gate-level, cryptographic systems, study the impact of clock glitches, or even X-Ray. They can use Artificial Intelligence (AI) to enhance the detection~\cite{AB-23-acns}. Another way to simulate fault injections is to use QEMU (Quick EMUlator)~\cite{BLK-23-access,HGASO-21-fdtc,KMD-24-ashes}.
+Many simulators for FIAs exist at different levels, to achieve different objectives, such as security at gate-level, cryptographic systems, study the impact of clock glitches, or even X-Ray. They can use Artificial Intelligence (AI) to enhance the detection~\cite{AB-23-acns}. Another way to simulate fault injections is to use QEMU (Quick EMUlator)~\cite{BLK-23-access,HGASO-21-fdtc,KMD-24-ashes}.
 QEMU is an open-source machine that emulates the behaviour of a processor at a very fine-grain, using various optimizations to keep execution speed as close as possible to native system execution.
 Bekele et al.~\cite{BLK-23-access} present a survey of QEMU-based Fault Injection techniques. After discussing the various techniques proposed in the state of the art, they classify into categories and compare them.
-Fault Injections simulations can be performed at processor instructions level. Authors of~\cite{AB-23-acns} explore the impact of fault injection attacks on software security. They evaluate four open-source fault simulators, comparing their techniques and suggest enhancing them with AI methods inspired by advances in cryptographic fault simulation. 
+Fault Injections simulations can be performed at processor instructions level. Authors of~\cite{AB-23-acns} explore the impact of FIAs on software security. They evaluate four open-source fault simulators, comparing their techniques and suggest enhancing them with AI methods inspired by advances in cryptographic fault simulation. 
 Arribas et al.~\cite{AWMN-20-host} introduces VerFI, a gate-level granularity fault simulator for hardware implementations. For instance, it has been used to spot an implementation mistake in ParTI~\cite{SMG-16-crypto}. However, this tool has been developed to check if implemented countermeasures can really protect against fault injection on cryptographic implementations, but it cannot evaluate components such as registers or memories.
 FiSim~\cite{fisim} is an open-source deterministic fault attack simulator prototype utilising the Unicorn Framework and Capstone disassembler.
 Tebina et al.~\cite{TMZHM-23-iolts} introduce Ray-Spect, a tool to simulate fault injection using parametric degradation of MOSFETs transistors, which is typical of X-ray fault injection.
@@ -57,7 +57,7 @@ In this work, we focus on RTL simulations, which provides a controlled virtual e
 Post-synthesis, timed, and post-implementation simulations can be more difficult to apprehend. This is because HDL synthesis alters the names of the various hardware elements, making it more difficult to find the various elements targeted in the behavioural section.
 Behavioural simulation-based fault injection offers the advantage of enabling designers to test their system at the early beginning of the design cycle, providing valuable insights and uncovering potential vulnerabilities early in the development process. However, a limitation lies in the potential lack of absolute fidelity to actual conditions, as simulations might not perfectly replicate all hardware intricacies, introducing a slight risk of overlooking certain faults that could manifest in the actual hardware.
 
-Table~\ref{table:FI_type_comparison} shows a comparison between these three methods for vulnerability assessment when considering FIA regarding six metrics. These metrics are the financial cost of setting up the fault injection campaign, the control over fault scenarios (how configurable are the scenarios), scalability which refers to the method capacity to be applied to systems of different sizes or complexities, speed of execution of the campaign, realism of the fault injection campaign and the level of required expertise.
+Table~\ref{table:FI_type_comparison} shows a comparison between these three methods for vulnerability assessment when considering FIAs regarding six metrics. These metrics are the financial cost of setting up the fault injection campaign, the control over fault scenarios (how configurable are the scenarios), scalability which refers to the method capacity to be applied to systems of different sizes or complexities, speed of execution of the campaign, realism of the fault injection campaign and the level of required expertise.
 Table~\ref{table:FI_type_comparison} shows that no method is completely optimal. Each method has its own advantages and disadvantages and must be chosen by the designer according to the requirements and the available financial and human resources. Indeed, setting up an actual fault injection campaign requires much more expertise in this domain and also requires costly equipment, whereas setting up a simulation campaign can be easier for a circuit designer familiar with HDL simulation tools.
 Table~\ref{table:FI_type_comparison} shows that simulation offers a good compromise to assess the security level of a circuit design. In particular, it provides an efficient solution for investigating security throughout the design cycle, enabling the concept of “Security by Design”.
 
@@ -67,7 +67,7 @@ This section presents our open-source tool, FISSA, available on GitHub~\cite{fis
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Main software architecture}
-FISSA is designed to help circuit designers to analyse, at the early beginning of the development, the sensitivity to FIA of the developed circuit. FISSA relies on behavioural simulations.
+FISSA is designed to help circuit designers to analyse, at the early beginning of the development, the sensitivity to FIAs of the developed circuit. FISSA relies on behavioural simulations.
 Figure~\ref{fig:archi_fissa} presents the software architecture of FISSA.
 It consists of three different modules: \textit{TCL generator}, \textit{Fault Injection Simulator} and \textit{Analyser}. The first and third modules correspond to a set of Python classes.
 
@@ -99,7 +99,7 @@ Customising end-of-simulation statuses allows for adaptation to the specific req
 \end{itemize}
 
 \begin{algorithm}
-    \caption{Simulated FIA campaign pseudocode}
+    \caption{Simulated FIAs campaign pseudocode}
     \label{algo:pseudoCodeSimuStages}
     \normalsize
     \begin{algorithmic}[1]
@@ -240,7 +240,7 @@ Line 5 in Algorithm~\ref{algo:pseudoCodeSimuStages} corresponds to Algorithm~\re
 
 
 \begin{algorithm}
-    \caption{FIA simulation pseudocode}
+    \caption{FIAs simulation pseudocode}
     \label{algo:pseudoCodeSimus}
     \normalsize
     \begin{algorithmic}[1]
@@ -268,7 +268,7 @@ Listing~\ref{code:logJSONFile_fissa} shows a simplified example of an output fil
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.5\textwidth, page=4]{c4_fissa/img/fissa/archi_fissa.pdf}
-    \caption{Fault Injection Simulator architecture}
+    \caption{Fault injection simulator architecture}
     \label{fig:archi_fis}
 \end{figure}
 
@@ -341,7 +341,7 @@ The last status refers to a \textit{success} (status 4), indicating a bypass of 
 
 In the input configuration file, a single injection window is set between cycles 3428 and 3434, the maximum number of simulated clock cycles is set to 100 from the start of the injection window, this allows us to detect if there were a control flow deviation, the design period is set to 40~ns, the number of simulations per TCL script is set to 2,200. The considered fault models are four of the seven fault models defined in Section~\ref{subsec:supported_fault_models}: \textit{target set to 0}, \textit{target set to 1}, \textit{single bit-flip in one target at a given cycle}, and \textit{single bit-flip in two targets at a given cycle}.
 
-Four FIA simulation campaigns are performed to evaluate the design against the four fault models.
+Four FIAs simulation campaigns are performed to evaluate the design against the four fault models.
 We choose to log the values of the \textit{Targets'} file, the simulation's number, targets' value after the injection, the injection cycle and the end-of-simulation status.
 The \textit{Targets'} file is filled with the 55 registers of the DIFT security mechanism, representing a total of 127 bits.
 
@@ -411,7 +411,7 @@ To further assess vulnerabilities, the designers can utilise Table~\ref{table:en
 
 Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} is produced by FISSA and details the successes from three distinct fault injection campaigns: \texttt{set to 0}, \texttt{set to 1} and \texttt{single bit-flip in one target at a given cycle}. Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} specifies successes for each fault model, correlated with the cycle and the affected target. For example, a \texttt{set to 0} fault at cycle 3428 on \texttt{tcr\_q} would lead to a successfully attack. It highlights which targets are sensitive to fault attacks at a cycle-accurate and bit-accurate level, providing the designers precise information on critical elements requiring protection based on their specific needs.  Table~\ref{table:end_sim_by_status_wop_1_detail_set0_set1_bitflip} only covers the most basic fault models. Indeed, producing a table for more complex scenarios, such as simultaneous faults in two targets within a same or multiple cycles, would be intricate and challenging to interpret. Consequently, we opted for an alternative method and developed a heatmap representation (e.g. Figure~\ref{fig:heatmap_spatial}).
 
-To further explore the impact of FIA on a design, a designer can study heatmaps generated by FISSA. 
+To further explore the impact of FIAs on a design, a designer can study heatmaps generated by FISSA. 
 These heatmaps are tailored to a fault model with two faulty registers, where each matrix intersection shows the number of successes with that target pair.
 
 Figure~\ref{fig:heatmap_spatial} shows an extract of the heatmap generated for the \textit{single bit-flip in two targets at a given clock cycle} fault model. For simplicity, only 5 registers are represented. The full figure will be presented in Chapter~\ref{chapter:exp_setup_results}.

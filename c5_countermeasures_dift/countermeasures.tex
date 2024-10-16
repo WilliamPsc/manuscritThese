@@ -1,5 +1,5 @@
-\chapter{Error Detection and Correction Codes to Protect an In-Core DIFT against FIA}
-\chaptermark{Error Detection and Correction codes to protect an In-Core DIFT against FIA}
+\chapter{Error Detection and Correction Codes to Protect an In-Core DIFT against FIAs}
+\chaptermark{Error Detection and Correction codes to protect an In-Core DIFT against FIAs}
 \label{chapter:countermeasures}
 \minitoc
 
@@ -7,7 +7,7 @@
 \section{Introduction}
 Previous chapters have shown that the D-RI5CY's DIFT security mechanism is vulnerable to FIAs, mainly due to single-bit flips. This D-RI5CY essentially uses single-bit registers, as it relies on 1-bit tags.
 
-In this chapter, we present three countermeasures in order to protect the DIFT against fault injection attacks.
+In this chapter, we present three countermeasures in order to protect the DIFT against FIAs.
 The first countermeasure implemented to detect and prevent the use of corrupted data is simple parity. We selected the simple parity code as the error detection countermeasure because of its suitability and limited overhead. However, parity codes are limited in that they can only detect, but not correct, single-bit errors.
 The second countermeasure is implemented to detect any single-bit errors that may occur, but also to correct them without time overhead. With this countermeasure, we want to correct to the nearest cycle so that the fault cannot propagate and show to a potential attacker that the fault he injected had no effect on the system.
 The third countermeasure is called SECDED for Single Error Correction, Double Error Detection. This protection is a Hamming Code extended with a single parity bit to allow the detection of double-bit errors while being able to correct single-bit errors.
@@ -628,7 +628,7 @@ However, Table~\ref{tab:chap5_results_tempo} shows that without any protection, 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary}
-In this chapter, we presented three countermeasures in order to protect the DIFT mechanism against fault injection attacks. For that, we considered two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. These fault models are used in real world fault injection attacks.
+In this chapter, we presented three countermeasures in order to protect the DIFT mechanism against FIAs. For that, we considered two fault models: \textit{single bit-flip in one register at a given clock cycle} and \textit{single bit-flip in two registers at two clock cycles}. These fault models are used in real world FIAs.
 The first countermeasure is based on parity code: simple parity and can be used to detect any errors. Thanks to this protection, we achieve a 100\% fault detection in our considered fault model, but with the downside of giving an indication to the attacker as we emit a signal which can be caught by a running software to halt the application.
 On the other hand, we implemented a code-based protection: Hamming Code. This protection is limited to only detection and correction of an error in our case. We propose two implementations. The first implementation is used to protect a set of registers together. The second implementation targets the protection of the \textit{Register File Tag} with constraints such as the number of write ports available. Thanks to these implementations, we are able to handle 100\% of the injected fault and correct them without any direct indication to the attacker.
 The third countermeasure is a Hamming Code with an additional parity bit, this protection is called SECDED for Single Error Correction, Double Error Detection. This protection has been implemented in the same exact way of Hamming Code, with the difference that each formed group comprises an additional general parity bit.
