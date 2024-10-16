@@ -19,9 +19,11 @@ Finally, in Section~\ref{section:chap6_discussion}, we discuss the results obtai
 \label{section:chap6_faultmodels}
 In Chapter~\ref{chapter:countermeasures}, we presented the results of fault injection campaigns targeting \textit{a single bit-flip in one register at a given clock cycle}, and \textit{a single bit-flip in two registers at two distinct clock cycles}. We demonstrated that lightweight countermeasures, such as simple parity, Hamming Code, or SECDED version of Hamming Code, are effective in protecting our DIFT mechanism against single bit-flips occurring in one register at one clock cycle or in two registers at two distinct clock cycles.
 
-In this chapter, we extend our analysis to consider an attacker capable of injecting faults into DIFT-related registers, leading to a \textit{single bit-flip in two registers at a given clock cycle}. Furthermore, we account for an attacker able to induce \textit{multi-bit faults in one register at a given clock cycle}, as well as, \textit{multi-bit faults in two registers at a given clock cycle}. These fault models, introduced in Chapter~\ref{chapter:fissa}, are exhaustively tested across registers ranging from 1-bit to 10-bit. Registers larger than 10 bits, such as the configuration registers TPR and TCR, are out of the question due to their size. Indeed, simulating an exhaustive attack on a single 32-bit register for one cycle would require $2^{32}$ simulations (i.e: \powerTwo{pow(32,2)}{0} simulations), and for the combination of two 32-bit registers, the number of simulations would reach $2^{32} \times 2^{32}$ which is too large to be simulated in a reasonable time. However, it is worth noting that the biggest register after these two 32-bit registers is a 6-bit register (cf. Table~\ref{tab:strategy_2_register_info} and \ref{tab:strategy_2_groups}), so we fault every 1-bit to 6-bit registers. Considering our fault models, we are able to inject up to 11 faults (the size of the two biggest considered registers) and state-of-the-art shows successful FIAs up to 4 bits at the same clock cycle.
+In this chapter, we extend our analysis to consider an attacker capable of injecting faults into DIFT-related registers, leading to a \textit{single bit-flip in two registers at a given clock cycle}. Furthermore, we account for an attacker able to induce \textit{multi-bit faults in one register at a given clock cycle}, as well as, \textit{multi-bit faults in two registers at a given clock cycle}. These fault models, introduced in Chapter~\ref{chapter:fissa}, are exhaustively tested across registers ranging from 1-bit to 10-bit. Registers larger than 10 bits, such as the configuration registers TPR and TCR, are out of the question due to their size. Even if 22 bits are used for TCR and 17 for TPR, simulating an exhaustive attack on a single 22-bit register for one cycle would require $2^{22}$ simulations (i.e: \powerTwo{pow(22,2)}{0} simulations), and for the combination of two registers (17 bits and 22 bits), the number of simulations would reach $2^{17} \times 2^{22} = \num{549755813888}$ which is too large to be simulated in a reasonable time.
 
-The three fault models are exhaustively simulated across all possible values of these registers. To meet this objective, any DIFT-related register that maintains a 1-bit tag value, drives tag propagation or tag update processes, or holds security policy configurations, can be targeted. Additionally, registers storing redundancy bits for protection mechanisms are also considered.
+However, it is worth noting that the biggest register after these two 32-bit registers is a 6-bit register (cf. Table~\ref{tab:strategy_2_register_info} and \ref{tab:strategy_2_groups}), so we fault every 1-bit to 6-bit registers. Considering our fault models, we are able to inject up to 11 faults (the size of the two biggest considered registers) and state-of-the-art shows successful FIAs up to 4 bits at the same clock cycle.
+
+The three fault models are exhaustively simulated across all possible values of these registers. To meet this objective, any DIFT-related register that maintains a tag value, drives tag propagation or tag update processes, can be targeted. Additionally, registers storing redundancy bits for protection mechanisms are also considered.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Implementation strategies}
@@ -37,7 +39,7 @@ By exploring these methodologies, we aim to provide actionable insights for deve
 \begin{table}[t]
     \centering
     \scriptsize
-    \caption{DIFT-related protected registers -- Strategy 2}
+    \caption{DIFT-related protected registers -- strategy 2}
     \label{tab:strategy_2_groups}
     \begin{tabular}{@{}rccccc@{}}
         \toprule
@@ -57,7 +59,7 @@ By exploring these methodologies, we aim to provide actionable insights for deve
 \begin{table}[t]
     \centering
     \scriptsize
-    \caption{D-RI5CY Registers Details List for Strategy 2}
+    \caption{D-RI5CY registers details list for strategy 2}
     \label{tab:strategy_2_register_info}
     % \setlength{\tabcolsep}{5pt}
     \begin{tabular}{@{}rccc@{}}
@@ -100,7 +102,7 @@ In the second implemented strategy, we rely on protecting each pipeline stage of
 
 Table~\ref{tab:strategy_2_register_info} represents the different DIFT-related registers with their associated group.
 Table~\ref{tab:strategy_2_groups} represents the number of protected bits inside each pipeline stage and their associated number of redundancy, and parity bits, when SECDED is used. As depicted in Table~\ref{tab:strategy_2_groups}, the number of protected bits differs a lot depending on the pipeline stage, ranging from one bit to thirty-two bits.
-Otherwise, the HDL implementations are the same as Chapter~\ref{chapter:countermeasures} with two proposed implementations (see Figure~\ref{fig:implementation_sd_1} and Figure~\ref{fig:implementation_sd_2}). The protection of the TPR and TCR is limited to 22 bits, as this is the maximum number of bits that can be used for the TCR. Regardless of the actual usage of the TPR, the same number of bits is protected for both registers. This strategy protects 107 bits by adding 30 redundancy bits and 7 parity bits, which led to a \compute{100*(30+7)/127}{0}\% increase in number of bits stored into registers.
+Otherwise, the HDL implementations are the same as Chapter~\ref{chapter:countermeasures} with two proposed implementations (see Figure~\ref{fig:implementation_sd_1} and Figure~\ref{fig:implementation_sd_2}). The protection of the TPR and TCR is limited to 22 bits, as this is the maximum number of bits that can be used for the TCR. Regardless of the actual usage of the TPR, the same number of bits is protected for both registers to simplify the implementation and do not change the area overhead. This strategy protects 107 bits by adding 30 redundancy bits and 7 parity bits, which led to a \compute{100*(30+7)/127}{0}\% increase in number of bits stored into registers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Strategy 3: Individual Register Encapsulation for Robust Error Mitigation}
@@ -108,7 +110,7 @@ Otherwise, the HDL implementations are the same as Chapter~\ref{chapter:counterm
 \begin{table}[t]
     \centering
     \scriptsize
-    \caption{D-RI5CY Registers Details List for Strategy 3}
+    \caption{D-RI5CY registers details list for strategy 3}
     \label{tab:strategy_3_register_info}
     % \setlength{\tabcolsep}{5pt}
     \begin{tabular}{@{}rccc@{}}
@@ -158,7 +160,7 @@ Table~\ref{tab:strategy_3_groups} represents the number of protected bits inside
 \begin{table}[t]
     \centering
     \scriptsize
-    \caption{D-RI5CY Registers Details List for Strategy 4}
+    \caption{D-RI5CY registers details list for strategy 4}
     \label{tab:strategy_4_register_info}
     % \setlength{\tabcolsep}{5pt}
     \begin{tabular}{@{}rccc@{}}
@@ -208,14 +210,14 @@ Table~\ref{tab:strategy_4_groups} depicts the number of redundancy and parity bi
 \begin{figure}[ht]
     \centering
     \includegraphics[page=1]{c6_group_composition/img/implem5_spaghetti.pdf}
-    \caption{Strategy 5 -- Mixing Registers Implementation}
+    \caption{Strategy 5 -- Mixing registers implementation}
     \label{fig:strategy_5_functionning}
 \end{figure}
 
 \begin{table}[t]
     \centering
     \scriptsize
-    \caption{D-RI5CY Registers Details List for Strategy 5}
+    \caption{D-RI5CY registers details list for strategy 5}
     \label{tab:strategy_5_register_info}
     \begin{tabular}{@{}rccc@{}}
         \toprule
@@ -265,7 +267,7 @@ Table~\ref{tab:strategy_5_groups} presents the number of redundancy and parity b
 \begin{table}[t]
     \centering
     \scriptsize
-    \caption{D-RI5CY Registers Details List}
+    \caption{D-RI5CY registers details list}
     \label{tab:strategies_register_info}
     \setlength{\tabcolsep}{4pt}
     \begin{tabular}{@{}rccccccc@{}}
@@ -308,7 +310,7 @@ Table~\ref{tab:strategy_5_groups} presents the number of redundancy and parity b
 \begin{table}[t]
     \centering
     \footnotesize
-    \caption{Registers by Strategy (SECDED count): Summary of Number and Size}
+    \caption{Registers by strategy (SECDED count): summary of number and size}
     \label{tab:strategies_summary}
     \begin{tabular}{rcc}
         \toprule
@@ -394,7 +396,8 @@ In this subsection, we present our fault injection campaigns results targeting t
 
 Table~\ref{tab:chap6_results_single_bitflip_spatial} shows the results obtained from the \textit{single bit-flip in two registers at a given clock cycle} fault model according to each use case. This table shows that without any protection in the case of the buffer overflow, the D-RI5CY lead to 1406 successes with this fault model, while with the simple parity, we decrease from 1406 to 239 successes. However, due to the increased number of registers and the fact that Hamming Code can detect only one error, as we inject two faults, Hamming Code try to correct a fault but in many cases, it can cause a third fault increasing the number of successes. Nevertheless, the different proposed strategies decrease this number of successes by a factor of approximatively 50, going from 2.93\% to 0.06\%. The SECDED protection detect all injected faults, thus no success happens thanks to this countermeasure. For this fault model, we conducted \num{4252212} simulations for a total of \num{11823} successes (\compute{11823*100/4252212}{2}\%). The simulation time for this fault model is approximately 4113 hours and 37 minutes equivalent, which equates to 3.48 seconds per simulation.
 Table~\ref{tab:chap6_results_multi_bitflip_reg} shows the results obtained from the \textit{multi-bit faults in one register at a given clock cycle} fault model. This table depicts that Hamming Code induces more or less the same amount of faults than without any protection, while simple parity shows better performances in terms of security. However, we can note a slight decrease for the second and third use cases. The best protection with Hamming Code is the fifth strategy, as it shows the lower amount of successes. On the other hand, SECDED offers the best results in terms of protection, although it is not always successful against attacks depending on the strategy considered. For example, for the second use case, all five strategies led to some successes, whereas for the third use case, only the first strategy led to successes. As we are injecting multiple faults, up to 6 bit-flips, with this fault model, it is normal that there will still be some successes. For this fault model, we conducted \num{82872} simulations for a total of \num{336} successes (\compute{336*100/82872}{2}\%). The simulation time for this fault model is approximately 58 hours and 2 minutes equivalent, which equates to 2.52 seconds per simulation.
-Table~\ref{tab:chap6_results_multi_bitflip_reg_multi} shows the results obtained from the \textit{multi-bit faults in two registers at a given clock cycle} fault model. This table represents the more complex considered fault model, for each use case and for each strategy there will be some successes. It is due to that fact that we can inject up to 11 faults in two registers, even though SECDED can detect up to two faults. Hamming Code increases the number of successes, depending on the strategy and the use case. However, if we just take into account the percentage, the different strategies allow decreasing with a significant factor the number of successes. For example, for the buffer overflow, the highest ratio of successes is due to the second strategy of Hamming Code at 1.33\% and the lowest ratio is thanks to the fifth strategy of SECDED at 0.0067\% (round to 0.01 in the table), which is approximatively 200 times less than 1.33\%. For this fault model, we conducted \num{16812216} simulations for a total of \num{118409} successes (\compute{118409*100/16812216}{2}\%). The simulation time for this fault model is approximately \num{15471} hours and 13 minutes equivalent, which equates to 3.31 seconds per simulation.
+Table~\ref{tab:chap6_results_multi_bitflip_reg_multi} shows the results obtained from the \textit{multi-bit faults in two registers at a given clock cycle} fault model. This table represents the more complex considered fault model, for each use case and for each strategy there will be some successes. It is due to that fact that we can inject up to 11 faults in two registers, even though SECDED can detect up to two faults. Hamming Code increases the number of successes, depending on the strategy and the use case. However, if we just take into account the percentage, the different strategies allow decreasing with a significant factor the number of successes. For example, for the buffer overflow, the highest ratio of successes is due to the second strategy of Hamming Code at 1.33\% and the lowest ratio is thanks to the fifth strategy of SECDED at 0.0067\% (round to 0.01 in the table), which is approximatively 200 times less than 1.33\%. For this fault model, we conducted \num{16812216} simulations for a total of \num{118409} successes (\compute{118409*100/16812216}{3}\%). The simulation time for this fault model is approximately \num{15471} hours and 13 minutes equivalent, which equates to 3.31 seconds per simulation.
+It should be noted that the fault model does not account for the two 32-bit registers, which are therefore unable to be simulated. As a result, the outcomes may be subject to bias. However, if the same percentage value is applied to an exhaustive attack, it can be calculated that there are $\num{9940608797400}$ simulations to be carried out for the fifth implementation of SECDED. If the same percentage values are applied (ranging from a minimum of 0\% to a maximum of 0.076\%), the number of successful outcomes for all use cases would be between 0 and \compute{0.076*9940608797400}{0} successes, and an examination of the preceding results in Table~\ref{tab:chap6_results_multi_bitflip_reg_multi} reveals a decline in the percentage of successful attacks. This suggests that the anticipated results may be lower than the aforementioned results and improve even more our results.
 
 \begin{table}[H]
     \scriptsize
@@ -537,10 +540,10 @@ Table~\ref{tab:chap6_results_multi_bitflip_reg_multi} shows the results obtained
                                                            & Hamming 4     & 0     & 0            & 5282        & --          & \num{393423}                             & --                                      & 2447 {\tiny (0.61\%)}        & \num{401152}   & 74:31                           \\
                                                            & Hamming 5     & 0     & 0            & 5829        & --          & \num{475987}                             & --                                      & 2664 {\tiny (0.55\%)}        & \num{484480}   & 94:21                           \\
                                                            & SECDED 1      & 0     & 0            & 656         & --          & \num{92123 }                             & \num{122731}                            & 490 {\tiny (0.23\%)}         & \num{216000}   & 35:42                           \\
-                                                           & SECDED 2      & 0     & 0            & 1452        & --          & \num{112110}                             & \num{124659}                            & 3 {\tiny (0.00\%)}           & \num{238224}   & 43:38                           \\
-                                                           & SECDED 3      & 0     & 0            & 640         & --          & \num{200702}                             & \num{175871}                            & 3 {\tiny (0.00\%)}           & \num{377216}   & 72:32                           \\
-                                                           & SECDED 4      & 0     & 0            & 68          & --          & \num{304920}                             & \num{246033}                            & 3 {\tiny (0.00\%)}           & \num{551024}   & 109:22                          \\
-                                                           & SECDED 5      & 0     & 0            & 96          & --          & \num{384572}                             & \num{267665}                            & 3 {\tiny (0.00\%)}           & \num{652336}   & 128:21                          \\\midrule
+                                                           & SECDED 2      & 0     & 0            & 1452        & --          & \num{112110}                             & \num{124659}                            & 3 {\tiny (\compute{3*100/238224}{2}\%)}           & \num{238224}   & 43:38                           \\
+                                                           & SECDED 3      & 0     & 0            & 640         & --          & \num{200702}                             & \num{175871}                            & 3 {\tiny (\compute{3*100/377216}{2}\%)}           & \num{377216}   & 72:32                           \\
+                                                           & SECDED 4      & 0     & 0            & 68          & --          & \num{304920}                             & \num{246033}                            & 3 {\tiny (\compute{3*100/551024}{2}\%)}           & \num{551024}   & 109:22                          \\
+                                                           & SECDED 5      & 0     & 0            & 96          & --          & \num{384572}                             & \num{267665}                            & 3 {\tiny (\compute{3*100/652336}{2}\%)}           & \num{652336}   & 128:21                          \\\midrule
         Total                                              &               &       &              &             &             &                                          &                                         & \num{118409} {\tiny (0.7\%)} & \num{16812216} &                                 \\
         \bottomrule
     \end{tabular}
