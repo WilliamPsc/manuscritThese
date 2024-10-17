@@ -23,14 +23,14 @@ We choose to work on an open-source RISC-V core, meaning that we have the abilit
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{RISC-V Instruction Set Architecture (ISA)}
+\subsection{RISC-V Instruction Set Architecture}
 RISC-V is an open and free ISA, which was originally developed at University of California, Berkeley, in 2010, and now is managed and supported by the RISC-V Foundation, having more than 70 members including companies such as Google, AMD, or Intel. The architecture was designed with a focus on simplicity and efficiency, embodying the Reduced Instruction Set Computer (RISC) principles. Unlike proprietary ISA, RISC-V is freely available for anyone to use without licensing fees, making it a popular choice for academic research, commercial products, and educational purposes.
 
 Technically, RISC-V features a modular design, allowing developers to incorporate only the necessary components for their specific application, which can significantly reduce the processor's complexity and power consumption. It supports several base integer sets classified by width—mainly RV32I, RV64I, and RV128I for 32-bit, 64-bit, and 128-bit architectures respectively. Each base set can be extended with additional modules for applications requiring floating-point computations (e.g., RV32F, RV64F), atomic operations (e.g., RV32A, RV64A), and more. This modularity and the openness of RISC-V have spurred a wide range of innovations in processor design and applications in areas ranging from embedded systems to high-performance computing.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{DIFT design}
-This thesis focuses on the evaluation of a DIFT against FIAs and the design of dedicated protections. We opted to not develop a Dynamic Information Flow Tracking (DIFT) system from scratch, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
+This thesis focuses on the evaluation of a DIFT against fault injection attacks and the design of dedicated protections. We opted to not develop a DIFT system from scratch, as this would have required considerable time for implementation and testing, which was not within the scope of our objectives. Consequently, we decided to review the current state of the art and select an open-source DIFT system.
 As a result, we have selected the D-RI5CY~\cite{PDGLC-18-hpec, driscy} design, which utilises the RI5CY core supported by PULPino~\cite{pulpino} and developed by PULP platform~\cite{pulp}. This is a 4-stage, in-order, 32-bit RISC-V core optimised for low-power embedded systems and IoT applications. It fully supports the base integer instruction set (RV32I), compressed instructions (RV32C), and the multiplication instruction set extension (RV32M) of the RISC-V ISA. Additionally, it includes a set of custom extensions (RV32XPulp) that support hardware loops, post-incrementing load and store instructions, ALU, and MAC operations.
 D-RI5CY has been developed by researchers of Columbia University, USA, in partnership with Politecnico di Torino, Italy. D-RI5CY extends the RI5CY processor to support in-core DIFT.
 
@@ -57,7 +57,7 @@ Each data element is physically stored in memory with its associated tag. Howeve
 
 It is worth noting that the D-RI5CY designers have chosen to rely on the \textit{illegal instruction exception} already implemented in the original RI5CY processor to manage the DIFT exceptions. This choice minimizes the area overhead of the proposed solution.
 
-In the Control and Status Registers (CSR), they added two additional 32-bit registers : Tag Propagation Register (TPR) and Tag Check Register (TCR). These registers are used to store the security policy for both tag propagation and tag check. These registers contain a default policy, and they can be modified during runtime with a simple \textit{csr write} instruction, such as \texttt{csrw \textit{csr, rs1}}.
+In the Control and Status Registers (CSR), they added two additional 32-bit registers : Tag Propagation Register and Tag Check Register. These registers are used to store the security policy for both tag propagation and tag check. These registers contain a default policy, and they can be modified during runtime with a simple \textit{csr write} instruction, such as \texttt{csrw \textit{csr, rs1}}.
 These policies consist of rules, which have fine-grain control over tag propagation and tag check for different classes of instructions. The rules specify how the tags of the instruction operands are combined and checked.
 Table~\ref{tab:insnClasses} shows the different instructions for each category represented in both TPR and TCR.
 
@@ -353,7 +353,7 @@ To summarise, these three use cases allow stimulating each element of the DIFT m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vulnerability assessment}
 \label{section:vuln_assessment}
-In order to analyse the behaviour of the processor at the application runtime against FIAs, we have simulated some fault injections campaigns in which we inject fault inside the 55 registers associated to the DIFT, which correspond to 127 bits in total. For these campaigns, we use a tool, developed for this purpose. This tool is described in Chapter~\ref{chapter:fissa} and can generate the TCL code to automate fault injections attacks campaigns at\textit{ Cycle Accurate and Bit Accurate} (CABA) level.
+In order to analyse the behaviour of the processor at the application runtime against fault injection attacks, we have simulated some fault injections campaigns in which we inject fault inside the 55 registers associated to the DIFT, which correspond to 127 bits in total. For these campaigns, we use a tool, developed for this purpose. This tool is described in Chapter~\ref{chapter:fissa} and can generate the TCL code to automate fault injections attacks campaigns at\textit{ Cycle Accurate and Bit Accurate} (CABA) level.
 Table~\ref{tab:registersDIFT} shows the repartition of these registers in every pipeline stage of the RI5CY core and the number of associated bits. This work has been published in the Workshop on Security and Privacy of Sensing Systems~\cite{PLG-22-SensorsSP}.
 
 \begin{table}[t]
