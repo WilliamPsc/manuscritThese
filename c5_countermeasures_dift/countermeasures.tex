@@ -18,7 +18,7 @@ The first section presents the different considered fault models. Then, the seco
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fault models considered in this chapter}
-In Chapter~\ref{chapter:dift_assessment}, we assessed the D-RI5CY design by considering \textit{single bit-flip in one register at a given clock cycle}, \textit{bit reset}, and \textit{bit set} fault models. The conclusion of this chapter was that the D-RI5CY is vulnerable mostly to single bit-flip, due to the fact that this DIFT design is mostly built around 1-bit registers for tag propagation.
+In Chapter~\ref{chapter:dift_assessment}, we assessed the D-RI5CY design by considering \textit{single bit-flip in one register at a given clock cycle}, \textit{bit reset}, and \textit{bit set} fault models. The conclusion of this chapter was that the D-RI5CY is vulnerable mainly to single bit-flip, due to the fact that this DIFT design is mostly built around 1-bit registers for tag propagation.
 
 In this chapter, we consider an attacker able to inject faults into DIFT-related registers, leading to single bit-flips at any position of the targeted register. To reach this objective, any DIFT-related register maintaining 1-bit tag value, driving the tag propagation or the tag update process or maintaining the security policy configuration can be targeted. Studies presented in~\cite{ZDCRT-12-dcis,CLFT-14-cosade} have shown that such precise single bit-flip attacks targeting registers can be performed using, for example, laser shots. We also consider an attacker able to inject a \textit{single bit-flip in two registers at two distinct clock cycles}, with a minimum delay of one clock cycle. Nowadays, more and more platforms exist to perform multi-bits faults on different targets~\cite{alphanov-doubleLFI,alphanov-fourLFI}. These platforms are helping to spread the use of this type of attack, thus we should also be forging our protection around these kinds of threats.
 
@@ -567,8 +567,8 @@ This comparison highlights the trade-offs between resource utilisation and perfo
 \end{table}
 
 Now, we will compare these protections in terms of security.
-Regarding the "\textit{single bit-flip in one register at a given clock cycle}" fault model, Table~\ref{tab:chap5_results_single_bitflip} shows the results obtained for the three considered use cases with and without protections. It is worth noting that we never get any crashes since we target the DIFT-related registers only. These registers do not impact the control or instruction flow of the processor.
-The results obtained without protection are from Chapter~\ref{chapter:dift_assessment}. We obtain \compute{12+29+10}{0} successes out of \compute{762+1016+508}{0} fault injection simulations with the D-RI5CY only.
+Regarding the "\textit{single bit-flip in one register at a given clock cycle}" fault model, Table~\ref{tab:chap5_results_single_bitflip} shows the results obtained for the three considered use cases with and without protections. It is worth noting that we never get any crashes since we target the DIFT-related registers only. These registers do not impact the control or instruction flow of the processor. The total number of simulations show the number of simulations done in total for each use case and each protection.
+The results obtained without protection are from Chapter~\ref{chapter:dift_assessment}. We obtain \compute{12+29+10}{0} successes out of \compute{762+1016+508}{0} fault injection simulations with the D-RI5CY without any protection.
 Conversely, when employing simple parity protection, none of the \compute{792+1056+528}{0} simulations result in success, as each single-fault in this fault model is detected, achieving a 100\% detection rate. With simple parity, an error signal is generated, which can be intercepted by a software running in the system to handle the fault, potentially halting the application if necessary. In contrast, the Hamming Code protection corrects the fault within the same cycle it occurs, without providing any direct indication to the attacker. The results from the Hamming Code simulations also show 0 success, but this time 100\% of the faults are corrected. This ensures the application continues running as if no fault occurred. From the attacker’s perspective, the fault does not affect the system’s behaviour in any way.
 Results obtained with SECDED show the same results as with Hamming Code, which is normal as this fault model inject only one fault per simulation.
 
@@ -580,7 +580,7 @@ Results obtained with SECDED show the same results as with Hamming Code, which i
     \setlength{\tabcolsep}{3pt}
     \begin{tabular}{@{}ccccccccccc@{}}
         \toprule
-                                                          &               & Crash & Silent & Delay & Detection & \tableTwoLines{Detection \&}{Correction} & \tableTwoLines{Double Error}{Detection} & Success     & Total  & \tableTwoLines{Execution}{time} \\\midrule
+                                                          &               & Crash & Silent & Delay & Detection & \tableTwoLines{Detection \&}{Correction} & \tableTwoLines{Double Error}{Detection} & Success     & Total  & \tableTwoLines{Execution}{time (h:min)} \\\midrule
         \multirow{4}{*}{\tableTwoLines{Buffer}{Overflow}} & No protection & 0     & 738    & 12    & --         & --                                        & --                                      & 12 (1.57\%) & 762    & 0:11                            \\
                                                           & Simple parity & 0     & 0      & 0     & 792       & --                                        & --                                      & 0           & 792    & 0:08                            \\
                                                           & Hamming Code  & 0     & 0      & 0     & --         & 912                                      & --                                      & 0           & 912    & 0:12                            \\
@@ -606,7 +606,7 @@ Results obtained with SECDED show the same results as with Hamming Code, which i
     \setlength{\tabcolsep}{3pt}
     \begin{tabular}{@{}cccccccccc@{}}
         \toprule
-                                                          &               & Crash & Silent  & Delay  & Detection & \tableTwoLines{Detection \&}{Correction} & Success         & Total     & \tableTwoLines{Execution}{time} \\\midrule
+                                                          &               & Crash & Silent  & Delay  & Detection & \tableTwoLines{Detection \&}{Correction} & Success         & Total     & \tableTwoLines{Execution}{time (h:min)} \\\midrule
         \multirow{3}{*}{\tableTwoLines{Buffer}{Overflow}} & No protection & 0     & 238,633 & 1,143  & --         & --                                        & 2,159 (0.89\%)  & 241,935   & 42:12                           \\
                                                           & Simple parity & 0     & 0       & 0      & 261,360   & --                                        & 0               & 261,360   & 64:24                           \\
                                                           & Hamming Code  & 0     & 0       & 0      & --         & 346,560                                  & 0               & 346,560   & 66:48                           \\\midrule

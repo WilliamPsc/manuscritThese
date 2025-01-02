@@ -366,13 +366,13 @@ Table~\ref{tab:registersDIFT} shows the repartition of these registers in every 
         \textbf{HDL Module} & \textbf{Number of registers} & \textbf{Number of bits in registers} \\ \midrule
         Instruction Fetch Stage & 2 & 2 \\
         Instruction Decode Stage & 14 & 19 \\
-        Register File Tag & 1 & 32 \\
+        Register File Tag & 32 & 32 \\
         Execution Stage & 1 & 1 \\
         Control and Status Registers & 2 & 64 \\
         Load/Store Unit & 4 & 9 \\
         \midrule
         \midrule
-        \textbf{Total} & \textbf{\textbf{24}} & \textbf{\textbf{127}} \\
+        \textbf{Total} & \textbf{\textbf{55}} & \textbf{\textbf{127}} \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -532,7 +532,7 @@ Finally, faults in \textit{tpr\_q} and \textit{tcr\_q} are successful, since the
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\linewidth]{c3_vulnerabilities_assessment/img/comp_compu/attaquePropag_v3_short.pdf}
+    \includegraphics[width=.9\linewidth]{c3_vulnerabilities_assessment/img/comp_compu/attaquePropag_v3_short.pdf}
     \caption{Tag propagation in a computation case with the Compare/Compute use case}
     \label{fig:study_attack_propag_v3_tag_propagation}
 \end{figure}
@@ -593,7 +593,7 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
     \label{table:end_sim_by_status_wop_1_set0}
     \begin{tabular}{@{}lcccccc@{}}
         \toprule
-                        & Crash & Silent & Delay & Success     & Total & Execution time \\
+                        & Crash & Silent & Delay & Success     & Total & \tableTwoLines{Execution}{time (h:min)} \\
         \midrule
         Buffer Overflow & 0     & 320    & 1     & 9 (2.73\%)  & 330   & 0:04           \\
         WU-FTPd         & 0     & 424    & 0     & 16 (3.64\%) & 440   & 0:47           \\
@@ -609,7 +609,7 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
     \label{table:end_sim_by_status_wop_1_set1}
     \begin{tabular}{@{}lcccccc@{}}
         \toprule
-                        & Crash & Silent & Delay & Success    & Total & Execution time \\
+                        & Crash & Silent & Delay & Success    & Total & \tableTwoLines{Execution}{time (h:min)} \\
         \midrule
         Buffer Overflow & 0     & 320    & 7     & 3 (0.91\%) & 330   & 0:04           \\
         WU-FTPd         & 0     & 397    & 36    & 7 (1.59\%) & 440   & 0:48           \\
@@ -625,7 +625,7 @@ Analysis of Figure~\ref{fig:attack_propag_v3_tag_propagation} supports the resul
     \label{table:end_sim_by_status_wop_1_bitflip}
     \begin{tabular}{@{}lcccccc@{}}
         \toprule
-                        & Crash & Silent & Delay & Success     & Total & Execution time \\
+                        & Crash & Silent & Delay & Success     & Total & \tableTwoLines{Execution}{time (h:min)} \\
         \midrule
         Buffer Overflow & 0     & 738    & 12    & 12 (1.57\%) & 762   & 0:11           \\
         WU-FTPd         & 0     & 946    & 41    & 29 (2.85\%) & 1016  & 01:52          \\
